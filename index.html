@@ -1,16 +1,29 @@
-<!-- index.html -->
-<!DOCTYPE html>
-<html lang="ja">
-<head>
-  <meta charset="UTF-8">
-  <title>釣りゲーム</title>
-  <style>
-    body { margin: 0; overflow: hidden; }
-    canvas { display: block; background: skyblue; }
-  </style>
-</head>
 <body>
-  <canvas id="gameCanvas" width="800" height="600"></canvas>
-  <script src="script.js"></script>
+  <div id="water" style="position: relative; width: 800px; height: 600px; background: lightblue;"></div>
+
+  <script>
+    fetch('dog.json')
+      .then(res => res.json())
+      .then(dogs => {
+        const water = document.getElementById('water');
+
+        dogs.forEach(dog => {
+          const dogElem = document.createElement('img');
+          dogElem.src = dog.image;
+          dogElem.alt = dog.name;
+          dogElem.classList.add('dog');
+
+          dogElem.style.position = 'absolute';
+          dogElem.style.width = '50px';
+
+          const x = Math.random() * (water.clientWidth - 50);
+          const y = Math.random() * (water.clientHeight - 50);
+
+          dogElem.style.left = `${x}px`;
+          dogElem.style.top = `${y}px`;
+
+          water.appendChild(dogElem);
+        });
+      });
+  </script>
 </body>
-</html>
