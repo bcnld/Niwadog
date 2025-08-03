@@ -3,13 +3,20 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no" />
-  <title>なさら</title>
+  <title>犬が泳ぐ川</title>
   <style>
-    /* 全画面の初期設定 */
     html, body {
-      margin: 0; padding: 0; height: 100%; overflow: hidden;
+      margin: 0;
+      padding: 0;
+      height: 100%;
+      overflow: hidden;
       background-color: #7ec8b2; /* 川の色 */
     }
+
+    :root {
+      --bottom-land-height: 120px;
+    }
+
     #container {
       position: relative;
       width: 100vw;
@@ -18,34 +25,29 @@
       overflow: hidden;
     }
 
-    :root {
-      --bottom-land-height: 120px; /* 土の高さ */
-    }
-
-    /* 川の水エリア（犬が泳ぐ場所） */
     #water-area {
       position: absolute;
-      top: 0; left: 0;
+      top: 0;
+      left: 0;
       width: 100%;
       height: calc(100% - var(--bottom-land-height));
       overflow: hidden;
       z-index: 1;
     }
 
-    /* 土の画像エリア */
     #bottom-land {
       position: absolute;
-      bottom: 0; left: 0;
+      bottom: 0;
+      left: 0;
       width: 100%;
       height: var(--bottom-land-height);
-      background-image: url('images/soil.png');
+      background-image: url('images/dirt.png');
       background-repeat: repeat-x;
       background-size: auto 100%;
       background-position: bottom center;
       z-index: 2;
     }
 
-    /* 犬の画像 */
     .dog {
       position: absolute;
       width: 70px;
@@ -54,10 +56,9 @@
       z-index: 3;
     }
 
-    /* スマホ対応 */
     @media (max-width: 600px) {
       :root {
-        --bottom-land-height: 100px; /* 少し小さめに */
+        --bottom-land-height: 100px;
       }
       .dog {
         width: 55px;
@@ -71,11 +72,9 @@
     <div id="bottom-land"></div>
   </div>
 
-  <!-- BGM（クリックで再生） -->
   <audio id="bgm" src="Sounds/bata.wav" loop></audio>
 
   <script>
-    // BGMはユーザークリックで再生（自動再生規制対応）
     window.addEventListener('click', () => {
       const bgm = document.getElementById('bgm');
       if (bgm.paused) {
@@ -96,16 +95,13 @@
           dogElem.classList.add('dog');
           dogElem.style.width = `${dogSize}px`;
 
-          // 初期位置ランダム（下の土にかからない範囲）
           let x = Math.random() * (waterArea.clientWidth - dogSize);
           let y = Math.random() * (waterArea.clientHeight - dogSize);
-
           dogElem.style.left = `${x}px`;
           dogElem.style.top = `${y}px`;
 
           waterArea.appendChild(dogElem);
 
-          // ランダム移動（下の土に行かないように）
           setInterval(() => {
             x = Math.random() * (waterArea.clientWidth - dogSize);
             y = Math.random() * (waterArea.clientHeight - dogSize);
