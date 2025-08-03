@@ -19,34 +19,50 @@
       background-color: #7ec8b2;
     }
 
+    /* 土の高さを変数で管理（デフォルト120pxに増やす） */
+    :root {
+      --bottom-land-height: 120px;
+    }
+
     #water-area {
       position: absolute;
       top: 0;
       left: 0;
       width: 100%;
-      height: calc(100% - 120px); /* 土の画像分だけ狭める */
+      height: calc(100% - var(--bottom-land-height)); /* 土の高さ分引く */
       overflow: hidden;
       z-index: 1;
     }
 
     #bottom-land {
       position: absolute;
-      bottom: 50px; /* 少し上に配置 */
+      bottom: 0; /* 画面一番下に固定 */
       left: 0;
       width: 100%;
-      height: 70px;
-      background-image: url('images/dirt.png'); /* 繰り返し画像 */
-      background-repeat: repeat-x;
-      background-size: auto 100%; /* 縦をぴったり合わせる */
+      height: var(--bottom-land-height);
+      /* 横も縦も繰り返す */
+      background-image: url('images/soil.png'); /* 土の画像パス */
+      background-repeat: repeat; /* 縦横両方繰り返し */
+      background-size: auto; /* 縦横サイズは自動 */
       z-index: 2;
     }
 
     .dog {
       position: absolute;
-      width: 50px;
+      width: 70px;  /* 犬を少し大きく */
       user-select: none;
       transition: left 2s linear, top 2s linear;
       z-index: 3;
+    }
+
+    /* スマホなど幅が狭い場合の調整 */
+    @media (max-width: 600px) {
+      :root {
+        --bottom-land-height: 150px; /* 土の高さを更に大きく */
+      }
+      .dog {
+        width: 55px; /* 犬も少し小さく */
+      }
     }
   </style>
 </head>
@@ -72,28 +88,30 @@
       .then(res => res.json())
       .then(dogs => {
         const waterArea = document.getElementById('water-area');
-        const dogSize = 50;
 
         dogs.forEach(dog => {
           const dogElem = document.createElement('img');
           dogElem.src = dog.image;
           dogElem.alt = dog.name;
           dogElem.classList.add('dog');
-          dogElem.style.width = `${dogSize}px`;
 
-          // 初期位置ランダム（土にかからない）
-          let x = Math.random() * (waterArea.clientWidth - dogSize);
-          let y = Math.random() * (waterArea.clientHeight - dogSize);
+          waterArea.appendChild(dogElem);
+
+          // 犬のサイズはCSS指定幅に合わせる
+          let dogWidth = dogElem.clientWidth || 70;
+          let dogHeight = dogWidth;
+
+          // 初期位置は土の領域を避ける
+          let x = Math.random() * (waterArea.clientWidth - dogWidth);
+          let y = Math.random() * (waterArea.clientHeight - dogHeight);
 
           dogElem.style.left = `${x}px`;
           dogElem.style.top = `${y}px`;
 
-          waterArea.appendChild(dogElem);
-
-          // ランダム移動
+          // ランダムに縦横両方向に移動
           setInterval(() => {
-            x = Math.random() * (waterArea.clientWidth - dogSize);
-            y = Math.random() * (waterArea.clientHeight - dogSize);
+            x = Math.random() * (waterArea.clientWidth - dogWidth);
+            y = Math.random() * (waterArea.clientHeight - dogHeight);
             dogElem.style.left = `${x}px`;
             dogElem.style.top = `${y}px`;
           }, 3000 + Math.random() * 3000);
