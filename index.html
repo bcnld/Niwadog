@@ -2,7 +2,7 @@
 <html lang="ja">
 <head>
   <meta charset="UTF-8" />
-  <title>犬の川泳ぎミニゲーム（岸あり）</title>
+  <title>犬の川泳ぎミニゲーム（岸あり＋BGM付き）</title>
   <style>
     html, body {
       margin: 0; padding: 0; height: 100%; overflow: hidden;
@@ -24,7 +24,6 @@
       flex-grow: 1;
       background-color: #7ec8b2;
       display: flex;
-      /* 左右に岸を追加 */
     }
 
     /* 左右の岸 */
@@ -61,7 +60,20 @@
 
   <div class="bank"></div> <!-- 下岸 -->
 
+  <!-- BGM -->
+  <audio id="bgm" src="sounds/bata.wav" loop></audio>
+
   <script>
+    // ユーザーがクリックしたらBGM再生
+    window.addEventListener('click', () => {
+      const bgm = document.getElementById('bgm');
+      if (bgm.paused) {
+        bgm.play().catch(() => {
+          // 再生失敗しても無視
+        });
+      }
+    });
+
     fetch('dog.json')
       .then(res => res.json())
       .then(dogs => {
@@ -75,7 +87,7 @@
           dogElem.classList.add('dog');
           dogElem.style.width = `${dogSize}px`;
 
-          // 初期位置は水エリア内ランダム（幅・高さはwaterAreaのサイズで）
+          // 初期位置ランダム
           let x = Math.random() * (waterArea.clientWidth - dogSize);
           let y = Math.random() * (waterArea.clientHeight - dogSize);
 
@@ -84,7 +96,7 @@
 
           waterArea.appendChild(dogElem);
 
-          // ランダム移動（3〜6秒ごと）
+          // ランダム移動
           setInterval(() => {
             x = Math.random() * (waterArea.clientWidth - dogSize);
             y = Math.random() * (waterArea.clientHeight - dogSize);
