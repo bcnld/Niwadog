@@ -64,6 +64,13 @@
     "image": "doggo.png",
     "probability": 0.1,
     "rarity": 7
+  },
+  {
+    "name": "スーパー犬",
+    "image": "dogsu.png",
+    "probability": 0.09,
+    "rarity": 7
   }
 ]
+
 
