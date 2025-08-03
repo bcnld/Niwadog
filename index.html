@@ -2,43 +2,41 @@
 <html lang="ja">
 <head>
   <meta charset="UTF-8" />
-  <title>安いもんだ、にわとりにしこったことがバレることぐらい。</title>
+  <title>安いもんだ、にわとりでしこったことがバレるぐらい。</title>
   <style>
     html, body {
-      margin: 0; padding: 0; height: 100%; overflow: hidden;
-      background-color: #7ec8b2; /* 川の色 */
-      display: flex;
-      flex-direction: column;
-    }
-
-    /* 上下の岸 */
-    .bank {
-      height: 50px;
-      background: #8b5a2b; /* 茶色っぽい岸色 */
-      flex-shrink: 0;
-    }
-
-    /* メイン水域 */
-    #water {
-      position: relative;
-      flex-grow: 1;
-      background-color: #7ec8b2;
-      display: flex;
-    }
-
-    /* 左右の岸 */
-    .side-bank {
-      width: 80px;
-      background: #8b5a2b;
-      flex-shrink: 0;
-    }
-
-    /* 犬の泳ぐエリア（真ん中） */
-    #water-area {
-      position: relative;
-      flex-grow: 1;
-      background-color: #7ec8b2;
+      margin: 0;
+      padding: 0;
+      height: 100%;
       overflow: hidden;
+      background-color: #7ec8b2; /* 川の色 */
+    }
+
+    #container {
+      position: relative;
+      width: 100vw;
+      height: 100vh;
+      background-color: #7ec8b2;
+    }
+
+    #water-area {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: calc(100% - 100px); /* 下の土の分だけ狭める */
+      overflow: hidden;
+      z-index: 1;
+    }
+
+    #bottom-land {
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      width: 100%;
+      height: 100px;
+      background-color: #8b5a2b;
+      z-index: 2;
     }
 
     .dog {
@@ -46,19 +44,15 @@
       width: 50px;
       user-select: none;
       transition: left 2s linear, top 2s linear;
+      z-index: 3;
     }
   </style>
 </head>
 <body>
-  <div class="bank"></div> <!-- 上岸 -->
-
-  <div id="water">
-    <div class="side-bank"></div> <!-- 左岸 -->
-    <div id="water-area"></div>  <!-- 犬が泳ぐエリア -->
-    <div class="side-bank"></div> <!-- 右岸 -->
+  <div id="container">
+    <div id="water-area"></div>
+    <div id="bottom-land"></div>
   </div>
-
-  <div class="bank"></div> <!-- 下岸 -->
 
   <!-- BGM -->
   <audio id="bgm" src="Sounds/bata.wav" loop></audio>
@@ -68,9 +62,7 @@
     window.addEventListener('click', () => {
       const bgm = document.getElementById('bgm');
       if (bgm.paused) {
-        bgm.play().catch(() => {
-          // 再生失敗しても無視
-        });
+        bgm.play().catch(() => {});
       }
     });
 
@@ -87,7 +79,7 @@
           dogElem.classList.add('dog');
           dogElem.style.width = `${dogSize}px`;
 
-          // 初期位置ランダム
+          // 初期位置ランダム（下の土にかからない範囲）
           let x = Math.random() * (waterArea.clientWidth - dogSize);
           let y = Math.random() * (waterArea.clientHeight - dogSize);
 
@@ -96,7 +88,7 @@
 
           waterArea.appendChild(dogElem);
 
-          // ランダム移動
+          // ランダム移動（下の土に行かないように）
           setInterval(() => {
             x = Math.random() * (waterArea.clientWidth - dogSize);
             y = Math.random() * (waterArea.clientHeight - dogSize);
@@ -111,5 +103,3 @@
   </script>
 </body>
 </html>
-
-
