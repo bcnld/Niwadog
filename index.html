@@ -2,25 +2,46 @@
 <html lang="ja">
 <head>
   <meta charset="UTF-8" />
-  <title>犬の川泳ぎミニゲーム</title>
+  <title>犬の川泳ぎミニゲーム（岸あり）</title>
   <style>
-    /* 画面全体に川っぽい色 */
     html, body {
-      margin: 0;
-      padding: 0;
-      height: 100%;
-      background-color: #7ec8b2; /* 川っぽい色 */
+      margin: 0; padding: 0; height: 100%; overflow: hidden;
+      background-color: #7ec8b2; /* 川の色 */
+      display: flex;
+      flex-direction: column;
+    }
+
+    /* 上下の岸 */
+    .bank {
+      height: 50px;
+      background: #8b5a2b; /* 茶色っぽい岸色 */
+      flex-shrink: 0;
+    }
+
+    /* メイン水域 */
+    #water {
+      position: relative;
+      flex-grow: 1;
+      background-color: #7ec8b2;
+      display: flex;
+      /* 左右に岸を追加 */
+    }
+
+    /* 左右の岸 */
+    .side-bank {
+      width: 80px;
+      background: #8b5a2b;
+      flex-shrink: 0;
+    }
+
+    /* 犬の泳ぐエリア（真ん中） */
+    #water-area {
+      position: relative;
+      flex-grow: 1;
+      background-color: #7ec8b2;
       overflow: hidden;
     }
 
-    /* 水（犬を泳がせる場所）を画面いっぱいに */
-    #water {
-      position: relative;
-      width: 100vw;
-      height: 100vh;
-    }
-
-    /* 犬画像のスタイル */
     .dog {
       position: absolute;
       width: 50px;
@@ -30,39 +51,46 @@
   </style>
 </head>
 <body>
-  <div id="water"></div>
+  <div class="bank"></div> <!-- 上岸 -->
+
+  <div id="water">
+    <div class="side-bank"></div> <!-- 左岸 -->
+    <div id="water-area"></div>  <!-- 犬が泳ぐエリア -->
+    <div class="side-bank"></div> <!-- 右岸 -->
+  </div>
+
+  <div class="bank"></div> <!-- 下岸 -->
 
   <script>
     fetch('dog.json')
       .then(res => res.json())
       .then(dogs => {
-        const water = document.getElementById('water');
+        const waterArea = document.getElementById('water-area');
+        const dogSize = 50;
 
         dogs.forEach(dog => {
           const dogElem = document.createElement('img');
           dogElem.src = dog.image;
           dogElem.alt = dog.name;
           dogElem.classList.add('dog');
-
-          const dogSize = 50;
           dogElem.style.width = `${dogSize}px`;
 
-          // 初期位置を水エリア内にランダムに設定
-          let x = Math.random() * (water.clientWidth - dogSize);
-          let y = Math.random() * (water.clientHeight - dogSize);
+          // 初期位置は水エリア内ランダム（幅・高さはwaterAreaのサイズで）
+          let x = Math.random() * (waterArea.clientWidth - dogSize);
+          let y = Math.random() * (waterArea.clientHeight - dogSize);
 
           dogElem.style.left = `${x}px`;
           dogElem.style.top = `${y}px`;
 
-          water.appendChild(dogElem);
+          waterArea.appendChild(dogElem);
 
-          // ランダムに泳ぐアニメーション
+          // ランダム移動（3〜6秒ごと）
           setInterval(() => {
-            x = Math.random() * (water.clientWidth - dogSize);
-            y = Math.random() * (water.clientHeight - dogSize);
+            x = Math.random() * (waterArea.clientWidth - dogSize);
+            y = Math.random() * (waterArea.clientHeight - dogSize);
             dogElem.style.left = `${x}px`;
             dogElem.style.top = `${y}px`;
-          }, 3000 + Math.random() * 3000); // 3～6秒ごとに移動
+          }, 3000 + Math.random() * 3000);
         });
       })
       .catch(err => {
