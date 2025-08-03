@@ -1,34 +1,147 @@
 <!DOCTYPE html>
 <html lang="ja">
 <head>
-  <meta charset="UTF-8" />
-  <title>ルーレット釣りゲーム</title>
-  <link rel="stylesheet" href="style.css" />
+  <meta charset="UTF-8">
+  <title>海で魚を釣ろう！</title>
+  <style>
+    body {
+      margin: 0;
+      overflow: hidden;
+      font-family: sans-serif;
+      background: url('https://i.imgur.com/8Y9sKcU.jpg') no-repeat center center fixed;
+      background-size: cover;
+    }
+
+    h1, button, #message, h2 {
+      position: absolute;
+      left: 50%;
+      transform: translateX(-50%);
+      text-align: center;
+      z-index: 10;
+      color: white;
+      text-shadow: 1px 1px 3px black;
+    }
+
+    h1 { top: 10px; }
+    button { top: 60px; padding: 10px 20px; font-size: 16px; }
+    #message { top: 110px; font-size: 18px; }
+    h2 { bottom: 180px; }
+
+    #zukan {
+      position: absolute;
+      bottom: 20px;
+      left: 50%;
+      transform: translateX(-50%);
+      background: rgba(255,255,255,0.7);
+      padding: 10px;
+      border-radius: 10px;
+      max-width: 90%;
+    }
+
+    .zukan-entry {
+      display: inline-block;
+      margin: 5px;
+    }
+
+    .fish {
+      position: absolute;
+      width: 80px;
+      transition: transform 1s linear;
+      pointer-events: none;
+    }
+  </style>
 </head>
 <body>
-  <h1>さかなつりゲーム（ルーレット式）</h1>
+  <h1>海で魚を釣ろう！</h1>
+  <button onclick="startFishing()">釣りスタート！</button>
+  <div id="message"></div>
 
-  <div id="water">
-    <div id="fish-area"></div>
-  </div>
+  <h2>さかな図鑑</h2>
+  <div id="zukan"></div>
 
-  <button id="startFishing">釣り開始</button>
+  <script>
+    const fishList = [
+      { id: 1, name: "コイキング", rarity: "★", img: "https://i.imgur.com/nO8yR0T.png" },
+      { id: 2, name: "ヨウカイさかな", rarity: "★★", img: "https://i.imgur.com/nO8yR0T.png" },
+      { id: 3, name: "レア妖魚", rarity: "★★★", img: "https://i.imgur.com/nO8yR0T.png" }
+    ];
 
-  <div id="roulette" class="hidden">
-    <canvas id="rouletteCanvas" width="300" height="300"></canvas>
-    <button id="stopBtn">止める！</button>
-  </div>
+    let zukan = JSON.parse(localStorage.getItem("zukan") || "{}");
+    let activeFish = null;
+    let fishTimeout;
 
-  <div id="result"></div>
+    function startFishing() {
+      document.getElementById("message").textContent = "魚が現れるのを待とう...";
+      clearTimeout(fishTimeout);
 
-  <!-- 音声ファイル -->
-  <audio id="bgm" src="bata.wav" loop></audio>
-  <audio id="soundStart" src="pop.wav"></audio>
-  <audio id="soundStop" src="pop.wav"></audio>
-  <audio id="soundSuccess" src="pop.wav"></audio>
-  <audio id="soundFail" src="oppa2.wav"></audio>
+      if (activeFish) {
+        document.body.removeChild(activeFish.element);
+        activeFish = null;
+      }
 
-  <script src="script.js"></script>
+      fishTimeout = setTimeout(spawnFish, 1000 + Math.random() * 2000);
+    }
+
+    function spawnFish() {
+      const fishData = fishList[Math.floor(Math.random() * fishList.length)];
+
+      const fish = document.createElement("img");
+      fish.src = fishData.img;
+      fish.className = "fish";
+
+      const startX = Math.random() * (window.innerWidth - 100);
+      const startY = Math.random() * (window.innerHeight - 200) + 100;
+      fish.style.left = `${startX}px`;
+      fish.style.top = `${startY}px`;
+
+      document.body.appendChild(fish);
+
+      activeFish = { element: fish, data: fishData };
+
+      fish.addEventListener("click", () => catchFish(fishData));
+
+      moveFish(fish); // ランダムに泳がせる
+    }
+
+    function moveFish(fish) {
+      const moveInterval = setInterval(() => {
+        const x = Math.random() * (window.innerWidth - 100);
+        const y = Math.random() * (window.innerHeight - 200) + 100;
+        fish.style.transform = `translate(${x}px, ${y}px) scaleX(${Math.random() > 0.5 ? 1 : -1})`;
+      }, 1500);
+      fish.dataset.moveInterval = moveInterval;
+    }
+
+    function catchFish(fishData) {
+      document.getElementById("message").textContent = `${fishData.name} を釣った！`;
+
+      if (!zukan[fishData.id]) {
+        zukan[fishData.id] = fishData.name;
+        localStorage.setItem("zukan", JSON.stringify(zukan));
+        document.getElementById("message").textContent += " 🎉 新種ゲット！";
+      }
+
+      if (activeFish) {
+        clearInterval(activeFish.element.dataset.moveInterval);
+        activeFish.element.remove();
+        activeFish = null;
+      }
+
+      renderZukan();
+    }
+
+    function renderZukan() {
+      const container = document.getElementById("zukan");
+      container.innerHTML = "";
+      for (const fish of fishList) {
+        const entry = document.createElement("div");
+        entry.className = "zukan-entry";
+        entry.textContent = zukan[fish.id] ? `${fish.name} ${fish.rarity}` : "？？？";
+        container.appendChild(entry);
+      }
+    }
+
+    renderZukan();
+  </script>
 </body>
 </html>
-
