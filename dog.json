@@ -1,76 +1,89 @@
 [
   {
     "name": "ノーマル犬",
-    "image": "dog.png",
+    "image": "images/dog.png",
     "probability": 0.6,
     "rarity": 1
+    "description": "いつもの犬。"
   },
   {
     "name": "普通の犬",
-    "image": "dogc.png",
+    "image": "images/dogc.png",
     "probability": 0.8,
     "rarity": 1
+    "description": "灰色のハスキー犬。"
   },
   {
     "name": "多分普通の犬",
-    "image": "doga.png",
+    "image": "images/doga.png",
     "probability": 0.6,
     "rarity": 2
+    "description": "緑がかった毛並みが特徴の犬。"
   },
   {
     "name": "レア犬",
-    "image": "dogr.png",
+    "image": "images/dogr.png",
     "probability": 0.5,
     "rarity": 3
+    "description": "青いレアなの犬。"
   },
   {
     "name": "珍しい犬",
-    "image": "doge.png",
+    "image": "images/doge.png",
     "probability": 0.4,
     "rarity": 4
+    "description": "紫のオーラの犬。"
   },
   {
     "name": "すごい犬",
-    "image": "dogre.png",
+    "image": "images/dogre.png",
     "probability": 0.3,
     "rarity": 5
+    "description": "光ったの犬。"
   },
   {
     "name": "紫犬",
-    "image": "dogpa.png",
+    "image": "images/dogpa.png",
     "probability": 0.2,
     "rarity": 6
+    "description": "毛の色が紫が特徴の犬。"
   },
   {
     "name": "赤い犬",
-    "image": "dogred.png",
+    "image": "images/dogred.png",
     "probability": 0.4,
     "rarity": 4
+    "description": "赤い毛が特徴の犬。"
   },
   {
     "name": "青い犬",
-    "image": "dogblue.png",
+    "image": "images/dogblue.png",
     "probability": 0.5,
     "rarity": 4
+    "description": "青い毛が特徴の犬。"
   },
   {
     "name": "気が狂った犬",
-    "image": "dogcraz.png",
+    "image": "images/dogcraz.png",
     "probability": 1.0,
     "rarity": 2
+    "description": "ホモに満ちた狂気の犬。"
   },
   {
     "name": "金犬",
-    "image": "doggo.png",
+    "image": "images/doggo.png",
     "probability": 0.1,
     "rarity": 7
+    "description": "金魂を食べたら金色の毛になった金色の犬。"
   },
   {
     "name": "スーパー犬",
-    "image": "dogsu.png",
+    "image": "images/dogsu.png",
     "probability": 0.09,
     "rarity": 7
+    "description": "とても素晴らしい犬。"
   }
 ]
+
 
 
