@@ -2,7 +2,7 @@
 <html lang="ja">
 <head>
   <meta charset="UTF-8" />
-  <title>安いもんだ、にわとりでしこったことがバレるぐらい。</title>
+  <title>安いもんだ、にわとりにしこったことがバレるぐらい</title>
   <style>
     html, body {
       margin: 0;
@@ -35,7 +35,9 @@
       left: 0;
       width: 100%;
       height: 100px;
-      background-color: #8b5a2b;
+      background-image: url('images/soil.png'); /* ここに画像パスを指定 */
+      background-repeat: repeat-x;
+      background-size: cover;
       z-index: 2;
     }
 
@@ -79,7 +81,7 @@
           dogElem.classList.add('dog');
           dogElem.style.width = `${dogSize}px`;
 
-          // 初期位置ランダム（下の土にかからない範囲）
+          // 初期位置ランダム（下の画像にかからない範囲）
           let x = Math.random() * (waterArea.clientWidth - dogSize);
           let y = Math.random() * (waterArea.clientHeight - dogSize);
 
@@ -88,7 +90,7 @@
 
           waterArea.appendChild(dogElem);
 
-          // ランダム移動（下の土に行かないように）
+          // ランダム移動（下の画像に行かないように）
           setInterval(() => {
             x = Math.random() * (waterArea.clientWidth - dogSize);
             y = Math.random() * (waterArea.clientHeight - dogSize);
