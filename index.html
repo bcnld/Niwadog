@@ -2,7 +2,7 @@
 <html lang="ja">
 <head>
   <meta charset="UTF-8" />
-  <title>安いもんだ、にわとりにしこったことがバレるぐらい</title>
+  <title>犬が泳ぐ川</title>
   <style>
     html, body {
       margin: 0;
@@ -24,20 +24,20 @@
       top: 0;
       left: 0;
       width: 100%;
-      height: calc(100% - 100px); /* 下の土の分だけ狭める */
+      height: calc(100% - 120px); /* 土の画像分だけ狭める */
       overflow: hidden;
       z-index: 1;
     }
 
     #bottom-land {
       position: absolute;
-      bottom: 0;
+      bottom: 50px; /* 少し上に配置 */
       left: 0;
       width: 100%;
-      height: 100px;
-      background-image: url('images/dirt.png'); /* ここに画像パスを指定 */
+      height: 70px;
+      background-image: url('images/dirt.png'); /* 繰り返し画像 */
       background-repeat: repeat-x;
-      background-size: cover;
+      background-size: auto 100%; /* 縦をぴったり合わせる */
       z-index: 2;
     }
 
@@ -81,7 +81,7 @@
           dogElem.classList.add('dog');
           dogElem.style.width = `${dogSize}px`;
 
-          // 初期位置ランダム（下の画像にかからない範囲）
+          // 初期位置ランダム（土にかからない）
           let x = Math.random() * (waterArea.clientWidth - dogSize);
           let y = Math.random() * (waterArea.clientHeight - dogSize);
 
@@ -90,7 +90,7 @@
 
           waterArea.appendChild(dogElem);
 
-          // ランダム移動（下の画像に行かないように）
+          // ランダム移動
           setInterval(() => {
             x = Math.random() * (waterArea.clientWidth - dogSize);
             y = Math.random() * (waterArea.clientHeight - dogSize);
@@ -105,4 +105,3 @@
   </script>
 </body>
 </html>
-
