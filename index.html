@@ -10,7 +10,6 @@
       padding: 0;
       height: 100%;
       overflow: hidden;
-      background-color: #7ec8b2;
     }
 
     :root {
@@ -21,7 +20,9 @@
       position: relative;
       width: 100vw;
       height: 100vh;
-      background-color: #7ec8b2;
+      background-image: url('images/water.png');
+      background-repeat: repeat;
+      background-size: 64px 64px;
       overflow: hidden;
     }
 
@@ -36,29 +37,16 @@
     }
 
     #bottom-land {
-      position: relative; /* 変更：relativeにして中の絶対配置アイコンが効くように */
+      position: absolute;
       bottom: 0;
       left: 0;
       width: 100%;
       height: var(--bottom-land-height);
       background-image: url('images/dirt.png');
-      background-repeat: repeat-x;
-      background-size: auto 100%;
+      background-repeat: repeat;
+      background-size: 64px 64px;
       background-position: bottom center;
       z-index: 2;
-    }
-
-    /* 図鑑アイコン */
-    #zukan-icon {
-      position: absolute;
-      right: 10px;
-      top: 50%;
-      transform: translateY(-50%);
-      width: 60px;
-      height: 60px;
-      cursor: pointer;
-      z-index: 5;
-      user-select: none;
     }
 
     .dog {
@@ -67,6 +55,35 @@
       user-select: none;
       transition: left 2s linear, top 2s linear;
       z-index: 3;
+    }
+
+    /* UIボタン */
+    .ui-button {
+      position: absolute;
+      bottom: 10px;
+      width: 50px;
+      height: 50px;
+      z-index: 10;
+      cursor: pointer;
+    }
+    #zukan-button {
+      right: 10px;
+    }
+    #shop-button {
+      left: 10px;
+    }
+
+    /* パネル */
+    .panel {
+      position: fixed;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      background: white;
+      border: 2px solid #333;
+      padding: 20px;
+      display: none;
+      z-index: 999;
     }
 
     /* 縦画面警告 */
@@ -87,78 +104,9 @@
       padding: 20px;
       box-sizing: border-box;
     }
-
     #orientation-warning img {
       max-width: 200px;
       margin-bottom: 20px;
-    }
-
-    /* 図鑑モーダル */
-    #zukan-modal {
-      position: fixed;
-      top: 0;
-      left: 0;
-      width: 100vw;
-      height: 100vh;
-      background: rgba(0,0,0,0.7);
-      display: none;
-      justify-content: center;
-      align-items: center;
-      z-index: 10000;
-    }
-
-    #zukan-modal.show {
-      display: flex;
-    }
-
-    #zukan-content {
-      background: white;
-      padding: 20px;
-      border-radius: 10px;
-      width: 80vw;
-      max-width: 400px;
-      max-height: 80vh;
-      overflow-y: auto;
-      box-sizing: border-box;
-      text-align: center;
-    }
-
-    #zukan-content h2 {
-      margin-top: 0;
-    }
-
-    #zukan-list {
-      margin-top: 10px;
-    }
-
-    #zukan-list p {
-      color: #555;
-    }
-
-    #zukan-list div {
-      display: flex;
-      align-items: center;
-      margin: 5px 0;
-      gap: 10px;
-      border-bottom: 1px solid #ccc;
-      padding-bottom: 5px;
-    }
-
-    #zukan-list img {
-      width: 50px;
-      height: auto;
-      user-select: none;
-    }
-
-    #zukan-close {
-      margin-top: 15px;
-      padding: 8px 20px;
-      background: #4caf50;
-      color: white;
-      border: none;
-      border-radius: 5px;
-      cursor: pointer;
-      font-size: 16px;
     }
 
     @media (max-width: 600px) {
@@ -168,19 +116,10 @@
       .dog {
         width: 50px;
       }
-      #zukan-icon {
-        width: 45px;
-        height: 45px;
-      }
-      #zukan-content {
-        width: 90vw;
-        max-width: none;
-      }
     }
   </style>
 </head>
 <body>
-  <!-- 縦画面警告 -->
   <div id="orientation-warning">
     <img src="images/dog.gif" alt="横向きにしてください">
     <p>横向きにしないと鶏があなたのケツを掘りに行きます</p>
@@ -188,39 +127,33 @@
 
   <div id="container">
     <div id="water-area"></div>
-    <div id="bottom-land">
-      <img id="zukan-icon" src="images/zukan_icon.png" alt="図鑑" title="図鑑を開く" />
-    </div>
+    <div id="bottom-land"></div>
+    <img id="zukan-button" class="ui-button" src="images/zukan_icon.png" alt="図鑑">
+    <img id="shop-button" class="ui-button" src="images/shop_icon.png" alt="ショップ">
   </div>
 
-  <!-- 図鑑モーダル -->
-  <div id="zukan-modal">
-    <div id="zukan-content">
-      <h2>図鑑</h2>
-      <div id="zukan-list">
-        <p>まだ釣った魚はいません</p>
-      </div>
-      <button id="zukan-close">閉じる</button>
-    </div>
+  <div id="zukan-panel" class="panel">
+    <h2>図鑑</h2>
+    <p>捕まえた犬が表示されます。</p>
+  </div>
+
+  <div id="shop-panel" class="panel">
+    <h2>ショップ</h2>
+    <p>ここでアイテムが買えます。</p>
   </div>
 
   <audio id="bgm" src="Sounds/bata.wav" loop></audio>
+  <audio id="panel-open" src="Sounds/open.mp3"></audio>
 
   <script>
     const orientationWarning = document.getElementById('orientation-warning');
     const container = document.getElementById('container');
-    const zukanIcon = document.getElementById('zukan-icon');
-    const zukanModal = document.getElementById('zukan-modal');
-    const zukanClose = document.getElementById('zukan-close');
-    const zukanList = document.getElementById('zukan-list');
 
-    // 画面向きチェック
     function checkOrientation() {
       const isPortrait = window.matchMedia("(orientation: portrait)").matches;
       if (isPortrait) {
         orientationWarning.style.display = 'flex';
         container.style.display = 'none';
-        zukanModal.classList.remove('show'); // 閉じる
       } else {
         orientationWarning.style.display = 'none';
         container.style.display = 'block';
@@ -231,7 +164,7 @@
     window.addEventListener('orientationchange', checkOrientation);
     window.addEventListener('load', checkOrientation);
 
-    // BGM再生（クリックで）
+    // BGM 再生
     window.addEventListener('click', () => {
       const bgm = document.getElementById('bgm');
       if (bgm.paused) {
@@ -239,17 +172,26 @@
       }
     });
 
-    // 図鑑アイコン押したら表示
-    zukanIcon.addEventListener('click', () => {
-      zukanModal.classList.add('show');
+    // パネル開閉
+    const zukanBtn = document.getElementById('zukan-button');
+    const shopBtn = document.getElementById('shop-button');
+    const zukanPanel = document.getElementById('zukan-panel');
+    const shopPanel = document.getElementById('shop-panel');
+    const openSound = document.getElementById('panel-open');
+
+    zukanBtn.addEventListener('click', () => {
+      const isOpen = zukanPanel.style.display === 'block';
+      zukanPanel.style.display = isOpen ? 'none' : 'block';
+      if (!isOpen) openSound.play();
     });
 
-    // 閉じるボタン
-    zukanClose.addEventListener('click', () => {
-      zukanModal.classList.remove('show');
+    shopBtn.addEventListener('click', () => {
+      const isOpen = shopPanel.style.display === 'block';
+      shopPanel.style.display = isOpen ? 'none' : 'block';
+      if (!isOpen) openSound.play();
     });
 
-    // 犬（または魚）を水域にランダム配置＆移動
+    // 犬の生成
     fetch('dog.json')
       .then(res => res.json())
       .then(dogs => {
