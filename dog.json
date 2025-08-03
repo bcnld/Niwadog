@@ -1,0 +1,62 @@
+[
+  {
+    "name": "ノーマル犬",
+    "image": "dog.png",
+    "probability": 0.6,
+    "rarity": 1
+  },
+  {
+    "name": "普通の犬",
+    "image": "dogc.png",
+    "probability": 0.8,
+    "rarity": 1
+  },
+  {
+    "name": "多分普通の犬",
+    "image": "doga.png",
+    "probability": 0.6,
+    "rarity": 2
+  },
+  {
+    "name": "レア犬",
+    "image": "dogr.png",
+    "probability": 0.5,
+    "rarity": 3
+  },
+  {
+    "name": "珍しい犬",
+    "image": "doge.png",
+    "probability": 0.4,
+    "rarity": 4
+  },
+  {
+    "name": "すごい犬",
+    "image": "dogre.png",
+    "probability": 0.3,
+    "rarity": 5
+  },
+  {
+    "name": "紫犬",
+    "image": "dogpa.png",
+    "probability": 0.03,
+    "rarity": 5
+  },
+  {
+    "name": "赤い犬",
+    "image": "dogred.png",
+    "probability": 0.4,
+    "rarity": 4
+  },
+  {
+    "name": "青い犬",
+    "image": "dogblue.png",
+    "probability": 0.5,
+    "rarity": 4
+  },
+  {
+    "name": "気が狂った犬",
+    "image": "dogcraz.png",
+    "probability": 1.0,
+    "rarity": 2
+  }
+]
