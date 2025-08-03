@@ -1,15 +1,7 @@
-<script>
-let dogList = [];
+<body>
+  <div id="water">
+    <!-- 魚はここに生成される -->
+  </div>
 
-fetch("dog.json")
-  .then((response) => response.json())
-  .then((data) => {
-    dogList = data;
-    initGame(); // 読み込み完了後にゲーム開始
-  });
-
-function initGame() {
-  console.log("読み込んだ犬たち：", dogList);
-  // ここからランダム出現・釣りなどの処理に使う
-}
-</script>
+  <script src="script.js"></script>
+</body>
