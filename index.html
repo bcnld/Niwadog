@@ -60,8 +60,8 @@
     /* 図鑑・ショップボタン */
     #zukan-btn, #shop-btn {
       position: absolute;
-      bottom: calc(var(--bottom-land-height) + 5px);
-      width: 80px;   /* PC向けサイズアップ */
+      bottom: calc(var(--bottom-land-height) + 10px);
+      width: 80px;
       height: 80px;
       z-index: 4;
       cursor: pointer;
@@ -118,27 +118,21 @@
       margin-bottom: 20px;
     }
 
-    /* スマホ対応 */
     @media (max-width: 600px) {
       :root {
         --bottom-land-height: 100px;
       }
-
       .dog {
         width: 50px;
       }
-
-      /* ボタン位置を上げてサイズも大きく */
       #zukan-btn, #shop-btn {
-        bottom: calc(var(--bottom-land-height) + 30px);
-        width: 90px;
-        height: 90px;
+        width: 60px;
+        height: 60px;
+        bottom: calc(var(--bottom-land-height) + 50px); /* 上に上げて見えるように */
       }
-
       #zukan-btn {
         right: 15px;
       }
-
       #shop-btn {
         left: 15px;
       }
@@ -147,7 +141,7 @@
 </head>
 <body>
   <div id="orientation-warning">
-    <img src="images/dog.gif" alt="横向きにしてください">
+    <img src="images/dog.gif" alt="横向きにしてください" />
     <p>横向きにしないと鶏があなたのケツを掘りに行きます</p>
   </div>
 
@@ -168,6 +162,7 @@
 
   <audio id="bgm" src="Sounds/bata.wav" loop></audio>
   <audio id="sfx-open" src="Sounds/open.mp3"></audio>
+  <audio id="sfx-close" src="Sounds/close.mp3"></audio>
 
   <script>
     const orientationWarning = document.getElementById('orientation-warning');
@@ -188,7 +183,7 @@
     window.addEventListener('orientationchange', checkOrientation);
     window.addEventListener('load', checkOrientation);
 
-    // BGM 再生
+    // BGM 再生（クリック後に再生開始）
     window.addEventListener('click', () => {
       const bgm = document.getElementById('bgm');
       if (bgm.paused) {
@@ -196,38 +191,36 @@
       }
     });
 
-    // 図鑑・ショップ開閉
+    // 図鑑・ショップ開閉と効果音
     const zukanBtn = document.getElementById('zukan-btn');
     const shopBtn = document.getElementById('shop-btn');
     const zukanPanel = document.getElementById('zukan-panel');
     const shopPanel = document.getElementById('shop-panel');
     const openSfx = document.getElementById('sfx-open');
-
-    function playOpenSound() {
-      openSfx.currentTime = 0;
-      openSfx.play().catch(() => {});
-    }
+    const closeSfx = document.getElementById('sfx-close');
 
     zukanBtn.addEventListener('click', () => {
       const isOpen = zukanPanel.style.display === 'block';
       if (isOpen) {
         zukanPanel.style.display = 'none';
+        closeSfx.play().catch(() => {});
       } else {
         zukanPanel.style.display = 'block';
         shopPanel.style.display = 'none';
+        openSfx.play().catch(() => {});
       }
-      playOpenSound();
     });
 
     shopBtn.addEventListener('click', () => {
       const isOpen = shopPanel.style.display === 'block';
       if (isOpen) {
         shopPanel.style.display = 'none';
+        closeSfx.play().catch(() => {});
       } else {
         shopPanel.style.display = 'block';
         zukanPanel.style.display = 'none';
+        openSfx.play().catch(() => {});
       }
-      playOpenSound();
     });
 
     // 犬の生成
@@ -266,6 +259,3 @@
   </script>
 </body>
 </html>
-
-
-
