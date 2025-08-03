@@ -55,9 +55,9 @@
       user-select: none;
       transition: left 2s linear, top 2s linear;
       z-index: 3;
+      cursor: pointer;
     }
 
-    /* 図鑑・ショップボタン */
     #zukan-btn, #shop-btn {
       position: absolute;
       bottom: calc(var(--bottom-land-height) + 10px);
@@ -75,7 +75,6 @@
       left: 30px;
     }
 
-    /* パネル共通 */
     .panel {
       display: none;
       position: absolute;
@@ -94,7 +93,6 @@
       box-shadow: 0 0 15px rgba(0, 0, 0, 0.5);
     }
 
-    /* 縦画面警告 */
     #orientation-warning {
       position: fixed;
       top: 0;
@@ -128,7 +126,7 @@
       #zukan-btn, #shop-btn {
         width: 60px;
         height: 60px;
-        bottom: calc(var(--bottom-land-height) + 50px); /* 上に上げて見えるように */
+        bottom: calc(var(--bottom-land-height) + 50px);
       }
       #zukan-btn {
         right: 15px;
@@ -137,17 +135,67 @@
         left: 15px;
       }
     }
+
+    #fishing-ui {
+      display: none;
+      position: absolute;
+      top: 20%;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 90vw;
+      max-width: 400px;
+      background: #fffde7;
+      border: 2px solid #444;
+      z-index: 99;
+      padding: 20px;
+      text-align: center;
+      box-shadow: 0 0 10px rgba(0,0,0,0.4);
+    }
+
+    #reel-area {
+      position: relative;
+      width: 100%;
+      height: 30px;
+      background: #c5e1a5;
+      margin: 10px auto;
+      border: 2px solid #33691e;
+      overflow: hidden;
+    }
+
+    #pointer {
+      position: absolute;
+      top: 0;
+      width: 5px;
+      height: 100%;
+      background: red;
+      animation: movePointer 2s linear infinite;
+    }
+
+    #target-zone {
+      position: absolute;
+      top: 0;
+      left: 40%;
+      width: 20%;
+      height: 100%;
+      background: rgba(0,255,0,0.3);
+    }
+
+    @keyframes movePointer {
+      0% { left: 0%; }
+      100% { left: 100%; }
+    }
   </style>
 </head>
 <body>
   <div id="fishing-ui" class="panel">
-  <h2>つりミニゲーム</h2>
-  <div id="reel-area">
-    <div id="pointer"></div>
-    <div id="target-zone"></div>
+    <h2>つりミニゲーム</h2>
+    <div id="reel-area">
+      <div id="pointer"></div>
+      <div id="target-zone"></div>
+    </div>
+    <button id="reel-button">タイミングよく止めろ！</button>
+    <p id="fishing-result"></p>
   </div>
-  <button id="reel-button">タイミングよく止めろ！</button>
-</div>
 
   <div id="orientation-warning">
     <img src="images/dog.gif" alt="横向きにしてください" />
@@ -192,7 +240,6 @@
     window.addEventListener('orientationchange', checkOrientation);
     window.addEventListener('load', checkOrientation);
 
-    // BGM 再生（クリック後に再生開始）
     window.addEventListener('click', () => {
       const bgm = document.getElementById('bgm');
       if (bgm.paused) {
@@ -200,7 +247,6 @@
       }
     });
 
-    // 図鑑・ショップ開閉と効果音
     const zukanBtn = document.getElementById('zukan-btn');
     const shopBtn = document.getElementById('shop-btn');
     const zukanPanel = document.getElementById('zukan-panel');
@@ -232,7 +278,6 @@
       }
     });
 
-    // 犬の生成
     fetch('dog.json')
       .then(res => res.json())
       .then(dogs => {
@@ -265,7 +310,39 @@
       .catch(err => {
         console.error('dog.jsonの読み込みに失敗しました:', err);
       });
+
+    const fishingUI = document.getElementById('fishing-ui');
+    const reelButton = document.getElementById('reel-button');
+    const pointer = document.getElementById('pointer');
+    const targetZone = document.getElementById('target-zone');
+    const resultText = document.getElementById('fishing-result');
+
+    function showFishingUI() {
+      fishingUI.style.display = 'block';
+      resultText.textContent = '';
+      pointer.style.animationPlayState = 'running';
+    }
+
+    reelButton.addEventListener('click', () => {
+      pointer.style.animationPlayState = 'paused';
+      const pointerRect = pointer.getBoundingClientRect();
+      const targetRect = targetZone.getBoundingClientRect();
+
+      if (pointerRect.left >= targetRect.left && pointerRect.right <= targetRect.right) {
+        resultText.textContent = '🎯 ヒット！犬が釣れた！';
+      } else {
+        resultText.textContent = '💨 のがした…';
+      }
+
+      setTimeout(() => {
+        fishingUI.style.display = 'none';
+        pointer.style.animationPlayState = 'running';
+      }, 2000);
+    });
+
+    document.addEventListener('keydown', (e) => {
+      if (e.key === 'f') showFishingUI();
+    });
   </script>
 </body>
 </html>
-
