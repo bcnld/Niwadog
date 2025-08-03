@@ -3,14 +3,14 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no" />
-  <title>犬が泳ぐ川</title>
+  <title>安いもんだ、にわとりでしこったことがバレるぐらい</title>
   <style>
     html, body {
       margin: 0;
       padding: 0;
       height: 100%;
       overflow: hidden;
-      background-color: #7ec8b2; /* 川の色 */
+      background-color: #7ec8b2;
     }
 
     :root {
@@ -56,17 +56,46 @@
       z-index: 3;
     }
 
+    /* 縦画面警告 */
+    #orientation-warning {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100vw;
+      height: 100vh;
+      background: rgba(0, 0, 0, 0.85);
+      color: white;
+      display: none;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      z-index: 9999;
+      text-align: center;
+      padding: 20px;
+      box-sizing: border-box;
+    }
+
+    #orientation-warning img {
+      max-width: 200px;
+      margin-bottom: 20px;
+    }
+
     @media (max-width: 600px) {
       :root {
         --bottom-land-height: 100px;
       }
       .dog {
-        width: 55px;
+        width: 50px;
       }
     }
   </style>
 </head>
 <body>
+  <div id="orientation-warning">
+    <img src="images/dog.gif" alt="横向きにしてください">
+    <p>横向きにしないと鶏があなたのケツを掘りに行きます</p>
+  </div>
+
   <div id="container">
     <div id="water-area"></div>
     <div id="bottom-land"></div>
@@ -75,6 +104,25 @@
   <audio id="bgm" src="Sounds/bata.wav" loop></audio>
 
   <script>
+    const orientationWarning = document.getElementById('orientation-warning');
+    const container = document.getElementById('container');
+
+    function checkOrientation() {
+      const isPortrait = window.matchMedia("(orientation: portrait)").matches;
+      if (isPortrait) {
+        orientationWarning.style.display = 'flex';
+        container.style.display = 'none';
+      } else {
+        orientationWarning.style.display = 'none';
+        container.style.display = 'block';
+      }
+    }
+
+    window.addEventListener('resize', checkOrientation);
+    window.addEventListener('orientationchange', checkOrientation);
+    window.addEventListener('load', checkOrientation);
+
+    // BGM 再生
     window.addEventListener('click', () => {
       const bgm = document.getElementById('bgm');
       if (bgm.paused) {
@@ -86,7 +134,8 @@
       .then(res => res.json())
       .then(dogs => {
         const waterArea = document.getElementById('water-area');
-        const dogSize = 70;
+        const isMobile = window.innerWidth <= 600;
+        const dogSize = isMobile ? 50 : 70;
 
         dogs.forEach(dog => {
           const dogElem = document.createElement('img');
