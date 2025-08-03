@@ -1,5 +1,36 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8" />
+  <title>犬の川泳ぎミニゲーム</title>
+  <style>
+    /* 画面全体に川っぽい色 */
+    html, body {
+      margin: 0;
+      padding: 0;
+      height: 100%;
+      background-color: #7ec8b2; /* 川っぽい色 */
+      overflow: hidden;
+    }
+
+    /* 水（犬を泳がせる場所）を画面いっぱいに */
+    #water {
+      position: relative;
+      width: 100vw;
+      height: 100vh;
+    }
+
+    /* 犬画像のスタイル */
+    .dog {
+      position: absolute;
+      width: 50px;
+      user-select: none;
+      transition: left 2s linear, top 2s linear;
+    }
+  </style>
+</head>
 <body>
-  <div id="water" style="position: relative; width: 800px; height: 600px; background: lightblue;"></div>
+  <div id="water"></div>
 
   <script>
     fetch('dog.json')
@@ -13,17 +44,30 @@
           dogElem.alt = dog.name;
           dogElem.classList.add('dog');
 
-          dogElem.style.position = 'absolute';
-          dogElem.style.width = '50px';
+          const dogSize = 50;
+          dogElem.style.width = `${dogSize}px`;
 
-          const x = Math.random() * (water.clientWidth - 50);
-          const y = Math.random() * (water.clientHeight - 50);
+          // 初期位置を水エリア内にランダムに設定
+          let x = Math.random() * (water.clientWidth - dogSize);
+          let y = Math.random() * (water.clientHeight - dogSize);
 
           dogElem.style.left = `${x}px`;
           dogElem.style.top = `${y}px`;
 
           water.appendChild(dogElem);
+
+          // ランダムに泳ぐアニメーション
+          setInterval(() => {
+            x = Math.random() * (water.clientWidth - dogSize);
+            y = Math.random() * (water.clientHeight - dogSize);
+            dogElem.style.left = `${x}px`;
+            dogElem.style.top = `${y}px`;
+          }, 3000 + Math.random() * 3000); // 3～6秒ごとに移動
         });
+      })
+      .catch(err => {
+        console.error('dog.jsonの読み込みに失敗しました:', err);
       });
   </script>
 </body>
+</html>
