@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>安いもんだ、にわとりでしこったことがバレるぐらい</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <h1>あなたは鶏を取得できますか？</h1>
+
+  <div id="game-area">
+    <button id="castBtn">釣り糸を垂らす</button>
+
+    <div id="rod-status">
+      <p>現在のにわとりのえさ性能: <span id="rodPower">1</span></p>
+      <button id="upgradeRodBtn">にわとりのえさをアップグレード (コスト: <span id="upgradeCost">10</span>ポイント)</button>
+    </div>
+
+    <div id="fishing-area">
+      <div id="line" style="display:none;"></div>
+      <div id="fishArea"></div>
+    </div>
+
+    <div id="caughtFish">
+      <h2>釣れた鶏</h2>
+      <ul id="caughtFishList"></ul>
+      <button id="sellFishBtn">鶏を売る</button>
+    </div>
+
+    <div id="pointArea">
+      ポイント: <span id="points">0</span>
+    </div>
+
+    <div id="fishBook">
+      <h2>図鑑</h2>
+      <ul id="fishBookList"></ul>
+    </div>
+  </div>
+
+  <!-- ここから音楽の追加 -->
+  <audio id="bgm" src="bgm.mp3" loop></audio>
+  <script>
+    window.addEventListener('load', () => {
+      const bgm = document.getElementById('bgm');
+      bgm.volume = 0.5;
+      bgm.play().catch(() => {
+        // 自動再生が許可されていない時のエラー防止
+      });
+    });
+  </script>
+  <!-- ここまで音楽の追加 -->
+
+  <script src="script.js"></script>
+</body>
+</html>
