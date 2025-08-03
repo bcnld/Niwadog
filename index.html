@@ -1,247 +1,33 @@
 <!DOCTYPE html>
 <html lang="ja">
 <head>
-  <meta charset="UTF-8">
-  <title>安いもんだ、にわとりでしこったことがバレるぐらい、</title>
-  <style>
-    body {
-      margin: 0;
-      padding: 0;
-      font-family: sans-serif;
-      background: url('1706.png') no-repeat center center fixed; /* 海の背景画像 */
-      background-size: cover;
-      display: flex;
-      height: 100vh;
-      overflow: hidden;
-    }
-
-    #game-area {
-      display: flex;
-      flex-direction: row;
-      width: 100%;
-      height: 100%;
-    }
-
-    #fishing-area {
-      flex: 3;
-      position: relative;
-      overflow: hidden;
-    }
-
-    #castBtn {
-      position: absolute;
-      bottom: 20px;
-      left: 50%;
-      transform: translateX(-50%);
-      padding: 10px 20px;
-      font-size: 18px;
-    }
-
-    #fishArea img {
-      position: absolute;
-      width: 100px;
-      filter: brightness(0.6);
-      transition: filter 0.3s;
-    }
-
-    #fishArea img.caught {
-      filter: brightness(1);
-    }
-
-    #line {
-      position: absolute;
-      width: 4px;
-      background: white;
-      top: 0;
-      left: 50%;
-      transform: translateX(-50%);
-      display: none;
-    }
-
-    #sidebar {
-      flex: 1;
-      background-color: rgba(255, 255, 255, 0.95);
-      padding: 20px;
-      overflow-y: auto;
-    }
-
-    #sidebar h2 {
-      margin-top: 10px;
-      margin-bottom: 5px;
-    }
-
-    ul {
-      list-style: none;
-      padding: 0;
-      margin: 0;
-    }
-
-    li {
-      margin-bottom: 5px;
-    }
-
-    button {
-      margin-top: 10px;
-      padding: 5px 10px;
-      font-size: 14px;
-    }
-  </style>
+  <meta charset="UTF-8" />
+  <title>ルーレット釣りゲーム</title>
+  <link rel="stylesheet" href="style.css" />
 </head>
 <body>
-  <div id="game-area">
-    <div id="fishing-area">
-      <div id="fishArea"></div>
-      <button id="castBtn">釣り糸を垂らす</button>
-      <div id="line"></div>
-    </div>
+  <h1>さかなつりゲーム（ルーレット式）</h1>
 
-    <div id="sidebar">
-      <p>🎣 釣り道具性能: <span id="rodPower">1</span></p>
-      <button id="upgradeRodBtn">強化 (コスト: <span id="upgradeCost">10</span>)</button>
-
-      <p>💰 ポイント: <span id="points">0</span></p>
-
-      <div id="caughtFish">
-        <h2>釣れた魚</h2>
-        <ul id="caughtFishList"></ul>
-        <button id="sellFishBtn">魚を売る</button>
-      </div>
-
-      <div id="fishBook">
-        <h2>図鑑</h2>
-        <ul id="fishBookList"></ul>
-      </div>
-    </div>
+  <div id="water">
+    <div id="fish-area"></div>
   </div>
 
-  <script>
-    const fishTypes = [
-      { name: "タイ", value: 10, image: "tai.png" },
-      { name: "サバ", value: 5, image: "saba.png" },
-      { name: "マグロ", value: 20, image: "maguro.png" },
-    ];
+  <button id="startFishing">釣り開始</button>
 
-    const fishArea = document.getElementById("fishArea");
-    const castBtn = document.getElementById("castBtn");
-    const line = document.getElementById("line");
-    const rodPowerSpan = document.getElementById("rodPower");
-    const pointsSpan = document.getElementById("points");
-    const upgradeBtn = document.getElementById("upgradeRodBtn");
-    const upgradeCostSpan = document.getElementById("upgradeCost");
-    const caughtFishList = document.getElementById("caughtFishList");
-    const fishBookList = document.getElementById("fishBookList");
+  <div id="roulette" class="hidden">
+    <canvas id="rouletteCanvas" width="300" height="300"></canvas>
+    <button id="stopBtn">止める！</button>
+  </div>
 
-    let rodPower = 1;
-    let points = 0;
-    let upgradeCost = 10;
-    let caughtFish = [];
-    let fishBook = {};
+  <div id="result"></div>
 
-    // 魚を表示
-    function spawnFish() {
-      fishArea.innerHTML = "";
-      fishTypes.forEach((fish) => {
-        const img = document.createElement("img");
-        img.src = fish.image;
-        img.alt = fish.name;
-        img.style.top = Math.random() * 300 + "px";
-        img.style.left = Math.random() * 80 + 10 + "%";
-        fishArea.appendChild(img);
-      });
-    }
+  <!-- 音声ファイル -->
+  <audio id="bgm" src="bgm.mp3" loop></audio>
+  <audio id="soundStart" src="start.wav"></audio>
+  <audio id="soundStop" src="stop.wav"></audio>
+  <audio id="soundSuccess" src="success.wav"></audio>
+  <audio id="soundFail" src="fail.wav"></audio>
 
-    // 釣り糸アニメーション
-    function castLine() {
-      line.style.display = "block";
-      line.style.height = "0px";
-      let height = 0;
-      const interval = setInterval(() => {
-        height += 10;
-        line.style.height = height + "px";
-        if (height >= 300) {
-          clearInterval(interval);
-          tryCatch();
-          setTimeout(() => {
-            line.style.display = "none";
-          }, 500);
-        }
-      }, 10);
-    }
-
-    // 魚を釣る処理
-    function tryCatch() {
-      const success = Math.random() < 0.3 + rodPower * 0.05;
-      if (success) {
-        const fish = fishTypes[Math.floor(Math.random() * fishTypes.length)];
-        caughtFish.push(fish);
-        updateCaughtFish();
-        if (!fishBook[fish.name]) {
-          fishBook[fish.name] = true;
-          updateFishBook();
-        }
-
-        // 視覚演出
-        const fishImgs = fishArea.querySelectorAll("img");
-        fishImgs.forEach(img => {
-          if (img.alt === fish.name) {
-            img.classList.add("caught");
-          }
-        });
-      }
-    }
-
-    // 魚リスト表示
-    function updateCaughtFish() {
-      caughtFishList.innerHTML = "";
-      caughtFish.forEach((fish, index) => {
-        const li = document.createElement("li");
-        li.textContent = `${fish.name}（価値: ${fish.value}）`;
-        caughtFishList.appendChild(li);
-      });
-    }
-
-    // 図鑑表示
-    function updateFishBook() {
-      fishBookList.innerHTML = "";
-      Object.keys(fishBook).forEach(name => {
-        const li = document.createElement("li");
-        li.textContent = name;
-        fishBookList.appendChild(li);
-      });
-    }
-
-    // 強化処理
-    upgradeBtn.addEventListener("click", () => {
-      if (points >= upgradeCost) {
-        points -= upgradeCost;
-        rodPower++;
-        upgradeCost += 10;
-        updateUI();
-      }
-    });
-
-    // 売却処理
-    document.getElementById("sellFishBtn").addEventListener("click", () => {
-      let total = caughtFish.reduce((sum, fish) => sum + fish.value, 0);
-      points += total;
-      caughtFish = [];
-      updateCaughtFish();
-      updateUI();
-    });
-
-    // UI更新
-    function updateUI() {
-      rodPowerSpan.textContent = rodPower;
-      pointsSpan.textContent = points;
-      upgradeCostSpan.textContent = upgradeCost;
-    }
-
-    // 初期表示
-    castBtn.addEventListener("click", castLine);
-    spawnFish();
-    updateUI();
-  </script>
+  <script src="script.js"></script>
 </body>
 </html>
-
-
