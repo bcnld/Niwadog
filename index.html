@@ -2,66 +2,65 @@
 <html lang="ja">
 <head>
   <meta charset="UTF-8" />
-  <title>犬が泳ぐ川</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no" />
+  <title>なさら</title>
   <style>
+    /* 全画面の初期設定 */
     html, body {
-      margin: 0;
-      padding: 0;
-      height: 100%;
-      overflow: hidden;
+      margin: 0; padding: 0; height: 100%; overflow: hidden;
       background-color: #7ec8b2; /* 川の色 */
     }
-
     #container {
       position: relative;
       width: 100vw;
       height: 100vh;
       background-color: #7ec8b2;
+      overflow: hidden;
     }
 
-    /* 土の高さを変数で管理（デフォルト120pxに増やす） */
     :root {
-      --bottom-land-height: 120px;
+      --bottom-land-height: 120px; /* 土の高さ */
     }
 
+    /* 川の水エリア（犬が泳ぐ場所） */
     #water-area {
       position: absolute;
-      top: 0;
-      left: 0;
+      top: 0; left: 0;
       width: 100%;
-      height: calc(100% - var(--bottom-land-height)); /* 土の高さ分引く */
+      height: calc(100% - var(--bottom-land-height));
       overflow: hidden;
       z-index: 1;
     }
 
+    /* 土の画像エリア */
     #bottom-land {
       position: absolute;
-      bottom: 0; /* 画面一番下に固定 */
-      left: 0;
+      bottom: 0; left: 0;
       width: 100%;
       height: var(--bottom-land-height);
-      /* 横も縦も繰り返す */
-      background-image: url('images/dirt.png'); /* 土の画像パス */
-      background-repeat: repeat; /* 縦横両方繰り返し */
-      background-size: auto; /* 縦横サイズは自動 */
+      background-image: url('images/soil.png');
+      background-repeat: repeat-x;
+      background-size: auto 100%;
+      background-position: bottom center;
       z-index: 2;
     }
 
+    /* 犬の画像 */
     .dog {
       position: absolute;
-      width: 70px;  /* 犬を少し大きく */
+      width: 70px;
       user-select: none;
       transition: left 2s linear, top 2s linear;
       z-index: 3;
     }
 
-    /* スマホなど幅が狭い場合の調整 */
+    /* スマホ対応 */
     @media (max-width: 600px) {
       :root {
-        --bottom-land-height: 150px; /* 土の高さを更に大きく */
+        --bottom-land-height: 100px; /* 少し小さめに */
       }
       .dog {
-        width: 55px; /* 犬も少し小さく */
+        width: 55px;
       }
     }
   </style>
@@ -72,11 +71,11 @@
     <div id="bottom-land"></div>
   </div>
 
-  <!-- BGM -->
+  <!-- BGM（クリックで再生） -->
   <audio id="bgm" src="Sounds/bata.wav" loop></audio>
 
   <script>
-    // ユーザーがクリックしたらBGM再生
+    // BGMはユーザークリックで再生（自動再生規制対応）
     window.addEventListener('click', () => {
       const bgm = document.getElementById('bgm');
       if (bgm.paused) {
@@ -88,30 +87,28 @@
       .then(res => res.json())
       .then(dogs => {
         const waterArea = document.getElementById('water-area');
+        const dogSize = 70;
 
         dogs.forEach(dog => {
           const dogElem = document.createElement('img');
           dogElem.src = dog.image;
           dogElem.alt = dog.name;
           dogElem.classList.add('dog');
+          dogElem.style.width = `${dogSize}px`;
 
-          waterArea.appendChild(dogElem);
-
-          // 犬のサイズはCSS指定幅に合わせる
-          let dogWidth = dogElem.clientWidth || 70;
-          let dogHeight = dogWidth;
-
-          // 初期位置は土の領域を避ける
-          let x = Math.random() * (waterArea.clientWidth - dogWidth);
-          let y = Math.random() * (waterArea.clientHeight - dogHeight);
+          // 初期位置ランダム（下の土にかからない範囲）
+          let x = Math.random() * (waterArea.clientWidth - dogSize);
+          let y = Math.random() * (waterArea.clientHeight - dogSize);
 
           dogElem.style.left = `${x}px`;
           dogElem.style.top = `${y}px`;
 
-          // ランダムに縦横両方向に移動
+          waterArea.appendChild(dogElem);
+
+          // ランダム移動（下の土に行かないように）
           setInterval(() => {
-            x = Math.random() * (waterArea.clientWidth - dogWidth);
-            y = Math.random() * (waterArea.clientHeight - dogHeight);
+            x = Math.random() * (waterArea.clientWidth - dogSize);
+            y = Math.random() * (waterArea.clientHeight - dogSize);
             dogElem.style.left = `${x}px`;
             dogElem.style.top = `${y}px`;
           }, 3000 + Math.random() * 3000);
@@ -123,4 +120,3 @@
   </script>
 </body>
 </html>
-
