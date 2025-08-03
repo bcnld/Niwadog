@@ -20,7 +20,7 @@
       position: relative;
       width: 100vw;
       height: 100vh;
-      background-image: url('images/water.png');
+      background-image: url('images/bg.png');
       background-repeat: repeat;
       background-size: 64px 64px;
       overflow: hidden;
@@ -57,33 +57,41 @@
       z-index: 3;
     }
 
-    /* UIボタン */
-    .ui-button {
+    /* 図鑑・ショップボタン */
+    #zukan-btn, #shop-btn {
       position: absolute;
-      bottom: 10px;
-      width: 50px;
-      height: 50px;
-      z-index: 10;
+      bottom: calc(var(--bottom-land-height) + 10px);
+      width: 80px;   /* PC向けサイズアップ */
+      height: 80px;
+      z-index: 4;
       cursor: pointer;
     }
-    #zukan-button {
-      right: 50px;
-    }
-    #shop-button {
-      left: 50px;
+
+    #zukan-btn {
+      right: 30px;
     }
 
-    /* パネル */
+    #shop-btn {
+      left: 30px;
+    }
+
+    /* パネル共通 */
     .panel {
-      position: fixed;
-      top: 50%;
-      left: 50%;
-      transform: translate(-50%, -50%);
-      background: white;
-      border: 2px solid #333;
-      padding: 20px;
       display: none;
-      z-index: 999;
+      position: absolute;
+      top: 10%;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 80vw;
+      max-width: 400px;
+      height: 60vh;
+      background: white;
+      border: 2px solid #444;
+      z-index: 10;
+      overflow-y: auto;
+      padding: 20px;
+      box-sizing: border-box;
+      box-shadow: 0 0 15px rgba(0, 0, 0, 0.5);
     }
 
     /* 縦画面警告 */
@@ -104,17 +112,35 @@
       padding: 20px;
       box-sizing: border-box;
     }
+
     #orientation-warning img {
       max-width: 200px;
       margin-bottom: 20px;
     }
 
+    /* スマホ対応 */
     @media (max-width: 600px) {
       :root {
         --bottom-land-height: 100px;
       }
+
       .dog {
         width: 50px;
+      }
+
+      /* ボタン位置を上げてサイズも大きく */
+      #zukan-btn, #shop-btn {
+        bottom: calc(var(--bottom-land-height) + 70px);
+        width: 90px;
+        height: 90px;
+      }
+
+      #zukan-btn {
+        right: 15px;
+      }
+
+      #shop-btn {
+        left: 15px;
       }
     }
   </style>
@@ -128,22 +154,20 @@
   <div id="container">
     <div id="water-area"></div>
     <div id="bottom-land"></div>
-    <img id="zukan-button" class="ui-button" src="images/zukan_icon.png" alt="図鑑">
-    <img id="shop-button" class="ui-button" src="images/shop_icon.png" alt="ショップ">
-  </div>
-
-  <div id="zukan-panel" class="panel">
-    <h2>図鑑</h2>
-    <p>捕まえた犬が表示されます。</p>
-  </div>
-
-  <div id="shop-panel" class="panel">
-    <h2>ショップ</h2>
-    <p>ここでアイテムが買えます。</p>
+    <img src="images/zukan.png" id="zukan-btn" alt="図鑑" />
+    <img src="images/shop.png" id="shop-btn" alt="ショップ" />
+    <div id="zukan-panel" class="panel">
+      <h2>図鑑</h2>
+      <p>見つけた犬たちがここに表示されます。</p>
+    </div>
+    <div id="shop-panel" class="panel">
+      <h2>ショップ</h2>
+      <p>アイテムを買う機能などをここに。</p>
+    </div>
   </div>
 
   <audio id="bgm" src="Sounds/bata.wav" loop></audio>
-  <audio id="panel-open" src="Sounds/open.mp3"></audio>
+  <audio id="sfx-open" src="Sounds/open.mp3"></audio>
 
   <script>
     const orientationWarning = document.getElementById('orientation-warning');
@@ -172,23 +196,38 @@
       }
     });
 
-    // パネル開閉
-    const zukanBtn = document.getElementById('zukan-button');
-    const shopBtn = document.getElementById('shop-button');
+    // 図鑑・ショップ開閉
+    const zukanBtn = document.getElementById('zukan-btn');
+    const shopBtn = document.getElementById('shop-btn');
     const zukanPanel = document.getElementById('zukan-panel');
     const shopPanel = document.getElementById('shop-panel');
-    const openSound = document.getElementById('panel-open');
+    const openSfx = document.getElementById('sfx-open');
+
+    function playOpenSound() {
+      openSfx.currentTime = 0;
+      openSfx.play().catch(() => {});
+    }
 
     zukanBtn.addEventListener('click', () => {
       const isOpen = zukanPanel.style.display === 'block';
-      zukanPanel.style.display = isOpen ? 'none' : 'block';
-      if (!isOpen) openSound.play();
+      if (isOpen) {
+        zukanPanel.style.display = 'none';
+      } else {
+        zukanPanel.style.display = 'block';
+        shopPanel.style.display = 'none';
+      }
+      playOpenSound();
     });
 
     shopBtn.addEventListener('click', () => {
       const isOpen = shopPanel.style.display === 'block';
-      shopPanel.style.display = isOpen ? 'none' : 'block';
-      if (!isOpen) openSound.play();
+      if (isOpen) {
+        shopPanel.style.display = 'none';
+      } else {
+        shopPanel.style.display = 'block';
+        zukanPanel.style.display = 'none';
+      }
+      playOpenSound();
     });
 
     // 犬の生成
@@ -227,4 +266,3 @@
   </script>
 </body>
 </html>
-
