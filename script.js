@@ -39,6 +39,11 @@ fetch('dog.json')
         currentX = newX;
         currentY = newY;
       }, 3000 / speed);
-    });
+       // 各犬に釣りイベントを追加
+      
+        dogElem.addEventListener('click', () => {
+          showFishingUI(dog);
+        });
   })
   .catch(err => console.error(err));
+
