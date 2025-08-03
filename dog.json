@@ -38,8 +38,8 @@
   {
     "name": "紫犬",
     "image": "dogpa.png",
-    "probability": 0.03,
-    "rarity": 5
+    "probability": 0.2,
+    "rarity": 6
   },
   {
     "name": "赤い犬",
@@ -58,5 +58,12 @@
     "image": "dogcraz.png",
     "probability": 1.0,
     "rarity": 2
+  },
+  {
+    "name": "金犬",
+    "image": "doggo.png",
+    "probability": 0.1,
+    "rarity": 7
   }
 ]
+
