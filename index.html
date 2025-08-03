@@ -10,7 +10,6 @@
       padding: 0;
       height: 100%;
       overflow: hidden;
-      background-color: #7ec8b2;
     }
 
     :root {
@@ -21,7 +20,9 @@
       position: relative;
       width: 100vw;
       height: 100vh;
-      background-color: #7ec8b2;
+      background-image: url('images/water.png');
+      background-repeat: repeat;
+      background-size: 64px 64px; /* 適宜変更 */
       overflow: hidden;
     }
 
@@ -42,8 +43,8 @@
       width: 100%;
       height: var(--bottom-land-height);
       background-image: url('images/dirt.png');
-      background-repeat: repeat-x;
-      background-size: auto 100%;
+      background-repeat: repeat;
+      background-size: 64px 64px;
       background-position: bottom center;
       z-index: 2;
     }
@@ -165,3 +166,5 @@
   </script>
 </body>
 </html>
+
+
