@@ -103,4 +103,46 @@ document.addEventListener('keydown', e => {
   if(e.key === 'f') startFishing();
 });
 
-// 犬を水面（水エリア）に
+// --- ここから犬を水面に配置して泳がせる処理 ---
+
+const dogs = [
+  { src: 'images/dog.png', alt: '犬1' },
+  { src: 'images/dogsu.png', alt: '犬2' }
+];
+
+const waterArea = document.getElementById('water-area');
+
+function spawnDogsInWater() {
+  waterArea.innerHTML = ''; // 既存をクリア
+
+  dogs.forEach(dog => {
+    const img = document.createElement('img');
+    img.src = dog.src;
+    img.alt = dog.alt;
+    img.className = 'dog';
+    img.style.position = 'absolute';
+
+    const maxX = waterArea.clientWidth - 70;
+    const maxY = waterArea.clientHeight - 70;
+
+    let posX = Math.random() * maxX;
+    let posY = Math.random() * maxY;
+    img.style.left = posX + 'px';
+    img.style.top = posY + 'px';
+
+    waterArea.appendChild(img);
+
+    // 犬が左右にゆっくり泳ぐアニメーション
+    let direction = 1;
+    function swim() {
+      posX += direction * 1; // 1pxずつ動く
+      if(posX > maxX) direction = -1;
+      if(posX < 0) direction = 1;
+      img.style.left = posX + 'px';
+      requestAnimationFrame(swim);
+    }
+    swim();
+  });
+}
+
+window.addEventListener('load', spawnDogsInWater);
