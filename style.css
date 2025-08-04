@@ -51,11 +51,9 @@ body, html {
 /* 犬の画像 */
 .dog {
   position: absolute;
-  /* 幅はJSで制御 */
-  transition: transform 1s linear;
-  user-select: none;
-  cursor: pointer;
-  pointer-events: auto;
+  width: 70px;
+  pointer-events: auto;  /* ← これを追加！ */
+  cursor: pointer;       /* ついでにマウスカーソルを変えるとわかりやすい */
 }
 
 /* 釣りUI */
@@ -217,3 +215,4 @@ button:hover {
 }
 
 /* 音量調整などのUIは必要に応じて追加してください */
+
