@@ -1,7 +1,7 @@
 const waterArea = document.getElementById('water-area');
 const testDogs = [
-  { name: 'ポチ', image: 'images/dog1.png', rarity: 3 },
-  { name: 'タロウ', image: 'images/dog2.png', rarity: 5 },
+  { name: 'ポチ', image: 'images/doga.png', rarity: 3 },
+  { name: 'タロウ', image: 'images/dogred.png', rarity: 5 },
 ];
 
 testDogs.forEach(dog => {
@@ -15,3 +15,4 @@ testDogs.forEach(dog => {
   dogElem.style.top = Math.random() * (waterArea.clientHeight - 70) + 'px';
   waterArea.appendChild(dogElem);
 });
+
