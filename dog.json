@@ -58,7 +58,7 @@
   {
     "name": "青い犬",
     "image": "images/dogblue.png",
-    "probability": 0.5,
+    "probability": 0.3,
     "rarity": 4,
     "description": "青い毛が特徴の犬。"
   },
@@ -72,15 +72,16 @@
   {
     "name": "金犬",
     "image": "images/doggo.png",
-    "probability": 0.1,
+    "probability": 0.05,
     "rarity": 7,
     "description": "金魂を食べたら金色の毛になった金色の犬。"
   },
   {
     "name": "スーパー犬",
     "image": "images/dogsu.png",
-    "probability": 0.09,
+    "probability": 0.009,
     "rarity": 7,
     "description": "とても素晴らしい犬。"
   }
 ]
+
