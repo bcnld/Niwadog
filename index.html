@@ -3,257 +3,124 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no" />
-  <title>いもんだ、にわとりでしこったことがバレるぐらい</title>
+  <title>あなる</title>
   <style>
-    html, body {
-      margin: 0;
-      padding: 0;
-      height: 100%;
-      overflow: hidden;
-    }
-
-    :root {
-      --bottom-land-height: 120px;
-    }
-
-    #container {
-      position: relative;
-      width: 100vw;
-      height: 100vh;
-      background-image: url('images/water.png');
-      background-repeat: repeat;
+    body, html {
+      margin: 0; padding: 0; height: 100%; overflow: hidden;
+      font-family: sans-serif;
+      background: #a0d8f7 url('images/water.png') repeat;
       background-size: 64px 64px;
-      overflow: hidden;
     }
-
-    #water-area {
-      position: absolute;
-      top: 0;
-      left: 0;
-      width: 100%;
-      height: calc(100% - var(--bottom-land-height));
-      overflow: hidden;
-      z-index: 1;
-    }
-
     #bottom-land {
-      position: absolute;
-      bottom: 0;
-      left: 0;
-      width: 100%;
-      height: var(--bottom-land-height);
-      background-image: url('images/dirt.png');
-      background-repeat: repeat;
+      position: fixed; bottom: 0; left: 0; width: 100%; height: 100px;
+      background: url('images/dirt.png') repeat;
       background-size: 64px 64px;
-      background-position: bottom center;
-      z-index: 2;
+      z-index: 10;
     }
-
-    .dog {
-      position: absolute;
-      width: 70px;
-      user-select: none;
-      transition: left 2s linear, top 2s linear;
-      z-index: 3;
-      cursor: pointer;
-    }
-
     #zukan-btn, #shop-btn {
-      position: absolute;
-      bottom: calc(var(--bottom-land-height) + 10px);
-      width: 80px;
-      height: 80px;
-      z-index: 4;
-      cursor: pointer;
+      position: fixed; bottom: 120px; width: 70px; height: 70px; cursor: pointer;
+      z-index: 20;
     }
-
-    #zukan-btn {
-      right: 30px;
-    }
-
-    #shop-btn {
-      left: 30px;
-    }
-
+    #zukan-btn { right: 30px; }
+    #shop-btn { left: 30px; }
     .panel {
       display: none;
-      position: absolute;
+      position: fixed;
       top: 10%;
       left: 50%;
       transform: translateX(-50%);
-      width: 80vw;
-      max-width: 400px;
-      height: 60vh;
-      background: white;
-      border: 2px solid #444;
-      z-index: 10;
+      width: 90vw; max-width: 400px; height: 60vh;
+      background: white; border: 2px solid #444;
+      box-shadow: 0 0 15px rgba(0,0,0,0.5);
       overflow-y: auto;
-      padding: 20px;
-      box-sizing: border-box;
-      box-shadow: 0 0 15px rgba(0, 0, 0, 0.5);
+      padding: 10px;
+      z-index: 30;
     }
-
-    #orientation-warning {
-      position: fixed;
-      top: 0;
-      left: 0;
-      width: 100vw;
-      height: 100vh;
-      background: rgba(0, 0, 0, 0.85);
-      color: white;
-      display: none;
-      flex-direction: column;
-      justify-content: center;
-      align-items: center;
-      z-index: 9999;
-      text-align: center;
-      padding: 20px;
-      box-sizing: border-box;
-    }
-
-    #orientation-warning img {
-      max-width: 200px;
-      margin-bottom: 20px;
-    }
-
-    @media (max-width: 600px) {
-      :root {
-        --bottom-land-height: 100px;
-      }
-      .dog {
-        width: 50px;
-      }
-      #zukan-btn, #shop-btn {
-        width: 60px;
-        height: 60px;
-        bottom: calc(var(--bottom-land-height) + 50px);
-      }
-      #zukan-btn {
-        right: 15px;
-      }
-      #shop-btn {
-        left: 15px;
-      }
-    }
-
     #fishing-ui {
       display: none;
-      position: absolute;
+      text-align: center;
+      background: #fffde7;
+      border: 2px solid #444;
+      padding: 15px;
+      box-shadow: 0 0 10px rgba(0,0,0,0.4);
+      z-index: 50;
+      position: fixed;
       top: 20%;
       left: 50%;
       transform: translateX(-50%);
-      width: 90vw;
-      max-width: 400px;
-      background: #fffde7;
-      border: 2px solid #444;
-      z-index: 99;
-      padding: 20px;
-      text-align: center;
-      box-shadow: 0 0 10px rgba(0,0,0,0.4);
+      width: 90vw; max-width: 400px;
     }
-
     #reel-area {
       position: relative;
-      width: 100%;
       height: 30px;
       background: #c5e1a5;
-      margin: 10px auto;
       border: 2px solid #33691e;
+      margin: 10px 0;
       overflow: hidden;
     }
-
     #pointer {
       position: absolute;
-      top: 0;
-      width: 5px;
-      height: 100%;
+      top: 0; left: 0;
+      width: 5px; height: 100%;
       background: red;
       animation: movePointer 2s linear infinite;
     }
-
     #target-zone {
       position: absolute;
-      top: 0;
-      left: 40%;
-      width: 20%;
-      height: 100%;
+      top: 0; left: 40%;
+      width: 20%; height: 100%;
       background: rgba(0,255,0,0.3);
     }
-
     @keyframes movePointer {
       0% { left: 0%; }
       100% { left: 100%; }
     }
-
-    /* 図鑑リスト */
-    #zukan-list {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 10px;
-      margin-top: 10px;
-    }
-
-    .zukan-item {
-      width: 70px;
-      cursor: pointer;
-      border: 1px solid #ccc;
-      padding: 5px;
-      text-align: center;
-      background: #f9f9f9;
-      border-radius: 5px;
-      transition: background 0.3s;
-    }
-
-    .zukan-item:hover {
-      background: #d1f0d1;
-    }
-
-    .zukan-item img {
-      width: 100%;
-      height: auto;
-      border-radius: 5px;
-    }
-
-    /* 詳細パネル */
-    #detail-panel {
+    #orientation-warning {
       display: none;
       position: fixed;
-      top: 50%;
-      left: 50%;
-      transform: translate(-50%, -50%);
-      width: 80vw;
-      max-width: 400px;
-      background: white;
-      border: 2px solid #444;
-      padding: 20px;
-      box-shadow: 0 0 20px rgba(0,0,0,0.5);
-      z-index: 1000;
-      overflow-y: auto;
-      max-height: 70vh;
-    }
-
-    #detail-panel h3 {
-      margin-top: 0;
-    }
-
-    #detail-close {
-      position: absolute;
-      top: 10px;
-      right: 10px;
-      cursor: pointer;
-      font-weight: bold;
-      font-size: 18px;
-      background: #eee;
-      border-radius: 50%;
-      width: 25px;
-      height: 25px;
-      line-height: 25px;
+      inset: 0;
+      background: rgba(0,0,0,0.85);
+      color: white;
+      font-size: 1.2em;
       text-align: center;
+      padding: 20px;
+      box-sizing: border-box;
+      z-index: 100;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+    }
+    #orientation-warning img {
+      max-width: 150px;
+      margin-bottom: 20px;
     }
   </style>
 </head>
 <body>
-  <div id="fishing-ui" class="panel">
+
+  <div id="orientation-warning">
+    <img src="images/dog.gif" alt="横向きにしてください" />
+    <p>横向きにしないと鶏があなたのケツを掘りに行きます</p>
+  </div>
+
+  <div id="bottom-land"></div>
+
+  <img id="zukan-btn" src="images/zukan_icon.png" alt="図鑑" />
+  <img id="shop-btn" src="images/shop_icon.png" alt="ショップ" />
+
+  <div id="zukan-panel" class="panel">
+    <h2>図鑑</h2>
+    <p>見つけた犬たちがここに表示されます。</p>
+    <div id="zukan-list"></div>
+  </div>
+
+  <div id="shop-panel" class="panel">
+    <h2>ショップ</h2>
+    <p>アイテム購入機能などをここに追加します。</p>
+  </div>
+
+  <div id="fishing-ui">
     <h2>つりミニゲーム</h2>
     <div id="reel-area">
       <div id="pointer"></div>
@@ -263,169 +130,118 @@
     <p id="fishing-result"></p>
   </div>
 
-  <div id="orientation-warning">
-    <img src="images/dog.gif" alt="横向きにしてください" />
-    <p>横向きにしないと鶏があなたのケツを掘りに行きます</p>
-  </div>
-
-  <div id="container">
-    <div id="water-area"></div>
-    <div id="bottom-land"></div>
-    <img src="images/zukan_icon.png" id="zukan-btn" alt="図鑑" />
-    <img src="images/shop_icon.png" id="shop-btn" alt="ショップ" />
-    <div id="zukan-panel" class="panel">
-      <h2>図鑑</h2>
-      <p>見つけた犬たちがここに表示されます。</p>
-      <div id="zukan-list"></div>
-    </div>
-    <div id="shop-panel" class="panel">
-      <h2>ショップ</h2>
-      <p>アイテムを買う機能などをここに。</p>
-    </div>
-  </div>
-
-  <div id="detail-panel">
-    <div id="detail-close">×</div>
-    <h3 id="detail-name"></h3>
-    <img id="detail-image" src="" alt="" style="width: 100%; border-radius: 5px;" />
-    <p id="detail-description"></p>
-  </div>
-
+  <!-- BGMと効果音 -->
   <audio id="bgm" src="Sounds/bata.wav" loop></audio>
   <audio id="sfx-open" src="Sounds/open.mp3"></audio>
   <audio id="sfx-close" src="Sounds/close.mp3"></audio>
 
-  <script>
-    const orientationWarning = document.getElementById('orientation-warning');
-    const container = document.getElementById('container');
-
-    function checkOrientation() {
-      const isPortrait = window.matchMedia("(orientation: portrait)").matches;
-      if (isPortrait) {
-        orientationWarning.style.display = 'flex';
-        container.style.display = 'none';
-      } else {
-        orientationWarning.style.display = 'none';
-        container.style.display = 'block';
-      }
+<script>
+  // 画面向きチェック
+  function checkOrientation() {
+    if(window.matchMedia("(orientation: portrait)").matches){
+      document.getElementById('orientation-warning').style.display = 'flex';
+      document.body.style.overflow = 'hidden';
+    } else {
+      document.getElementById('orientation-warning').style.display = 'none';
+      document.body.style.overflow = 'auto';
     }
+  }
+  window.addEventListener('load', checkOrientation);
+  window.addEventListener('resize', checkOrientation);
+  window.addEventListener('orientationchange', checkOrientation);
 
-    window.addEventListener('resize', checkOrientation);
-    window.addEventListener('orientationchange', checkOrientation);
-    window.addEventListener('load', checkOrientation);
+  // BGM再生（最初のクリックで再生開始）
+  const bgm = document.getElementById('bgm');
+  document.body.addEventListener('click', () => {
+    if(bgm.paused){
+      bgm.play().catch(() => {});
+    }
+  }, { once: true });
 
-    window.addEventListener('click', () => {
-      const bgm = document.getElementById('bgm');
-      if (bgm.paused) {
-        bgm.play().catch(() => {});
-      }
-    });
+  // ボタンとパネルの制御 + 効果音再生
+  const zukanBtn = document.getElementById('zukan-btn');
+  const shopBtn = document.getElementById('shop-btn');
+  const zukanPanel = document.getElementById('zukan-panel');
+  const shopPanel = document.getElementById('shop-panel');
 
-    const zukanBtn = document.getElementById('zukan-btn');
-    const shopBtn = document.getElementById('shop-btn');
-    const zukanPanel = document.getElementById('zukan-panel');
-    const shopPanel = document.getElementById('shop-panel');
-    const openSfx = document.getElementById('sfx-open');
-    const closeSfx = document.getElementById('sfx-close');
+  const sfxOpen = document.getElementById('sfx-open');
+  const sfxClose = document.getElementById('sfx-close');
 
-    zukanBtn.addEventListener('click', () => {
-      const isOpen = zukanPanel.style.display === 'block';
-      if (isOpen) {
-        zukanPanel.style.display = 'none';
-        closeSfx.play().catch(() => {});
-      } else {
-        zukanPanel.style.display = 'block';
-        shopPanel.style.display = 'none';
-        openSfx.play().catch(() => {});
-      }
-    });
-
-    shopBtn.addEventListener('click', () => {
-      const isOpen = shopPanel.style.display === 'block';
-      if (isOpen) {
-        shopPanel.style.display = 'none';
-        closeSfx.play().catch(() => {});
-      } else {
-        shopPanel.style.display = 'block';
-        zukanPanel.style.display = 'none';
-        openSfx.play().catch(() => {});
-      }
-    });
-
-    // 図鑑データ（釣れた犬リスト）
-    const caughtDogs = [];
-
-    const zukanList = document.getElementById('zukan-list');
-    const detailPanel = document.getElementById('detail-panel');
-    const detailClose = document.getElementById('detail-close');
-    const detailName = document.getElementById('detail-name');
-    const detailImage = document.getElementById('detail-image');
-    const detailDescription = document.getElementById('detail-description');
-
-    function updateZukan() {
-      zukanList.innerHTML = '';
-      caughtDogs.forEach(dog => {
-        const item = document.createElement('div');
-        item.classList.add('zukan-item');
-        item.innerHTML = `<img src="${dog.src}" alt="${dog.alt}" /><div>${dog.alt}</div>`;
-        item.addEventListener('click', () => {
-          showDetail(dog);
-        });
-        zukanList.appendChild(item);
+  function togglePanel(panel) {
+    const isOpen = panel.style.display === 'block';
+    if (isOpen) {
+      panel.style.display = 'none';
+      sfxClose.play().catch(() => {});
+    } else {
+      // 他のパネル閉じて効果音
+      [zukanPanel, shopPanel].forEach(p => {
+        if(p !== panel && p.style.display === 'block'){
+          p.style.display = 'none';
+          sfxClose.play().catch(() => {});
+        }
       });
+      panel.style.display = 'block';
+      sfxOpen.play().catch(() => {});
     }
+  }
+  zukanBtn.addEventListener('click', () => togglePanel(zukanPanel));
+  shopBtn.addEventListener('click', () => togglePanel(shopPanel));
 
-    function showDetail(dog) {
-      detailName.textContent = dog.alt;
-      detailImage.src = dog.src;
-      detailImage.alt = dog.alt;
-      detailDescription.textContent = dog.description || '詳細情報はありません。';
-      detailPanel.style.display = 'block';
-    }
+  // 図鑑表示用のダミーデータ
+  const caughtDogs = [
+    { src:'images/dog.png', alt:'犬1', description:'おなにーすきすきいぬ。' },
+    { src:'images/dogsu.png', alt:'犬2', description:'元気な犬です。' }
+  ];
+  const zukanList = document.getElementById('zukan-list');
 
-    detailClose.addEventListener('click', () => {
-      detailPanel.style.display = 'none';
+  function updateZukan() {
+    zukanList.innerHTML = '';
+    caughtDogs.forEach(dog => {
+      const div = document.createElement('div');
+      div.textContent = dog.alt;
+      div.style.cursor = 'pointer';
+      div.style.border = '1px solid #ccc';
+      div.style.margin = '5px';
+      div.style.padding = '5px';
+      div.addEventListener('click', () => alert(dog.description));
+      zukanList.appendChild(div);
     });
+  }
+  updateZukan();
 
-    // 釣りUI関連
-    const fishingUI = document.getElementById('fishing-ui');
-    const reelButton = document.getElementById('reel-button');
-    const pointer = document.getElementById('pointer');
-    const targetZone = document.getElementById('target-zone');
-    const resultText = document.getElementById('fishing-result');
-    let currentFishingDog = null;
+  // 釣りミニゲームUI制御
+  const fishingUI = document.getElementById('fishing-ui');
+  const reelButton = document.getElementById('reel-button');
+  const pointer = document.getElementById('pointer');
+  const targetZone = document.getElementById('target-zone');
+  const fishingResult = document.getElementById('fishing-result');
 
-    function showFishingUI(dog) {
-      fishingUI.style.display = 'block';
-      resultText.textContent = '';
+  function startFishing() {
+    fishingUI.style.display = 'block';
+    fishingResult.textContent = '';
+    pointer.style.animationPlayState = 'running';
+  }
+  function stopFishing() {
+    pointer.style.animationPlayState = 'paused';
+    const pointerRect = pointer.getBoundingClientRect();
+    const targetRect = targetZone.getBoundingClientRect();
+    if(pointerRect.left >= targetRect.left && pointerRect.right <= targetRect.right) {
+      fishingResult.textContent = '🎯 ヒット！犬が釣れた！';
+    } else {
+      fishingResult.textContent = '💨 のがした…';
+    }
+    setTimeout(() => {
+      fishingUI.style.display = 'none';
       pointer.style.animationPlayState = 'running';
-      currentFishingDog = dog;
-    }
+    }, 1500);
+  }
+  reelButton.addEventListener('click', stopFishing);
 
-    reelButton.addEventListener('click', () => {
-      pointer.style.animationPlayState = 'paused';
+  // キーボードの f で釣りゲーム起動
+  document.addEventListener('keydown', e => {
+    if(e.key === 'f') startFishing();
+  });
+</script>
 
-      const pointerRect = pointer.getBoundingClientRect();
-      const targetRect = targetZone.getBoundingClientRect();
-
-      let isHit = false;
-      if (pointerRect.left >= targetRect.left && pointerRect.right <= targetRect.right) {
-        resultText.textContent = '🎯 ヒット！犬が釣れた！';
-      } else {
-        resultText.textContent = '💨 のがした…';
-      }
-
-      setTimeout(() => {
-        fishingUI.style.display = 'none';
-        pointer.style.animationPlayState = 'running';
-      }, 2000);
-    });
-
-    document.addEventListener('keydown', (e) => {
-      if (e.key === 'f') showFishingUI();
-    });
-  </script>
 </body>
 </html>
-
-
