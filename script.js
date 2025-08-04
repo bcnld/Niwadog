@@ -73,6 +73,7 @@ function spawnDogs() {
     img.alt = dog.name;
     img.title = `${dog.name}（${dog.rarity}）\n${dog.description}`;
     img.className = 'dog';
+    img.style.pointerEvents = 'auto';  // クリック判定を有効にする（cssでも可）
     Object.assign(img.style, {
       position: 'absolute',
       width: dogSize + 'px',
@@ -155,3 +156,4 @@ window.addEventListener('load', () => {
 });
 window.addEventListener('resize', checkOrientation);
 window.addEventListener('orientationchange', checkOrientation);
+
