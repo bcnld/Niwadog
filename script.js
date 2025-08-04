@@ -142,12 +142,32 @@ detailClose.addEventListener('click', () => {
 });
 
 // 犬データ読み込みと表示・移動処理
+// 犬データ読み込みと配置（レア度に基づく出現）
 fetch('dog.json')
   .then(res => res.json())
-  .then(dogs => {
+  .then(allDogs => {
     const waterArea = document.getElementById('water-area');
     const isMobile = window.innerWidth <= 600;
     const dogSize = isMobile ? 50 : 70;
+
+    // レア度に応じて重み付け
+    function weightedRandomDogs(dogs, count = 10) {
+      const weighted = [];
+      dogs.forEach(dog => {
+        const weight = Math.max(1, 8 - dog.rarity); // rarity: 1→7, 7→1
+        for (let i = 0; i < weight; i++) {
+          weighted.push(dog);
+        }
+      });
+      const selected = [];
+      for (let i = 0; i < count; i++) {
+        const index = Math.floor(Math.random() * weighted.length);
+        selected.push(weighted[index]);
+      }
+      return selected;
+    }
+
+    const dogs = weightedRandomDogs(allDogs, 12); // 表示する犬の数
 
     dogs.forEach(dog => {
       const dogElem = document.createElement('img');
@@ -156,18 +176,14 @@ fetch('dog.json')
       dogElem.classList.add('dog');
       dogElem.style.width = `${dogSize}px`;
 
-      // 初期位置
       let x = Math.random() * (waterArea.clientWidth - dogSize);
       let y = Math.random() * (waterArea.clientHeight - dogSize);
       dogElem.style.left = `${x}px`;
       dogElem.style.top = `${y}px`;
 
-      // 犬の情報をdatasetに保存
       dogElem.dataset.info = JSON.stringify(dog);
-
       waterArea.appendChild(dogElem);
 
-      // ランダム移動
       setInterval(() => {
         x = Math.random() * (waterArea.clientWidth - dogSize);
         y = Math.random() * (waterArea.clientHeight - dogSize);
@@ -175,7 +191,6 @@ fetch('dog.json')
         dogElem.style.top = `${y}px`;
       }, 3000 + Math.random() * 3000);
 
-      // 犬クリックで釣りUI表示
       dogElem.addEventListener('click', () => {
         showFishingUI(dogElem);
       });
