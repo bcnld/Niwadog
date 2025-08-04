@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no" />
-  <title>わら</title>
+  <title>うら</title>
   <style>
     body, html {
       margin: 0; padding: 0; height: 100%; overflow: hidden;
@@ -29,7 +29,6 @@
     }
     #zukan-btn { right: 30px; }
     #shop-btn { left: 30px; }
-
     .panel {
       display: none;
       position: fixed;
@@ -43,42 +42,45 @@
       padding: 10px;
       z-index: 30;
     }
-
     #fishing-ui {
       display: none;
       text-align: center;
       background: #fffde7;
       border: 2px solid #444;
-      padding: 20px;
-      border-radius: 8px;
+      padding: 15px;
       box-shadow: 0 0 10px rgba(0,0,0,0.4);
-      z-index: 1000;
+      z-index: 50;
       position: fixed;
       top: 20%;
       left: 50%;
       transform: translateX(-50%);
-      width: 90vw;
-      max-width: 400px;
+      width: 90vw; max-width: 400px;
     }
-
-    #roulette-canvas {
-      display: block;
-      margin: 0 auto;
+    #reel-area {
+      position: relative;
+      height: 30px;
+      background: #c5e1a5;
+      border: 2px solid #33691e;
+      margin: 10px 0;
+      overflow: hidden;
     }
-
-    #reel-button {
-      margin-top: 15px;
-      padding: 10px 20px;
-      font-size: 1rem;
-      cursor: pointer;
+    #pointer {
+      position: absolute;
+      top: 0; left: 0;
+      width: 5px; height: 100%;
+      background: red;
+      animation: movePointer 2s linear infinite;
     }
-
-    #fishing-result {
-      margin-top: 10px;
-      font-weight: bold;
-      font-size: 1.2rem;
+    #target-zone {
+      position: absolute;
+      top: 0; left: 40%;
+      width: 20%; height: 100%;
+      background: rgba(0,255,0,0.3);
     }
-
+    @keyframes movePointer {
+      0% { left: 0%; }
+      100% { left: 100%; }
+    }
     #orientation-warning {
       display: none;
       position: fixed;
@@ -95,65 +97,55 @@
       justify-content: center;
       align-items: center;
     }
-
     #orientation-warning img {
       max-width: 150px;
       margin-bottom: 20px;
     }
-
     .dog {
       position: absolute;
       width: 70px;
-      pointer-events: auto;
-      cursor: pointer;
+      pointer-events: none;
     }
   </style>
 </head>
 <body>
 
-  <!-- 横向き警告 -->
   <div id="orientation-warning">
     <img src="images/dog.gif" alt="横向きにしてください" />
     <p>横向きにしないと鶏があなたのケツを掘りに行きます</p>
   </div>
 
-  <!-- 水中エリア -->
   <div id="water-area"></div>
 
-  <!-- 土地 -->
   <div id="bottom-land"></div>
 
-  <!-- ボタン -->
   <img id="zukan-btn" src="images/zukan_icon.png" alt="図鑑" />
   <img id="shop-btn" src="images/shop_icon.png" alt="ショップ" />
 
-  <!-- 図鑑パネル -->
   <div id="zukan-panel" class="panel">
     <h2>図鑑</h2>
     <p>見つけた犬たちがここに表示されます。</p>
     <div id="zukan-list"></div>
   </div>
 
-  <!-- ショップパネル -->
   <div id="shop-panel" class="panel">
     <h2>ショップ</h2>
     <p>アイテム購入機能などをここに追加します。</p>
   </div>
 
-  <!-- 釣りUI -->
-  <div id="fishing-ui">
+  <div id="fishing-ui" style="display:none; position:absolute; top:20%; left:50%; transform:translateX(-50%);
     <h2>犬乱獲</h2>
-    <canvas id="roulette-canvas" width="300" height="300"></canvas>
-    <button id="reel-button">リールを止める</button>
-    <div id="fishing-result"></div>
-  </div>
+    background:#fffde7; border:2px solid #444; padding:20px; border-radius:8px; text-align:center; z-index:1000;">
+  <canvas id="roulette-canvas" width="300" height="300" style="display:block; margin:0 auto;"></canvas>
+  <button id="reel-button" style="margin-top:15px; padding:10px 20px; font-size:1rem; cursor:pointer;">リールを止める</button>
+  <div id="fishing-result" style="margin-top:10px; font-weight:bold; font-size:1.2rem;"></div>
+</div>
 
-  <!-- サウンド -->
+
   <audio id="bgm" src="Sounds/bata.wav" loop></audio>
   <audio id="sfx-open" src="Sounds/open.mp3"></audio>
   <audio id="sfx-close" src="Sounds/close.mp3"></audio>
 
-  <!-- JS -->
   <script src="script.js"></script>
-</body>
+</body>  
 </html>
