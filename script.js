@@ -15,7 +15,6 @@ const bottomLandHeight = 100;
 let dogData = [], weightedDogs = [], spawnedDogs = [], caughtDogsMap = {}, currentDog = null;
 let fishingActive = false; // 釣り中かどうか判定用
 
-// 横向きか縦向きかの判定＆警告表示
 function handleOrientation() {
   if (window.innerHeight > window.innerWidth) {
     orientationWarning.style.display = 'flex';
@@ -26,12 +25,10 @@ function handleOrientation() {
   }
 }
 
-// BGM 初回クリックで再生（スマホ対応）
 document.body.addEventListener('click', () => {
   if (bgm.paused) bgm.play().catch(() => {});
 }, { once: true });
 
-// パネルの開閉処理
 function togglePanel(panel) {
   const isOpen = panel.style.display === 'block';
   if (isOpen) {
@@ -51,7 +48,6 @@ function togglePanel(panel) {
 zukanBtn.onclick = () => togglePanel(zukanPanel);
 shopBtn.onclick = () => togglePanel(shopPanel);
 
-// 図鑑表示更新
 function updateZukan() {
   zukanList.innerHTML = '';
   Object.values(caughtDogsMap).forEach(dog => {
@@ -63,12 +59,10 @@ function updateZukan() {
   });
 }
 
-// 重み付き配列作成
 function createWeightedDogs(dogs) {
   return dogs.flatMap(dog => Array(Math.max(1, Math.round(dog.probability * 100))).fill(dog));
 }
 
-// 犬のスポーン＆動き開始
 function spawnDogs() {
   waterArea.innerHTML = '';
   spawnedDogs = [];
@@ -118,17 +112,19 @@ function spawnDogs() {
   }
 }
 
-// 釣りUI起動
+// 釣りUI起動（重複アニメーション防止）
 function startFishing() {
   fishingActive = true;
   const fishingUI = document.getElementById('fishing-ui');
-  document.getElementById('fishing-result').textContent = '';
   const pointer = document.getElementById('pointer');
+  document.getElementById('fishing-result').textContent = '';
   pointer.style.animationPlayState = 'running';
+
+  // 釣りUI表示
   fishingUI.style.display = 'block';
 }
 
-// 釣り成功判定＆図鑑登録＆犬削除（成功・失敗共に）
+// 釣り判定＆終了
 function stopFishing() {
   if (!fishingActive) return; // 既に停止済みなら無視
   fishingActive = false;
@@ -155,12 +151,13 @@ function stopFishing() {
     fishingResult.textContent = '💨 のがした…';
   }
 
-  // 釣り終わった犬は画面から削除
+  // 犬を確実に削除する処理
   if (currentDog) {
-    // 対応するimg要素を水面から削除
     const targetSpawn = spawnedDogs.find(s => s.dog === currentDog);
     if (targetSpawn) {
-      waterArea.removeChild(targetSpawn.img);
+      if (waterArea.contains(targetSpawn.img)) {
+        waterArea.removeChild(targetSpawn.img);
+      }
       spawnedDogs = spawnedDogs.filter(s => s.dog !== currentDog);
     }
   }
@@ -175,7 +172,6 @@ function stopFishing() {
 
 document.getElementById('reel-button').onclick = stopFishing;
 
-// 初期化
 window.addEventListener('load', () => {
   handleOrientation();
   fetch('dog.json')
