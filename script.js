@@ -25,7 +25,6 @@ const zukanBtn = document.getElementById('zukan-btn');
 const shopBtn = document.getElementById('shop-btn');
 const zukanPanel = document.getElementById('zukan-panel');
 const shopPanel = document.getElementById('shop-panel');
-
 const sfxOpen = document.getElementById('sfx-open');
 const sfxClose = document.getElementById('sfx-close');
 
@@ -70,50 +69,15 @@ function updateZukan() {
 }
 updateZukan();
 
-// 釣りミニゲームUI制御
-const fishingUI = document.getElementById('fishing-ui');
-const reelButton = document.getElementById('reel-button');
-const pointer = document.getElementById('pointer');
-const targetZone = document.getElementById('target-zone');
-const fishingResult = document.getElementById('fishing-result');
-
-function startFishing() {
-  fishingUI.style.display = 'block';
-  fishingResult.textContent = '';
-  pointer.style.animationPlayState = 'running';
-}
-function stopFishing() {
-  pointer.style.animationPlayState = 'paused';
-  const pointerRect = pointer.getBoundingClientRect();
-  const targetRect = targetZone.getBoundingClientRect();
-  if(pointerRect.left >= targetRect.left && pointerRect.right <= targetRect.right) {
-    fishingResult.textContent = '🎯 ヒット！犬が釣れた！';
-  } else {
-    fishingResult.textContent = '💨 のがした…';
-  }
-  setTimeout(() => {
-    fishingUI.style.display = 'none';
-    pointer.style.animationPlayState = 'running';
-  }, 1500);
-}
-reelButton.addEventListener('click', stopFishing);
-
-// キーボードの f で釣りゲーム起動
-document.addEventListener('keydown', e => {
-  if(e.key === 'f') startFishing();
-});
-
-// --- ここから犬を水面に配置して泳がせる処理 ---
-
+// 水面（水エリア）に犬を表示し、ランダムに動かす処理
+const waterArea = document.getElementById('water-area');
 const dogs = [
-  { src: 'images/dog.png', alt: '犬1' },
-  { src: 'images/dogsu.png', alt: '犬2' }
+  { src: 'images/dog.png', alt: '犬1', description:'おなにーすきすきいぬ。' },
+  { src: 'images/dogsu.png', alt: '犬2', description:'元気な犬です。' }
 ];
 
-const waterArea = document.getElementById('water-area');
-
 function spawnDogsInWater() {
-  waterArea.innerHTML = ''; // 既存をクリア
+  waterArea.innerHTML = '';
 
   dogs.forEach(dog => {
     const img = document.createElement('img');
@@ -125,24 +89,52 @@ function spawnDogsInWater() {
     const maxX = waterArea.clientWidth - 70;
     const maxY = waterArea.clientHeight - 70;
 
+    // 初期位置をランダムに設定
     let posX = Math.random() * maxX;
     let posY = Math.random() * maxY;
     img.style.left = posX + 'px';
     img.style.top = posY + 'px';
 
+    // ランダム移動のための速度ベクトル
+    let velocityX = (Math.random() * 2 - 1) * 1; // -1〜1ピクセル/フレーム
+    let velocityY = (Math.random() * 2 - 1) * 1;
+
+    img.style.pointerEvents = 'auto'; // クリックできるようにする（釣り開始用）
+
+    // クリックイベントなどは釣り機能で追加予定なのでここではまだ処理なし
+
     waterArea.appendChild(img);
 
-    // 犬が左右にゆっくり泳ぐアニメーション
-    let direction = 1;
-    function swim() {
-      posX += direction * 1; // 1pxずつ動く
-      if(posX > maxX) direction = -1;
-      if(posX < 0) direction = 1;
+    // ランダムに動くアニメーション
+    function move() {
+      posX += velocityX;
+      posY += velocityY;
+
+      // 壁に当たったら反射
+      if(posX < 0) {
+        posX = 0;
+        velocityX = -velocityX;
+      } else if(posX > maxX) {
+        posX = maxX;
+        velocityX = -velocityX;
+      }
+
+      if(posY < 0) {
+        posY = 0;
+        velocityY = -velocityY;
+      } else if(posY > maxY) {
+        posY = maxY;
+        velocityY = -velocityY;
+      }
+
       img.style.left = posX + 'px';
-      requestAnimationFrame(swim);
+      img.style.top = posY + 'px';
+
+      requestAnimationFrame(move);
     }
-    swim();
+    move();
   });
 }
 
 window.addEventListener('load', spawnDogsInWater);
+window.addEventListener('resize', spawnDogsInWater);
