@@ -1,10 +1,64 @@
+/* ベースリセットと画面全体設定 */
 body, html {
   margin: 0;
   padding: 0;
   height: 100%;
   overflow: hidden;
+  font-family: Arial, sans-serif;
+  background: #a0d8f7; /* 空っぽの背景例 */
 }
 
+/* 画面向き警告表示用 */
+#orientation-warning {
+  display: none;
+  position: fixed;
+  top: 0; left: 0;
+  width: 100vw; height: 100vh;
+  background: rgba(0,0,0,0.8);
+  color: white;
+  font-size: 1.5rem;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  z-index: 1000;
+  padding: 20px;
+  box-sizing: border-box;
+}
+
+/* メインゲーム画面のコンテナ */
+#container {
+  position: relative;
+  width: 100vw;
+  height: 100vh;
+  overflow: hidden;
+}
+
+/* 水エリア */
+#water-area {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100vh; /* 画面いっぱい */
+  overflow: hidden;
+  z-index: 1;
+  background-image: url('images/water.png');
+  background-repeat: repeat;
+  background-size: auto 100%;
+  background-position: left center;
+}
+
+/* 犬の画像 */
+.dog {
+  position: absolute;
+  /* 幅はJSで制御 */
+  transition: transform 1s linear;
+  user-select: none;
+  cursor: pointer;
+  pointer-events: auto;
+}
+
+/* 釣りUI */
 #fishing-ui {
   display: none;
   position: absolute;
@@ -19,8 +73,10 @@ body, html {
   padding: 20px;
   text-align: center;
   box-shadow: 0 0 10px rgba(0,0,0,0.4);
+  border-radius: 8px;
 }
 
+/* リールエリア */
 #reel-area {
   position: relative;
   width: 100%;
@@ -29,8 +85,10 @@ body, html {
   margin: 10px auto;
   border: 2px solid #33691e;
   overflow: hidden;
+  border-radius: 4px;
 }
 
+/* ポインター */
 #pointer {
   position: absolute;
   top: 0;
@@ -38,8 +96,10 @@ body, html {
   height: 100%;
   background: red;
   animation: movePointer 2s linear infinite;
+  animation-play-state: paused; /* 初期は停止 */
 }
 
+/* 釣り成功ゾーン */
 #target-zone {
   position: absolute;
   top: 0;
@@ -47,32 +107,113 @@ body, html {
   width: 20%;
   height: 100%;
   background: rgba(0,255,0,0.3);
+  pointer-events: none;
+  border-radius: 2px;
 }
 
+/* ポインターの動き */
 @keyframes movePointer {
   0% { left: 0%; }
   100% { left: 100%; }
 }
 
-#water-area {
-  position: absolute;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: calc(100% - var(--bottom-land-height));
-  overflow: hidden;
-  z-index: 1;
-  background-image: url('images/water.png');
-  background-repeat: repeat;
-  background-size: auto 100%;
-  background-position: left center;
+/* 図鑑ボタン・ショップボタン */
+button {
+  cursor: pointer;
+  padding: 10px 20px;
+  margin: 5px;
+  font-size: 1rem;
+  border-radius: 6px;
+  border: none;
+  background-color: #6ab04c;
+  color: white;
+  transition: background-color 0.3s ease;
+}
+button:hover {
+  background-color: #4a7a30;
 }
 
-.dog {
+/* 図鑑・ショップパネル */
+#zukan-panel, #shop-panel {
+  display: none;
   position: absolute;
-  width: 50px;
-  transition: transform 1s linear;
+  top: 60px;
+  right: 10px;
+  width: 300px;
+  max-height: 60vh;
+  overflow-y: auto;
+  background: #f0f8ff;
+  border: 2px solid #444;
+  border-radius: 8px;
+  padding: 10px;
+  z-index: 100;
+  box-shadow: 0 0 8px rgba(0,0,0,0.3);
+}
+
+/* 図鑑リスト */
+#zukan-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+/* 図鑑の犬アイテム */
+.zukan-item {
+  width: 70px;
+  cursor: pointer;
+  text-align: center;
   user-select: none;
 }
+.zukan-item img {
+  width: 70px;
+  height: auto;
+  border-radius: 6px;
+  border: 1px solid #ccc;
+  transition: transform 0.2s ease;
+}
+.zukan-item:hover img {
+  transform: scale(1.1);
+}
 
+/* 図鑑詳細パネル */
+#detail-panel {
+  display: none;
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 320px;
+  background: white;
+  border: 3px solid #555;
+  border-radius: 12px;
+  padding: 20px;
+  z-index: 1500;
+  box-shadow: 0 0 15px rgba(0,0,0,0.5);
+}
+#detail-panel img {
+  max-width: 100%;
+  border-radius: 8px;
+}
+#detail-close {
+  margin-top: 15px;
+  padding: 8px 16px;
+  background: #e74c3c;
+  border: none;
+  color: white;
+  border-radius: 8px;
+  cursor: pointer;
+  font-weight: bold;
+}
+#detail-close:hover {
+  background: #c0392b;
+}
 
+/* 釣り結果表示 */
+#fishing-result {
+  margin-top: 10px;
+  font-size: 1.2rem;
+  font-weight: bold;
+  min-height: 1.5em;
+}
+
+/* 音量調整などのUIは必要に応じて追加してください */
