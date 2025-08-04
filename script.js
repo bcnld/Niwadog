@@ -111,12 +111,13 @@ function spawnDogs() {
       requestAnimationFrame(move);
     })();
 
-    img.onclick = () => {
-      if (fishingActive) return;
-      currentDog = dog;
-      currentDogImg = img;
-      startFishing();
-    };
+    img.addEventListener('click', () => {
+      if (!fishingActive) {
+        currentDog = dog;
+        currentDogImg = img;
+        startFishing();
+      }
+    });
 
     waterArea.appendChild(img);
     spawnedDogs.push({ img, dog });
@@ -127,7 +128,7 @@ function startFishing() {
   fishingActive = true;
   fishingResult.textContent = '';
   pointer.style.animation = 'none';
-  void pointer.offsetWidth; // Reflow to reset animation
+  void pointer.offsetWidth;
   pointer.style.animation = 'movePointer 2s linear infinite';
   fishingUI.style.display = 'block';
 }
@@ -145,13 +146,15 @@ function stopFishing() {
     updateZukan();
   }
 
-  if (currentDogImg) currentDogImg.remove();
+  if (currentDogImg) {
+    currentDogImg.remove();
+    currentDogImg = null;
+  }
 
   setTimeout(() => {
     fishingUI.style.display = 'none';
     fishingActive = false;
     currentDog = null;
-    currentDogImg = null;
   }, 1500);
 }
 
