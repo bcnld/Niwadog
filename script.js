@@ -1,18 +1,21 @@
-const waterArea = document.getElementById('water-area');
-const testDogs = [
-  { name: 'ポチ', image: 'images/doga.png', rarity: 3 },
-  { name: 'タロウ', image: 'images/dogred.png', rarity: 5 },
-];
-
-testDogs.forEach(dog => {
-  const dogElem = document.createElement('img');
-  dogElem.src = dog.image;
-  dogElem.alt = dog.name;
-  dogElem.classList.add('dog');
-  dogElem.style.width = '70px';
-  dogElem.style.position = 'absolute';
-  dogElem.style.left = Math.random() * (waterArea.clientWidth - 70) + 'px';
-  dogElem.style.top = Math.random() * (waterArea.clientHeight - 70) + 'px';
-  waterArea.appendChild(dogElem);
-});
-
+// 1. JSONを読み込む
+fetch('dog.json')
+  .then(res => res.json())
+  .then(allDogs => {
+    const waterArea = document.getElementById('water-area');
+    
+    // 2. 犬を一匹だけ画面に出す
+    const dog = allDogs[0]; // とりあえず1匹
+    const img = document.createElement('img');
+    img.src = dog.image;
+    img.alt = dog.name;
+    img.className = 'dog';
+    img.style.position = 'absolute';
+    img.style.left = '50%';
+    img.style.top = '50%';
+    img.style.transform = 'translate(-50%, -50%)';
+    waterArea.appendChild(img);
+  })
+  .catch(err => {
+    console.error('dog.jsonの読み込みエラー:', err);
+  });
