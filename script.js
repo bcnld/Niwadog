@@ -9,19 +9,14 @@ const shopPanel = document.getElementById('shop-panel');
 const sfxOpen = document.getElementById('sfx-open');
 const sfxClose = document.getElementById('sfx-close');
 const zukanList = document.getElementById('zukan-list');
-const fishingUI = document.getElementById('fishing-ui');
-const reelButton = document.getElementById('reel-button');
-const pointer = document.getElementById('pointer');
-const targetZone = document.getElementById('target-zone');
-const fishingResult = document.getElementById('fishing-result');
 
 const maxDogs = 6;
 const bottomLandHeight = 100;
 
-let dogData = [];         // dog.jsonの全データを格納
-let weightedDogs = [];    // 重み付き配列（出現犬用）
-let spawnedDogs = [];     // 画面に表示中の犬DOMとデータの対応配列
-let caughtDogsMap = {};   // 図鑑登録済み犬を名前で管理（重複防止）
+let dogData = [];
+let weightedDogs = [];
+let spawnedDogs = [];
+let caughtDogsMap = {};
 
 // 画面向きチェック
 function checkOrientation() {
@@ -59,7 +54,7 @@ function togglePanel(panel) {
 zukanBtn.addEventListener('click', () => togglePanel(zukanPanel));
 shopBtn.addEventListener('click', () => togglePanel(shopPanel));
 
-// 図鑑更新表示（捕まえた犬だけ）
+// 図鑑更新表示
 function updateZukan() {
   zukanList.innerHTML = '';
   for (const dogName in caughtDogsMap) {
@@ -128,6 +123,12 @@ function spawnDogs() {
     }
     move();
 
+    // クリックで釣り開始
+    img.addEventListener('click', () => {
+      startFishing();
+      // 釣る対象の犬を保存したい場合はここでセットしてください
+    });
+
     waterArea.appendChild(img);
     spawnedDogs.push({ img, dog });
   }
@@ -135,6 +136,9 @@ function spawnDogs() {
 
 // 釣りミニゲーム起動
 function startFishing() {
+  const fishingUI = document.getElementById('fishing-ui');
+  const fishingResult = document.getElementById('fishing-result');
+  const pointer = document.getElementById('pointer');
   fishingUI.style.display = 'block';
   fishingResult.textContent = '';
   pointer.style.animationPlayState = 'running';
@@ -142,6 +146,11 @@ function startFishing() {
 
 // 釣り成功判定＆図鑑登録
 function stopFishing() {
+  const fishingUI = document.getElementById('fishing-ui');
+  const fishingResult = document.getElementById('fishing-result');
+  const pointer = document.getElementById('pointer');
+  const targetZone = document.getElementById('target-zone');
+
   pointer.style.animationPlayState = 'paused';
   const pointerRect = pointer.getBoundingClientRect();
   const targetRect = targetZone.getBoundingClientRect();
@@ -149,12 +158,10 @@ function stopFishing() {
   if (pointerRect.left >= targetRect.left && pointerRect.right <= targetRect.right) {
     fishingResult.textContent = '🎯 ヒット！犬が釣れた！';
 
-    // ランダムに釣れた犬を選ぶ
-    if (spawnedDogs.length === 0) return; // 念のため
+    if (spawnedDogs.length === 0) return;
     const caughtIndex = Math.floor(Math.random() * spawnedDogs.length);
     const caughtDog = spawnedDogs[caughtIndex].dog;
 
-    // 図鑑登録（重複しないように）
     if (!caughtDogsMap[caughtDog.name]) {
       caughtDogsMap[caughtDog.name] = caughtDog;
       updateZukan();
@@ -169,10 +176,8 @@ function stopFishing() {
   }, 1500);
 }
 
-reelButton.addEventListener('click', stopFishing);
-document.addEventListener('keydown', e => {
-  if (e.key === 'f') startFishing();
-});
+// 釣りUIのリールボタンにイベント追加
+document.getElementById('reel-button').addEventListener('click', stopFishing);
 
 // 初期化
 window.addEventListener('load', () => {
