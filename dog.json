@@ -3,6 +3,7 @@
     "name": "ノーマル犬",
     "image": "images/dog.png",
     "probability": 0.6,
+    "catchRate": 1.0,
     "rarity": 1,
     "description": "いつもの犬。"
   },
@@ -10,6 +11,7 @@
     "name": "普通の犬",
     "image": "images/dogc.png",
     "probability": 0.8,
+    "catchRate": 0.95,
     "rarity": 1,
     "description": "灰色のハスキー犬。"
   },
@@ -17,6 +19,7 @@
     "name": "多分普通の犬",
     "image": "images/doga.png",
     "probability": 0.6,
+    "catchRate": 0.70,
     "rarity": 2,
     "description": "緑がかった毛並みが特徴の犬。"
   },
@@ -24,64 +27,216 @@
     "name": "レア犬",
     "image": "images/dogr.png",
     "probability": 0.5,
+    "catchRate": 0.45,
     "rarity": 3,
-    "description": "青いレアなの犬。"
+    "description": "顔色が悪い犬。"
   },
   {
     "name": "珍しい犬",
     "image": "images/doge.png",
-    "probability": 0.4,
+    "probability": 0.04,
+    "catchRate": 0.23,
     "rarity": 4,
-    "description": "紫のオーラの犬。"
+    "description": "風呂キャンで紫のオーラを放っている犬。"
   },
   {
     "name": "すごい犬",
     "image": "images/dogre.png",
-    "probability": 0.3,
+    "probability": 0.03,
+    "catchRate": 0.22,
     "rarity": 5,
-    "description": "光ったの犬。"
+    "description": "光の速さで腰を振ることで光っている犬。"
   },
   {
     "name": "紫犬",
     "image": "images/dogpa.png",
-    "probability": 0.2,
+    "probability": 0.02,
+    "catchRate": 0.21,
     "rarity": 6,
-    "description": "毛の色が紫が特徴の犬。"
+    "description": "風呂キャン初心者の犬。"
   },
   {
     "name": "赤い犬",
     "image": "images/dogred.png",
-    "probability": 0.4,
+    "probability": 0.2,
+    "catchRate": 0.38,
     "rarity": 4,
-    "description": "赤い毛が特徴の犬。"
+    "description": "生理で血が飛び出た犬。"
   },
   {
     "name": "青い犬",
     "image": "images/dogblue.png",
     "probability": 0.3,
+    "catchRate": 0.42,
     "rarity": 4,
-    "description": "青い毛が特徴の犬。"
+    "description": "ブルーチーズを食いすぎた犬。"
   },
   {
     "name": "気が狂った犬",
     "image": "images/dogcraz.png",
     "probability": 1.0,
+    "catchRate": 0.1,
     "rarity": 2,
-    "description": "ホモに満ちた狂気の犬。"
+    "description": "ホモによって犯された犬。"
   },
   {
     "name": "金犬",
     "image": "images/doggo.png",
-    "probability": 0.05,
+    "probability": 0.01,
+    "catchRate": 0.15,
     "rarity": 7,
     "description": "金魂を食べたら金色の毛になった金色の犬。"
   },
   {
     "name": "スーパー犬",
     "image": "images/dogsu.png",
-    "probability": 0.009,
+    "probability": 0.09,
+    "catchRate": 0.005,
     "rarity": 7,
-    "description": "とても素晴らしい犬。"
+    "description": "ホモから逃げ切った実績のある犬"
+  },
+  {
+    "name": "ウルトラ犬",
+    "image": "images/dogur.png",
+    "probability": 0.009,
+    "catchRate": 0.00085,
+    "rarity": 9,
+    "description": "伝説の毛穴ウルバリンから逃げ切った実績がある犬。"
+  },
+  {
+    "name": "毛穴ウルバリン犬",
+    "image": "images/dogku.png",
+    "probability": 0.02,
+    "catchRate": 0.00001,
+    "rarity": 1,
+    "description": "毛穴ウルバリン症にかかってしまった犬。"
+  },
+  {
+    "name": "鶏犬",
+    "image": "images/dogkfc.png",
+    "probability": 0.004,
+    "catchRate": 0.00085,
+    "rarity": 7,
+    "description": "何人もの人たちをBANさせた犬。"
+  },
+  {
+    "name": "精子犬",
+    "image": "images/dogsc.png",
+    "probability": 0.08,
+    "catchRate": 0.001,
+    "rarity": 1,
+    "description": "犬の性欲を満たすために出てきてしまった犬。"
+  },
+  {
+    "name": "オタク犬",
+    "image": "images/dogot.png",
+    "probability": 0.1,
+    "catchRate": 0.05,
+    "rarity": 1,
+    "description": "きもくてくさい犬。"
+  },
+  {
+    "name": "受精犬",
+    "image": "images/dogtg.png",
+    "probability": 0.08,
+    "catchRate": 0.001,
+    "rarity": 1,
+    "description": "受精した瞬間に取り出された犬。"
+  },
+  {
+    "name": "コンドーム犬",
+    "image": "images/doggn.png",
+    "probability": 0.5,
+    "catchRate": 0.001,
+    "rarity": 1,
+    "description": "やり捨てされた犬。"
+  },
+  {
+    "name": "眼鏡族犬",
+    "image": "images/dognb.png",
+    "probability": 0.2,
+    "catchRate": 0.5,
+    "rarity": 4,
+    "description": "生まれた瞬間眼鏡をかけてる民族犬。"
+  },
+  {
+    "name": "マッスル犬",
+    "image": "images/dogmdm.png",
+    "probability": 0.03,
+    "catchRate": 0.3,
+    "rarity": 6,
+    "description": "素犬腕相撲最強。"
+  },
+  {
+    "name": "ネズミ犬",
+    "image": "images/dognm.png",
+    "probability": 0.03,
+    "catchRate": 0.3,
+    "rarity": 2,
+    "description": "かつて飲食店でお風呂に入った犬。"
+  },
+  {
+    "name": "ハスキー犬",
+    "image": "images/doghk.png",
+    "probability": 0.003,
+    "catchRate": 0.003,
+    "rarity": 9,
+    "description": "AV最多勝に選ばれた犬。"
+  },
+  {
+    "name": "包茎犬",
+    "image": "images/dogho.png",
+    "probability": 0.3,
+    "catchRate": 0.3,
+    "rarity": 2,
+    "description": "精子を出しても皮に吸収されて受精させれない犬。"
+  },
+  {
+    "name": "スーパーウルトラ犬",
+    "image": "images/dogsr.png",
+    "probability": 0.0003,
+    "catchRate": 0.003,
+    "rarity": 10,
+    "description": "生まれつきの才能を持った犬。"
+  },
+  {
+    "name": "面白すぎて、い↑ぬ↓",
+    "image": "images/dogin.png",
+    "probability": 0.1,
+    "catchRate": 0.3,
+    "rarity": 1,
+    "description": "面白くないノリをする犬。"
+  },
+  {
+    "name": "寄生虫犬",
+    "image": "images/dogks.png",
+    "probability": 0.001,
+    "catchRate": 0.08,
+    "rarity": 7,
+    "description": "けつのあなに何十万匹もの寄生虫を飼っている犬。"
+  },
+  {
+    "name": "おしっこ犬",
+    "image": "images/dogos.png",
+    "probability": 0.15,
+    "catchRate": 0.3,
+    "rarity": 3,
+    "description": "通話をしていることを忘れて放尿してしまった犬。"
+  },
+  {
+    "name": "黒ひげ犬",
+    "image": "images/dogkh.png",
+    "probability": 0.09,
+    "catchRate": 0.3,
+    "rarity": 5,
+    "description": "犬の夢は終わらねぇ！...言いながらどんぐりの虫を食べる犬。"
+  },
+  {
+    "name": "うんちびり犬",
+    "image": "images/dogut.png",
+    "probability": 0.15,
+    "catchRate": 0.3,
+    "rarity": 3,
+    "description": "急に話しかけられてうんこをちびってしまった犬"
   }
 ]
-
