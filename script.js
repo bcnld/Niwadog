@@ -15,6 +15,14 @@ const pointer = document.getElementById('pointer');
 const targetZone = document.getElementById('target-zone');
 const fishingResult = document.getElementById('fishing-result');
 
+const maxDogs = 6;
+const bottomLandHeight = 100;
+
+let dogData = [];         // dog.jsonの全データを格納
+let weightedDogs = [];    // 重み付き配列（出現犬用）
+let spawnedDogs = [];     // 画面に表示中の犬DOMとデータの対応配列
+let caughtDogsMap = {};   // 図鑑登録済み犬を名前で管理（重複防止）
+
 // 画面向きチェック
 function checkOrientation() {
   if (window.matchMedia("(orientation: portrait)").matches) {
@@ -26,7 +34,7 @@ function checkOrientation() {
   }
 }
 
-// 初回クリックでBGM再生
+// BGM初回クリック再生
 document.body.addEventListener('click', () => {
   if (bgm.paused) bgm.play().catch(() => {});
 }, { once: true });
@@ -51,136 +59,133 @@ function togglePanel(panel) {
 zukanBtn.addEventListener('click', () => togglePanel(zukanPanel));
 shopBtn.addEventListener('click', () => togglePanel(shopPanel));
 
-// 犬読み込みと表示
-fetch('dog.json')
-  .then(res => res.json())
-  .then(dogData => {
-    const isMobile = window.innerWidth <= 600;
-    const dogSize = isMobile ? 50 : 70;
-    const maxDogs = 6;
-    const bottomLandHeight = 100;
-    const caughtDogs = [];
+// 図鑑更新表示（捕まえた犬だけ）
+function updateZukan() {
+  zukanList.innerHTML = '';
+  for (const dogName in caughtDogsMap) {
+    const dog = caughtDogsMap[dogName];
+    const div = document.createElement('div');
+    div.textContent = dog.name;
+    div.style.cursor = 'pointer';
+    div.style.border = '1px solid #ccc';
+    div.style.margin = '5px';
+    div.style.padding = '5px';
+    div.addEventListener('click', () => alert(dog.description));
+    zukanList.appendChild(div);
+  }
+}
 
-    // 重みづけ＋シャッフルでユニークな犬を選出
-    function getRandomDogs(dogs, count) {
-      const weighted = [];
-      dogs.forEach(dog => {
-        const times = Math.round(100 * dog.probability);
-        for (let i = 0; i < times; i++) {
-          weighted.push(dog);
-        }
-      });
-
-      // シャッフルしてユニークな犬だけ抽出
-      const uniqueMap = {};
-      const result = [];
-      while (weighted.length > 0 && result.length < count) {
-        const index = Math.floor(Math.random() * weighted.length);
-        const dog = weighted.splice(index, 1)[0];
-        if (!uniqueMap[dog.name]) {
-          uniqueMap[dog.name] = true;
-          result.push(dog);
-        }
-      }
-      return result;
+// 重み付き配列作成
+function createWeightedDogs(dogs) {
+  const weighted = [];
+  dogs.forEach(dog => {
+    const times = Math.max(1, Math.round(100 * dog.probability));
+    for (let i = 0; i < times; i++) {
+      weighted.push(dog);
     }
-
-    // 図鑑更新
-    function updateZukan() {
-      zukanList.innerHTML = '';
-      const unique = {};
-      caughtDogs.forEach(dog => {
-        if (!unique[dog.name]) {
-          unique[dog.name] = true;
-          const div = document.createElement('div');
-          div.textContent = dog.name;
-          div.style.cursor = 'pointer';
-          div.style.border = '1px solid #ccc';
-          div.style.margin = '5px';
-          div.style.padding = '5px';
-          div.addEventListener('click', () => alert(dog.description));
-          zukanList.appendChild(div);
-        }
-      });
-    }
-
-    // 犬の表示＆移動
-    function spawnDogs() {
-      waterArea.innerHTML = '';
-      const selectedDogs = getRandomDogs(dogData, maxDogs);
-      caughtDogs.push(...selectedDogs);
-
-      const maxX = waterArea.clientWidth - dogSize;
-      const maxY = waterArea.clientHeight - bottomLandHeight - dogSize;
-
-      selectedDogs.forEach(dog => {
-        const img = document.createElement('img');
-        img.src = dog.image;
-        img.alt = dog.name;
-        img.title = `${dog.name}（${dog.rarity}）\n${dog.description}`;
-        img.className = 'dog';
-        img.style.position = 'absolute';
-        img.style.width = `${dogSize}px`;
-        img.style.height = `${dogSize}px`;
-
-        let posX = Math.random() * maxX;
-        let posY = Math.random() * maxY;
-        img.style.left = `${posX}px`;
-        img.style.top = `${posY}px`;
-
-        let vx = (Math.random() * 2 - 1) * 0.5;
-        let vy = (Math.random() * 2 - 1) * 0.5;
-
-        function move() {
-          posX += vx;
-          posY += vy;
-          if (posX < 0 || posX > maxX) vx = -vx;
-          if (posY < 0 || posY > maxY) vy = -vy;
-          img.style.left = `${Math.max(0, Math.min(maxX, posX))}px`;
-          img.style.top = `${Math.max(0, Math.min(maxY, posY))}px`;
-          requestAnimationFrame(move);
-        }
-        move();
-
-        waterArea.appendChild(img);
-      });
-
-      updateZukan();
-    }
-
-    // DOM準備が整った後にspawn実行
-    requestAnimationFrame(spawnDogs);
-  })
-  .catch(err => {
-    console.error('dog.json 読み込みエラー:', err);
   });
+  return weighted;
+}
 
-// 釣りミニゲーム
+// 犬をスポーン・移動
+function spawnDogs() {
+  waterArea.innerHTML = '';
+  spawnedDogs = [];
+  const isMobile = window.innerWidth <= 600;
+  const dogSize = isMobile ? 50 : 70;
+
+  for (let i = 0; i < maxDogs; i++) {
+    const dog = weightedDogs[Math.floor(Math.random() * weightedDogs.length)];
+
+    const img = document.createElement('img');
+    img.src = dog.image;
+    img.alt = dog.name;
+    img.title = `${dog.name}（${dog.rarity}）\n${dog.description}`;
+    img.className = 'dog';
+    img.style.position = 'absolute';
+    img.style.width = `${dogSize}px`;
+    img.style.height = `${dogSize}px`;
+
+    const maxX = waterArea.clientWidth - dogSize;
+    const maxY = waterArea.clientHeight - bottomLandHeight - dogSize;
+
+    let posX = Math.random() * maxX;
+    let posY = Math.random() * maxY;
+    img.style.left = `${posX}px`;
+    img.style.top = `${posY}px`;
+
+    let vx = (Math.random() * 2 - 1) * 0.5;
+    let vy = (Math.random() * 2 - 1) * 0.5;
+
+    function move() {
+      posX += vx;
+      posY += vy;
+      if (posX < 0 || posX > maxX) vx = -vx;
+      if (posY < 0 || posY > maxY) vy = -vy;
+      img.style.left = Math.max(0, Math.min(maxX, posX)) + 'px';
+      img.style.top = Math.max(0, Math.min(maxY, posY)) + 'px';
+      requestAnimationFrame(move);
+    }
+    move();
+
+    waterArea.appendChild(img);
+    spawnedDogs.push({ img, dog });
+  }
+}
+
+// 釣りミニゲーム起動
 function startFishing() {
   fishingUI.style.display = 'block';
   fishingResult.textContent = '';
   pointer.style.animationPlayState = 'running';
 }
+
+// 釣り成功判定＆図鑑登録
 function stopFishing() {
   pointer.style.animationPlayState = 'paused';
   const pointerRect = pointer.getBoundingClientRect();
   const targetRect = targetZone.getBoundingClientRect();
+
   if (pointerRect.left >= targetRect.left && pointerRect.right <= targetRect.right) {
     fishingResult.textContent = '🎯 ヒット！犬が釣れた！';
+
+    // ランダムに釣れた犬を選ぶ
+    if (spawnedDogs.length === 0) return; // 念のため
+    const caughtIndex = Math.floor(Math.random() * spawnedDogs.length);
+    const caughtDog = spawnedDogs[caughtIndex].dog;
+
+    // 図鑑登録（重複しないように）
+    if (!caughtDogsMap[caughtDog.name]) {
+      caughtDogsMap[caughtDog.name] = caughtDog;
+      updateZukan();
+    }
   } else {
     fishingResult.textContent = '💨 のがした…';
   }
+
   setTimeout(() => {
     fishingUI.style.display = 'none';
     pointer.style.animationPlayState = 'running';
   }, 1500);
 }
+
 reelButton.addEventListener('click', stopFishing);
 document.addEventListener('keydown', e => {
   if (e.key === 'f') startFishing();
 });
 
 // 初期化
-window.addEventListener('load', checkOrientation);
+window.addEventListener('load', () => {
+  checkOrientation();
+
+  fetch('dog.json')
+    .then(res => res.json())
+    .then(data => {
+      dogData = data;
+      weightedDogs = createWeightedDogs(dogData);
+      spawnDogs();
+    })
+    .catch(err => console.error('dog.json 読み込みエラー:', err));
+});
 window.addEventListener('resize', checkOrientation);
 window.addEventListener('orientationchange', checkOrientation);
