@@ -1,4 +1,3 @@
-// 要素取得
 const waterArea = document.getElementById('water-area');
 const orientationWarning = document.getElementById('orientation-warning');
 const bgm = document.getElementById('bgm');
@@ -9,33 +8,21 @@ const shopPanel = document.getElementById('shop-panel');
 const sfxOpen = document.getElementById('sfx-open');
 const sfxClose = document.getElementById('sfx-close');
 const zukanList = document.getElementById('zukan-list');
-
 const maxDogs = 6;
 const bottomLandHeight = 100;
 
-let dogData = [];
-let weightedDogs = [];
-let spawnedDogs = [];
-let caughtDogsMap = {};
-let currentDog = null;  // ★クリックされた犬を記憶
+let dogData = [], weightedDogs = [], spawnedDogs = [], caughtDogsMap = {}, currentDog = null;
 
-// 画面向きチェック
 function checkOrientation() {
-  if (window.matchMedia("(orientation: portrait)").matches) {
-    orientationWarning.style.display = 'flex';
-    document.body.style.overflow = 'hidden';
-  } else {
-    orientationWarning.style.display = 'none';
-    document.body.style.overflow = 'auto';
-  }
+  const portrait = window.matchMedia("(orientation: portrait)").matches;
+  orientationWarning.style.display = portrait ? 'flex' : 'none';
+  document.body.style.overflow = portrait ? 'hidden' : 'auto';
 }
 
-// BGM初回クリック再生
 document.body.addEventListener('click', () => {
   if (bgm.paused) bgm.play().catch(() => {});
 }, { once: true });
 
-// パネルの開閉処理
 function togglePanel(panel) {
   const isOpen = panel.style.display === 'block';
   if (isOpen) {
@@ -52,100 +39,79 @@ function togglePanel(panel) {
     sfxOpen.play().catch(() => {});
   }
 }
-zukanBtn.addEventListener('click', () => togglePanel(zukanPanel));
-shopBtn.addEventListener('click', () => togglePanel(shopPanel));
 
-// 図鑑更新表示
+zukanBtn.onclick = () => togglePanel(zukanPanel);
+shopBtn.onclick = () => togglePanel(shopPanel);
+
 function updateZukan() {
   zukanList.innerHTML = '';
-  for (const dogName in caughtDogsMap) {
-    const dog = caughtDogsMap[dogName];
+  Object.values(caughtDogsMap).forEach(dog => {
     const div = document.createElement('div');
     div.textContent = dog.name;
-    div.style.cursor = 'pointer';
-    div.style.border = '1px solid #ccc';
-    div.style.margin = '5px';
-    div.style.padding = '5px';
-    div.addEventListener('click', () => alert(dog.description));
+    div.style.cssText = 'cursor:pointer;border:1px solid #ccc;margin:5px;padding:5px;';
+    div.onclick = () => alert(dog.description);
     zukanList.appendChild(div);
-  }
-}
-
-// 重み付き配列作成
-function createWeightedDogs(dogs) {
-  const weighted = [];
-  dogs.forEach(dog => {
-    const times = Math.max(1, Math.round(100 * dog.probability));
-    for (let i = 0; i < times; i++) {
-      weighted.push(dog);
-    }
   });
-  return weighted;
 }
 
-// 犬をスポーン・移動
+function createWeightedDogs(dogs) {
+  return dogs.flatMap(dog => Array(Math.max(1, Math.round(dog.probability * 100))).fill(dog));
+}
+
 function spawnDogs() {
   waterArea.innerHTML = '';
   spawnedDogs = [];
   const isMobile = window.innerWidth <= 600;
   const dogSize = isMobile ? 50 : 70;
+  const maxX = waterArea.clientWidth - dogSize;
+  const maxY = waterArea.clientHeight - bottomLandHeight - dogSize;
 
   for (let i = 0; i < maxDogs; i++) {
     const dog = weightedDogs[Math.floor(Math.random() * weightedDogs.length)];
-
     const img = document.createElement('img');
     img.src = dog.image;
     img.alt = dog.name;
     img.title = `${dog.name}（${dog.rarity}）\n${dog.description}`;
     img.className = 'dog';
-    img.style.position = 'absolute';
-    img.style.width = `${dogSize}px`;
-    img.style.height = `${dogSize}px`;
+    Object.assign(img.style, {
+      position: 'absolute',
+      width: dogSize + 'px',
+      height: 'auto',
+      pointerEvents: 'auto',
+      cursor: 'pointer',
+      left: `${Math.random() * maxX}px`,
+      top: `${Math.random() * maxY}px`
+    });
 
-    const maxX = waterArea.clientWidth - dogSize;
-    const maxY = waterArea.clientHeight - bottomLandHeight - dogSize;
+    let posX = parseFloat(img.style.left), posY = parseFloat(img.style.top);
+    let vx = (Math.random() * 2 - 1) * 0.5, vy = (Math.random() * 2 - 1) * 0.5;
 
-    let posX = Math.random() * maxX;
-    let posY = Math.random() * maxY;
-    img.style.left = `${posX}px`;
-    img.style.top = `${posY}px`;
-
-    let vx = (Math.random() * 2 - 1) * 0.5;
-    let vy = (Math.random() * 2 - 1) * 0.5;
-
-    function move() {
-      posX += vx;
-      posY += vy;
+    (function move() {
+      posX += vx; posY += vy;
       if (posX < 0 || posX > maxX) vx = -vx;
       if (posY < 0 || posY > maxY) vy = -vy;
-      img.style.left = Math.max(0, Math.min(maxX, posX)) + 'px';
-      img.style.top = Math.max(0, Math.min(maxY, posY)) + 'px';
+      img.style.left = Math.min(Math.max(posX, 0), maxX) + 'px';
+      img.style.top = Math.min(Math.max(posY, 0), maxY) + 'px';
       requestAnimationFrame(move);
-    }
-    move();
+    })();
 
-    // ★ クリックで釣り開始（犬を渡す）
-    img.addEventListener('click', () => {
+    img.onclick = () => {
       currentDog = dog;
       startFishing();
-    });
+    };
 
     waterArea.appendChild(img);
     spawnedDogs.push({ img, dog });
   }
 }
 
-// 釣りミニゲーム起動
 function startFishing() {
   const fishingUI = document.getElementById('fishing-ui');
-  const fishingResult = document.getElementById('fishing-result');
-  const pointer = document.getElementById('pointer');
+  document.getElementById('fishing-result').textContent = '';
+  document.getElementById('pointer').style.animationPlayState = 'running';
   fishingUI.style.display = 'block';
-  fishingResult.textContent = '';
-  pointer.style.animationPlayState = 'running';
 }
 
-// 釣り成功判定＆図鑑登録
 function stopFishing() {
   const fishingUI = document.getElementById('fishing-ui');
   const fishingResult = document.getElementById('fishing-result');
@@ -153,12 +119,12 @@ function stopFishing() {
   const targetZone = document.getElementById('target-zone');
 
   pointer.style.animationPlayState = 'paused';
-  const pointerRect = pointer.getBoundingClientRect();
-  const targetRect = targetZone.getBoundingClientRect();
 
-  if (pointerRect.left >= targetRect.left && pointerRect.right <= targetRect.right) {
+  const pRect = pointer.getBoundingClientRect();
+  const tRect = targetZone.getBoundingClientRect();
+
+  if (pRect.left >= tRect.left && pRect.right <= tRect.right) {
     fishingResult.textContent = '🎯 ヒット！犬が釣れた！';
-
     if (currentDog && !caughtDogsMap[currentDog.name]) {
       caughtDogsMap[currentDog.name] = currentDog;
       updateZukan();
@@ -174,13 +140,10 @@ function stopFishing() {
   }, 1500);
 }
 
-// 釣りUIのリールボタンにイベント追加
-document.getElementById('reel-button').addEventListener('click', stopFishing);
+document.getElementById('reel-button').onclick = stopFishing;
 
-// 初期化
 window.addEventListener('load', () => {
   checkOrientation();
-
   fetch('dog.json')
     .then(res => res.json())
     .then(data => {
@@ -188,7 +151,7 @@ window.addEventListener('load', () => {
       weightedDogs = createWeightedDogs(dogData);
       spawnDogs();
     })
-    .catch(err => console.error('dog.json 読み込みエラー:', err));
+    .catch(console.error);
 });
 window.addEventListener('resize', checkOrientation);
 window.addEventListener('orientationchange', checkOrientation);
