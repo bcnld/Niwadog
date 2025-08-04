@@ -17,6 +17,7 @@ let dogData = [];
 let weightedDogs = [];
 let spawnedDogs = [];
 let caughtDogsMap = {};
+let currentDog = null;  // ★クリックされた犬を記憶
 
 // 画面向きチェック
 function checkOrientation() {
@@ -123,10 +124,10 @@ function spawnDogs() {
     }
     move();
 
-    // クリックで釣り開始
+    // ★ クリックで釣り開始（犬を渡す）
     img.addEventListener('click', () => {
+      currentDog = dog;
       startFishing();
-      // 釣る対象の犬を保存したい場合はここでセットしてください
     });
 
     waterArea.appendChild(img);
@@ -158,12 +159,8 @@ function stopFishing() {
   if (pointerRect.left >= targetRect.left && pointerRect.right <= targetRect.right) {
     fishingResult.textContent = '🎯 ヒット！犬が釣れた！';
 
-    if (spawnedDogs.length === 0) return;
-    const caughtIndex = Math.floor(Math.random() * spawnedDogs.length);
-    const caughtDog = spawnedDogs[caughtIndex].dog;
-
-    if (!caughtDogsMap[caughtDog.name]) {
-      caughtDogsMap[caughtDog.name] = caughtDog;
+    if (currentDog && !caughtDogsMap[currentDog.name]) {
+      caughtDogsMap[currentDog.name] = currentDog;
       updateZukan();
     }
   } else {
@@ -173,6 +170,7 @@ function stopFishing() {
   setTimeout(() => {
     fishingUI.style.display = 'none';
     pointer.style.animationPlayState = 'running';
+    currentDog = null;
   }, 1500);
 }
 
