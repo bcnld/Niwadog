@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no" />
-  <title>いもんだ、にわとりでしこったことがバレるぐらい</title>
+  <title>安いもんだ、にわとりでしこったことがバレるぐらい</title>
   <style>
     html, body {
       margin: 0;
@@ -184,6 +184,72 @@
       0% { left: 0%; }
       100% { left: 100%; }
     }
+
+    /* 図鑑リスト */
+    #zukan-list {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      margin-top: 10px;
+    }
+
+    .zukan-item {
+      width: 70px;
+      cursor: pointer;
+      border: 1px solid #ccc;
+      padding: 5px;
+      text-align: center;
+      background: #f9f9f9;
+      border-radius: 5px;
+      transition: background 0.3s;
+    }
+
+    .zukan-item:hover {
+      background: #d1f0d1;
+    }
+
+    .zukan-item img {
+      width: 100%;
+      height: auto;
+      border-radius: 5px;
+    }
+
+    /* 詳細パネル */
+    #detail-panel {
+      display: none;
+      position: fixed;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      width: 80vw;
+      max-width: 400px;
+      background: white;
+      border: 2px solid #444;
+      padding: 20px;
+      box-shadow: 0 0 20px rgba(0,0,0,0.5);
+      z-index: 1000;
+      overflow-y: auto;
+      max-height: 70vh;
+    }
+
+    #detail-panel h3 {
+      margin-top: 0;
+    }
+
+    #detail-close {
+      position: absolute;
+      top: 10px;
+      right: 10px;
+      cursor: pointer;
+      font-weight: bold;
+      font-size: 18px;
+      background: #eee;
+      border-radius: 50%;
+      width: 25px;
+      height: 25px;
+      line-height: 25px;
+      text-align: center;
+    }
   </style>
 </head>
 <body>
@@ -210,11 +276,19 @@
     <div id="zukan-panel" class="panel">
       <h2>図鑑</h2>
       <p>見つけた犬たちがここに表示されます。</p>
+      <div id="zukan-list"></div>
     </div>
     <div id="shop-panel" class="panel">
       <h2>ショップ</h2>
       <p>アイテムを買う機能などをここに。</p>
     </div>
+  </div>
+
+  <div id="detail-panel">
+    <div id="detail-close">×</div>
+    <h3 id="detail-name"></h3>
+    <img id="detail-image" src="" alt="" style="width: 100%; border-radius: 5px;" />
+    <p id="detail-description"></p>
   </div>
 
   <audio id="bgm" src="Sounds/bata.wav" loop></audio>
@@ -278,56 +352,63 @@
       }
     });
 
-    fetch('dog.json')
-      .then(res => res.json())
-      .then(dogs => {
-        const waterArea = document.getElementById('water-area');
-        const isMobile = window.innerWidth <= 600;
-        const dogSize = isMobile ? 50 : 70;
+    // 図鑑データ（釣れた犬リスト）
+    const caughtDogs = [];
 
-        dogs.forEach(dog => {
-          const dogElem = document.createElement('img');
-          dogElem.src = dog.image;
-          dogElem.alt = dog.name;
-          dogElem.classList.add('dog');
-          dogElem.style.width = `${dogSize}px`;
+    const zukanList = document.getElementById('zukan-list');
+    const detailPanel = document.getElementById('detail-panel');
+    const detailClose = document.getElementById('detail-close');
+    const detailName = document.getElementById('detail-name');
+    const detailImage = document.getElementById('detail-image');
+    const detailDescription = document.getElementById('detail-description');
 
-          let x = Math.random() * (waterArea.clientWidth - dogSize);
-          let y = Math.random() * (waterArea.clientHeight - dogSize);
-          dogElem.style.left = `${x}px`;
-          dogElem.style.top = `${y}px`;
-
-          waterArea.appendChild(dogElem);
-
-          setInterval(() => {
-            x = Math.random() * (waterArea.clientWidth - dogSize);
-            y = Math.random() * (waterArea.clientHeight - dogSize);
-            dogElem.style.left = `${x}px`;
-            dogElem.style.top = `${y}px`;
-          }, 3000 + Math.random() * 3000);
+    function updateZukan() {
+      zukanList.innerHTML = '';
+      caughtDogs.forEach(dog => {
+        const item = document.createElement('div');
+        item.classList.add('zukan-item');
+        item.innerHTML = `<img src="${dog.src}" alt="${dog.alt}" /><div>${dog.alt}</div>`;
+        item.addEventListener('click', () => {
+          showDetail(dog);
         });
-      })
-      .catch(err => {
-        console.error('dog.jsonの読み込みに失敗しました:', err);
+        zukanList.appendChild(item);
       });
+    }
 
+    function showDetail(dog) {
+      detailName.textContent = dog.alt;
+      detailImage.src = dog.src;
+      detailImage.alt = dog.alt;
+      detailDescription.textContent = dog.description || '詳細情報はありません。';
+      detailPanel.style.display = 'block';
+    }
+
+    detailClose.addEventListener('click', () => {
+      detailPanel.style.display = 'none';
+    });
+
+    // 釣りUI関連
     const fishingUI = document.getElementById('fishing-ui');
     const reelButton = document.getElementById('reel-button');
     const pointer = document.getElementById('pointer');
     const targetZone = document.getElementById('target-zone');
     const resultText = document.getElementById('fishing-result');
+    let currentFishingDog = null;
 
-    function showFishingUI() {
+    function showFishingUI(dog) {
       fishingUI.style.display = 'block';
       resultText.textContent = '';
       pointer.style.animationPlayState = 'running';
+      currentFishingDog = dog;
     }
 
     reelButton.addEventListener('click', () => {
       pointer.style.animationPlayState = 'paused';
+
       const pointerRect = pointer.getBoundingClientRect();
       const targetRect = targetZone.getBoundingClientRect();
 
+      let isHit = false;
       if (pointerRect.left >= targetRect.left && pointerRect.right <= targetRect.right) {
         resultText.textContent = '🎯 ヒット！犬が釣れた！';
       } else {
@@ -346,4 +427,5 @@
   </script>
 </body>
 </html>
+
 
