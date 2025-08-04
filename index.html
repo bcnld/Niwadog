@@ -99,6 +99,8 @@
 </head>
 <body>
 
+  <div id="water-area"></div>
+
   <div id="orientation-warning">
     <img src="images/dog.gif" alt="横向きにしてください" />
     <p>横向きにしないと鶏があなたのケツを掘りに行きます</p>
@@ -136,9 +138,11 @@
   <audio id="bgm" src="Sounds/bata.wav" loop></audio>
   <audio id="sfx-open" src="Sounds/open.mp3"></audio>
   <audio id="sfx-close" src="Sounds/close.mp3"></audio>
-
+  
 <script>
   // 画面向きチェック
+  <script src="script.js">
+  
   function checkOrientation() {
     if(window.matchMedia("(orientation: portrait)").matches){
       document.getElementById('orientation-warning').style.display = 'flex';
@@ -247,6 +251,7 @@
 
 </body>
 </html>
+
 
 
 
