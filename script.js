@@ -119,18 +119,6 @@ function spawnDogs() {
     }
     move();
 
-    // クリックで釣り開始
-    img.addEventListener('click', () => {
-      if (isFishing) return;
-      isFishing = true;
-      startFishing(img, dog);
-    });
-
-    waterArea.appendChild(img);
-    spawnedDogs.push({ img, dog });
-  }
-}
-
 // 釣りミニゲーム起動
 function startFishing(img, dog) {
   fishingUI.style.display = 'block';
@@ -193,3 +181,4 @@ window.addEventListener('load', () => {
     })
     .catch(err => console.error('dog.json 読み込みエラー:', err));
 });
+
