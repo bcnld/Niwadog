@@ -6,23 +6,7 @@ body, html {
   overflow: hidden;
   font-family: Arial, sans-serif;
   background: #a0d8f7; /* 空っぽの背景例 */
-}
 
-/* 画面向き警告表示用 */
-#orientation-warning {
-  display: none;
-  position: fixed;
-  top: 0; left: 0;
-  width: 100vw; height: 100vh;
-  background: rgba(0,0,0,0.8);
-  color: white;
-  font-size: 1.5rem;
-  align-items: center;
-  justify-content: center;
-  text-align: center;
-  z-index: 1000;
-  padding: 20px;
-  box-sizing: border-box;
 }
 
 /* メインゲーム画面のコンテナ */
@@ -215,4 +199,5 @@ button:hover {
 }
 
 /* 音量調整などのUIは必要に応じて追加してください */
+
 
