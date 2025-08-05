@@ -126,49 +126,50 @@ function spawnDogs() {
 }
 
 // 釣り開始
+let angle = 0;
+let spinSpeed = 0;
+let spinning = false;
+let animationFrameId;
+let hitZoneStart = 0;
+let hitZoneEnd = 0;
+
 function startFishing() {
   isFishing = true;
   fishingResult.textContent = '';
   fishingUI.style.display = 'block';
+
+  // ランダムな当たり範囲を設定（0.3rad分）
+  const randomCenter = Math.random() * 2 * Math.PI;
+  const zoneSize = Math.PI / 5; // 約36度
+  hitZoneStart = randomCenter - zoneSize / 2;
+  hitZoneEnd = randomCenter + zoneSize / 2;
+
   angle = 0;
   spinSpeed = 0.25 + Math.random() * 0.25;
   spinning = true;
 
-  // 🎯 当たりゾーンの開始位置（0〜2πのランダム）
-  hitZoneStart = Math.random() * 2 * Math.PI;
-
-  // 当たりゾーンの長さを固定（例：0.3ラジアン ≒ 17度）
-  const hitZoneSize = 0.3;
-  hitZoneEnd = hitZoneStart + hitZoneSize;
-
+  cancelAnimationFrame(animationFrameId); // 前回のループ停止
   drawRoulette();
 }
 
-// リールボタン
-reelButton.addEventListener('click', () => {
-  if (!spinning || slowingDown) return;
-  slowingDown = true;
-});
-
-// ルーレット描画とスローダウン処理
 function drawRoulette() {
   ctx.clearRect(0, 0, canvas.width, canvas.height);
   const center = canvas.width / 2;
 
-  // 背景
+  // 背景円
   ctx.beginPath();
   ctx.arc(center, center, center - 10, 0, 2 * Math.PI);
   ctx.fillStyle = '#eef';
   ctx.fill();
 
-  // ヒットゾーン（赤）
+  // ヒットゾーン
   ctx.beginPath();
   ctx.moveTo(center, center);
   ctx.arc(center, center, center - 10, hitZoneStart, hitZoneEnd);
   ctx.fillStyle = '#f00';
   ctx.fill();
 
-  // 回転針
+  // 針
   const needleLength = center - 20;
   ctx.beginPath();
   ctx.moveTo(center, center);
@@ -182,35 +183,51 @@ function drawRoulette() {
 
   if (spinning) {
     angle += spinSpeed;
-
-    if (slowingDown) {
-      spinSpeed *= 0.98;
-      if (spinSpeed < 0.01) {
-        spinning = false;
-        finalizeFishing();
-        return;
-      }
-    }
-
-    requestAnimationFrame(drawRoulette);
+    animationFrameId = requestAnimationFrame(drawRoulette);
   }
 }
 
-// 釣果判定
-function finalizeFishing() {
-  const hitZoneStart = Math.PI * 1.2;
-  const hitZoneEnd = Math.PI * 1.5;
+// 減速処理
+function stopRoulette() {
+  function decelerate() {
+    if (spinSpeed > 0.01) {
+      spinSpeed *= 0.97; // 減速
+      angle += spinSpeed;
+      drawRoulette();
+      animationFrameId = requestAnimationFrame(decelerate);
+    } else {
+      spinning = false;
+      checkHit();
+    }
+  }
+  cancelAnimationFrame(animationFrameId);
+  decelerate();
+}
+
+// リールボタン押下
+reelButton.addEventListener('click', () => {
+  if (!spinning) return;
+  stopRoulette();
+});
+
+// 当たり判定
+function checkHit() {
   const normalizedAngle = angle % (2 * Math.PI);
 
-  if (normalizedAngle >= hitZoneStart && normalizedAngle <= hitZoneEnd) {
-    fishingResult.textContent = '🎯 ヒット！犬を拉致れた！';
+  const isHit =
+    hitZoneStart < hitZoneEnd
+      ? normalizedAngle >= hitZoneStart && normalizedAngle <= hitZoneEnd
+      : normalizedAngle >= hitZoneStart || normalizedAngle <= hitZoneEnd;
+
+  if (isHit) {
+    fishingResult.textContent = '🎯 ヒット！犬が釣れた！';
     if (!caughtDogsMap[selectedDog.dog.name]) {
       caughtDogsMap[selectedDog.dog.name] = selectedDog.dog;
       updateZukan();
     }
     selectedDog.img.remove();
   } else {
-    fishingResult.textContent = '💨 逃げられた…';
+    fishingResult.textContent = '💨 のがした…';
     selectedDog.img.remove();
   }
 
@@ -230,5 +247,6 @@ window.addEventListener('load', () => {
       spawnDogs();
     });
 });
+
 
 
