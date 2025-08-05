@@ -168,10 +168,6 @@ let selectedDog = null;
 // 釣りUIのリールボタンにイベント追加
 reelButton.addEventListener('click', stopFishing);
 
-// 初期化
-window.addEventListener('load', () => {
-  checkOrientation();
-
   fetch('dog.json')
     .then(res => res.json())
     .then(data => {
@@ -181,4 +177,5 @@ window.addEventListener('load', () => {
     })
     .catch(err => console.error('dog.json 読み込みエラー:', err));
 });
+
 
