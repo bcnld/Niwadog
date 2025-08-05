@@ -64,10 +64,6 @@
     #roulette-canvas {
       display: block;
       margin: 0 auto;
-      background-color: #fff;
-      border-radius: 50%;
-      border: 2px solid #444;
-      box-shadow: 0 0 8px rgba(0,0,0,0.3);
     }
 
     #reel-button {
@@ -148,7 +144,8 @@
   <div id="fishing-ui">
     <h2>犬乱獲</h2>
     <div id="reel-area">
-      <canvas id="roulette-canvas" width="300" height="300"></canvas>
+      <div id="pointer"></div>
+      <div id="target-zone"></div>
     </div>
     <button id="reel-button">リールを止める</button>
     <div id="fishing-result"></div>
