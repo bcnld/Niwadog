@@ -127,13 +127,19 @@ function spawnDogs() {
 function startFishing() {
   fishingActive = true;
   fishingResult.textContent = '';
+
+  // アニメーションをリセット（高速化防止）
   pointer.style.animation = 'none';
-  void pointer.offsetWidth;
+  void pointer.offsetWidth; // 強制再描画
   pointer.style.animation = 'movePointer 2s linear infinite';
+
   fishingUI.style.display = 'block';
 }
 
 function stopFishing() {
+  if (!fishingActive) return;
+  fishingActive = false;
+
   pointer.style.animation = 'none';
   const pRect = pointer.getBoundingClientRect();
   const tRect = targetZone.getBoundingClientRect();
@@ -153,7 +159,6 @@ function stopFishing() {
 
   setTimeout(() => {
     fishingUI.style.display = 'none';
-    fishingActive = false;
     currentDog = null;
   }, 1500);
 }
