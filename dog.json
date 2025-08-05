@@ -1,5 +1,6 @@
 [
   {
+    "number": 1,
     "name": "ノーマル犬",
     "image": "images/dog.png",
     "probability": 0.6,
@@ -9,6 +10,7 @@
     "description": "いつもの犬。"
   },
   {
+    "number": 2,
     "name": "普通の犬",
     "image": "images/dogc.png",
     "probability": 0.4,
@@ -18,6 +20,7 @@
     "description": "灰色のハスキー犬。"
   },
   {
+    "number": 3,
     "name": "多分普通の犬",
     "image": "images/doga.png",
     "probability": 0.3,
@@ -27,6 +30,7 @@
     "description": "緑がかった毛並みが特徴の犬。"
   },
   {
+    "number": 4,
     "name": "レア犬",
     "image": "images/dogr.png",
     "probability": 0.2,
@@ -36,6 +40,7 @@
     "description": "顔色が悪い犬。"
   },
   {
+    "number": 5,
     "name": "珍しい犬",
     "image": "images/doge.png",
     "probability": 0.1,
@@ -45,6 +50,7 @@
     "description": "風呂キャンで紫のオーラを放っている犬。"
   },
   {
+    "number": 6,
     "name": "すごい犬",
     "image": "images/dogre.png",
     "probability": 0.05,
@@ -54,6 +60,7 @@
     "description": "光の速さで腰を振ることで光っている犬。"
   },
   {
+    "number": 7,
     "name": "紫犬",
     "image": "images/dogpa.png",
     "probability": 0.01,
@@ -63,6 +70,7 @@
     "description": "風呂キャン初心者の犬。"
   },
   {
+    "number": 8,
     "name": "赤い犬",
     "image": "images/dogred.png",
     "probability": 0.1,
@@ -72,6 +80,7 @@
     "description": "生理で血が飛び出た犬。"
   },
   {
+    "number": 9,
     "name": "青い犬",
     "image": "images/dogblue.png",
     "probability": 0.2,
@@ -81,6 +90,7 @@
     "description": "ブルーチーズを食いすぎた犬。"
   },
   {
+    "number": 10,
     "name": "気が狂った犬",
     "image": "images/dogcraz.png",
     "probability": 1.0,
@@ -90,6 +100,7 @@
     "description": "ホモによって犯された犬。"
   },
   {
+    "number": 11,
     "name": "金犬",
     "image": "images/doggo.png",
     "probability": 0.02,
@@ -99,6 +110,7 @@
     "description": "金魂を食べたら金色の毛になった金色の犬。"
   },
   {
+    "number": 12,
     "name": "スーパー犬",
     "image": "images/dogsu.png",
     "probability": 0.006,
@@ -108,6 +120,7 @@
     "description": "ホモから逃げ切った実績のある犬"
   },
   {
+    "number": 13,
     "name": "ウルトラ犬",
     "image": "images/dogur.png",
     "probability": 0.004,
@@ -117,6 +130,7 @@
     "description": "伝説の毛穴ウルバリンから逃げ切った実績がある犬。"
   },
   {
+    "number": 14,
     "name": "毛穴ウルバリン犬",
     "image": "images/dogku.png",
     "probability": 0.08,
@@ -126,6 +140,7 @@
     "description": "毛穴ウルバリン症にかかってしまった犬。"
   },
   {
+    "number": 15,
     "name": "鶏犬",
     "image": "images/dogkfc.png",
     "probability": 0.0003,
@@ -135,6 +150,7 @@
     "description": "何人もの人たちをBANさせた犬。"
   },
   {
+    "number": 16,
     "name": "精子犬",
     "image": "images/dogsc.png",
     "probability": 0.08,
@@ -144,6 +160,7 @@
     "description": "犬の性欲を満たすために出てきてしまった犬。"
   },
   {
+    "number": 17,
     "name": "オタク犬",
     "image": "images/dogot.png",
     "probability": 0.1,
@@ -153,6 +170,7 @@
     "description": "きもくてくさい犬。"
   },
   {
+    "number": 18,
     "name": "受精犬",
     "image": "images/dogtg.png",
     "probability": 0.0,
@@ -162,6 +180,7 @@
     "description": "受精した瞬間に取り出された犬。"
   },
   {
+    "number": 19,
     "name": "コンドーム犬",
     "image": "images/doggn.png",
     "probability": 0.05,
@@ -171,6 +190,7 @@
     "description": "やり捨てされた犬。"
   },
   {
+    "number": 20,
     "name": "眼鏡族犬",
     "image": "images/dognb.png",
     "probability": 0.01,
@@ -180,6 +200,7 @@
     "description": "生まれた瞬間眼鏡をかけてる民族犬。"
   },
   {
+    "number": 21,
     "name": "マッスル犬",
     "image": "images/dogmdm.png",
     "probability": 0.006,
@@ -189,6 +210,7 @@
     "description": "素犬腕相撲最強。"
   },
   {
+    "number": 22,
     "name": "ネズミ犬",
     "image": "images/dognm.png",
     "probability": 0.03,
@@ -198,6 +220,7 @@
     "description": "かつて飲食店でお風呂に入った犬。"
   },
   {
+    "number": 23,
     "name": "ハスキー犬",
     "image": "images/doghk.png",
     "probability": 0.0007,
@@ -207,6 +230,7 @@
     "description": "AV最多勝に選ばれた犬。"
   },
   {
+    "number": 24,
     "name": "包茎犬",
     "image": "images/dogho.png",
     "probability": 0.1,
@@ -216,6 +240,7 @@
     "description": "精子を出しても皮に吸収されて受精させれない犬。"
   },
   {
+    "number": 25,
     "name": "スーパーウルトラ犬",
     "image": "images/dogsr.png",
     "probability": 0.00003,
@@ -225,6 +250,7 @@
     "description": "生まれつきの才能を持った犬。"
   },
   {
+    "number": 26,
     "name": "面白すぎて、い↑ぬ↓",
     "image": "images/dogin.png",
     "probability": 0.1,
@@ -234,6 +260,7 @@
     "description": "面白くないノリをする犬。"
   },
   {
+    "number": 27,
     "name": "寄生虫犬",
     "image": "images/dogks.png",
     "probability": 0.003,
@@ -243,6 +270,7 @@
     "description": "けつのあなに何十万匹もの寄生虫を飼っている犬。"
   },
   {
+    "number": 28,
     "name": "おしっこ犬",
     "image": "images/dogos.png",
     "probability": 0.15,
@@ -252,6 +280,7 @@
     "description": "通話をしていることを忘れて放尿してしまった犬。"
   },
   {
+    "number": 29,
     "name": "黒ひげ犬",
     "image": "images/dogkh.png",
     "probability": 0.03,
@@ -261,6 +290,7 @@
     "description": "犬の夢は終わらねぇ！...言いながらどんぐりの虫を食べる犬。"
   },
   {
+    "number": 30,
     "name": "うんちびり犬",
     "image": "images/dogut.png",
     "probability": 0.15,
@@ -270,4 +300,5 @@
     "description": "急に話しかけられてうんこをちびってしまった犬"
   }
 ]
+
 
