@@ -153,8 +153,8 @@ function startFishing() {
   fishingUI.style.display = 'block';
 
   // 例：当たり範囲を 60度 に設定（毎回ランダムにしたい場合はここを動的に変える）
-let hitZoneStart = Math.random() * 2 * Math.PI;
-let hitZoneEnd = hitZoneStart + Math.PI / 6; // 約60度
+  hitZoneStart = Math.random() * 2 * Math.PI;
+  hitZoneEnd = hitZoneStart + Math.PI / 6; // 約60度
 
   angle = 0;
   spinSpeed = 0.3; // 一定値でスタート
@@ -240,6 +240,7 @@ function checkHit() {
     isFishing = false;
   }, 1500);
 }
+
 
 
 
