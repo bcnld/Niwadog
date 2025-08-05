@@ -1,6 +1,5 @@
 // 要素取得
 const waterArea = document.getElementById('water-area');
-const orientationWarning = document.getElementById('orientation-warning');
 const bgm = document.getElementById('bgm');
 const zukanBtn = document.getElementById('zukan-btn');
 const shopBtn = document.getElementById('shop-btn');
@@ -22,14 +21,17 @@ let dogData = [];
 let weightedDogs = [];
 let spawnedDogs = [];
 let caughtDogsMap = {};
-let isFishing = false; // フラグを追加して釣り中は他の犬をクリックできないように
+let selectedDog = null;
+let isFishing = false;
 
-// BGM初回クリック再生
+// 初回クリックでBGM再生
 document.body.addEventListener('click', () => {
-  if (bgm.paused) bgm.play().catch(() => {});
+  if (bgm.paused) {
+    bgm.play().catch(() => {});
+  }
 }, { once: true });
 
-// パネルの開閉処理
+// パネル切替
 function togglePanel(panel) {
   const isOpen = panel.style.display === 'block';
   if (isOpen) {
@@ -49,7 +51,7 @@ function togglePanel(panel) {
 zukanBtn.addEventListener('click', () => togglePanel(zukanPanel));
 shopBtn.addEventListener('click', () => togglePanel(shopPanel));
 
-// 図鑑更新表示
+// 図鑑表示更新
 function updateZukan() {
   zukanList.innerHTML = '';
   for (const dogName in caughtDogsMap) {
@@ -65,7 +67,7 @@ function updateZukan() {
   }
 }
 
-// 重み付き配列作成
+// 重み付きリスト作成
 function createWeightedDogs(dogs) {
   const weighted = [];
   dogs.forEach(dog => {
@@ -77,29 +79,26 @@ function createWeightedDogs(dogs) {
   return weighted;
 }
 
-// 犬をスポーン・移動
+// 犬出現処理
 function spawnDogs() {
   waterArea.innerHTML = '';
   spawnedDogs = [];
+
   const isMobile = window.innerWidth <= 600;
   const dogSize = isMobile ? 50 : 70;
 
   for (let i = 0; i < maxDogs; i++) {
     const dog = weightedDogs[Math.floor(Math.random() * weightedDogs.length)];
-
     const img = document.createElement('img');
     img.src = dog.image;
     img.alt = dog.name;
     img.title = `${dog.name}（${dog.rarity}）\n${dog.description}`;
     img.className = 'dog';
-    img.style.position = 'absolute';
     img.style.width = `${dogSize}px`;
     img.style.height = `${dogSize}px`;
-    img.style.pointerEvents = 'auto';
 
     const maxX = waterArea.clientWidth - dogSize;
     const maxY = waterArea.clientHeight - bottomLandHeight - dogSize;
-
     let posX = Math.random() * maxX;
     let posY = Math.random() * maxY;
     img.style.left = `${posX}px`;
@@ -109,6 +108,7 @@ function spawnDogs() {
     let vy = (Math.random() * 2 - 1) * 0.5;
 
     function move() {
+      if (!img.parentElement) return; // 削除済みなら移動停止
       posX += vx;
       posY += vy;
       if (posX < 0 || posX > maxX) vx = -vx;
@@ -119,18 +119,27 @@ function spawnDogs() {
     }
     move();
 
-// 釣りミニゲーム起動
+    img.addEventListener('click', () => {
+      if (isFishing) return;
+      isFishing = true;
+      startFishing(img, dog);
+    });
+
+    waterArea.appendChild(img);
+    spawnedDogs.push(img);
+  }
+}
+
+// 釣り開始処理
 function startFishing(img, dog) {
   fishingUI.style.display = 'block';
   fishingResult.textContent = '';
   pointer.style.animation = 'movePointer 2s linear infinite';
   pointer.style.animationPlayState = 'running';
-
-  // 釣りUI中にクリックされた犬は非表示にして保持
   selectedDog = { img, dog };
 }
 
-// 釣り成功判定＆図鑑登録
+// 釣り停止（成功判定）
 function stopFishing() {
   pointer.style.animationPlayState = 'paused';
   const pointerRect = pointer.getBoundingClientRect();
@@ -144,13 +153,11 @@ function stopFishing() {
       updateZukan();
     }
 
-    // 成功した場合は犬を消す
     if (selectedDog) {
       selectedDog.img.remove();
     }
   } else {
     fishingResult.textContent = '💨 のがした…';
-    // 外れても犬は消す
     if (selectedDog) {
       selectedDog.img.remove();
     }
@@ -159,15 +166,15 @@ function stopFishing() {
   setTimeout(() => {
     fishingUI.style.display = 'none';
     pointer.style.animationPlayState = 'running';
+    selectedDog = null;
     isFishing = false;
   }, 1500);
 }
 
-let selectedDog = null;
-
-// 釣りUIのリールボタンにイベント追加
+// リールボタン押下イベント
 reelButton.addEventListener('click', stopFishing);
 
+// 初期化：犬データ取得＆出現
 window.addEventListener('load', () => {
   fetch('dog.json')
     .then(res => res.json())
@@ -178,6 +185,3 @@ window.addEventListener('load', () => {
     })
     .catch(err => console.error('dog.json 読み込みエラー:', err));
 });
-
-
-
