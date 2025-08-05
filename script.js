@@ -12,6 +12,8 @@ const fishingResult = document.getElementById('fishing-result');
 const pointer = document.getElementById('pointer');
 const targetZone = document.getElementById('target-zone');
 const reelButton = document.getElementById('reel-button');
+const canvas = document.getElementById('roulette-canvas');
+const ctx = canvas.getContext('2d');
 
 let dogData = [], weightedDogs = [], spawnedDogs = [];
 let caughtDogsMap = {};
@@ -202,3 +204,4 @@ window.addEventListener('load', () => {
       spawnDogs();
     });
 });
+
