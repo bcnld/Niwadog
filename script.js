@@ -24,17 +24,6 @@ let spawnedDogs = [];
 let caughtDogsMap = {};
 let isFishing = false; // フラグを追加して釣り中は他の犬をクリックできないように
 
-// 画面向きチェック
-function checkOrientation() {
-  if (window.matchMedia("(orientation: portrait)").matches) {
-    orientationWarning.style.display = 'flex';
-    document.body.style.overflow = 'hidden';
-  } else {
-    orientationWarning.style.display = 'none';
-    document.body.style.overflow = 'auto';
-  }
-}
-
 // BGM初回クリック再生
 document.body.addEventListener('click', () => {
   if (bgm.paused) bgm.play().catch(() => {});
@@ -204,6 +193,3 @@ window.addEventListener('load', () => {
     })
     .catch(err => console.error('dog.json 読み込みエラー:', err));
 });
-
-window.addEventListener('resize', checkOrientation);
-window.addEventListener('orientationchange', checkOrientation); 
