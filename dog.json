@@ -5,7 +5,7 @@
     "probability": 0.6,
     "catchRate": 1.0,
     "rarity": 1,
-    "price": 10
+    "price": 10,
     "description": "いつもの犬。"
   },
   {
@@ -14,7 +14,7 @@
     "probability": 0.4,
     "catchRate": 0.95,
     "rarity": 1,
-    "price": 10
+    "price": 10,
     "description": "灰色のハスキー犬。"
   },
   {
@@ -23,7 +23,7 @@
     "probability": 0.3,
     "catchRate": 0.70,
     "rarity": 2,
-    "price": 15
+    "price": 15,
     "description": "緑がかった毛並みが特徴の犬。"
   },
   {
@@ -32,7 +32,7 @@
     "probability": 0.2,
     "catchRate": 0.45,
     "rarity": 3,
-    "price": 20
+    "price": 20,
     "description": "顔色が悪い犬。"
   },
   {
@@ -41,7 +41,7 @@
     "probability": 0.1,
     "catchRate": 0.23,
     "rarity": 4,
-    "price": 30
+    "price": 30,
     "description": "風呂キャンで紫のオーラを放っている犬。"
   },
   {
@@ -50,7 +50,7 @@
     "probability": 0.05,
     "catchRate": 0.22,
     "rarity": 5,
-    "price": 40
+    "price": 40,
     "description": "光の速さで腰を振ることで光っている犬。"
   },
   {
@@ -59,7 +59,7 @@
     "probability": 0.01,
     "catchRate": 0.20,
     "rarity": 6,
-    "price": 50
+    "price": 50,
     "description": "風呂キャン初心者の犬。"
   },
   {
@@ -68,7 +68,7 @@
     "probability": 0.1,
     "catchRate": 0.38,
     "rarity": 4,
-    "price": 25
+    "price": 25,
     "description": "生理で血が飛び出た犬。"
   },
   {
@@ -77,7 +77,7 @@
     "probability": 0.2,
     "catchRate": 0.42,
     "rarity": 4,
-    "price": 25
+    "price": 25,
     "description": "ブルーチーズを食いすぎた犬。"
   },
   {
@@ -86,7 +86,7 @@
     "probability": 1.0,
     "catchRate": 0.1,
     "rarity": 2,
-    "price": 3
+    "price": 3,
     "description": "ホモによって犯された犬。"
   },
   {
@@ -95,7 +95,7 @@
     "probability": 0.02,
     "catchRate": 0.15,
     "rarity": 7,
-    "price": 75
+    "price": 75,
     "description": "金魂を食べたら金色の毛になった金色の犬。"
   },
   {
@@ -104,7 +104,7 @@
     "probability": 0.006,
     "catchRate": 0.005,
     "rarity": 7,
-    "price": 100
+    "price": 100,
     "description": "ホモから逃げ切った実績のある犬"
   },
   {
@@ -113,7 +113,7 @@
     "probability": 0.004,
     "catchRate": 0.00085,
     "rarity": 9,
-    "price": 150
+    "price": 150,
     "description": "伝説の毛穴ウルバリンから逃げ切った実績がある犬。"
   },
   {
@@ -122,7 +122,7 @@
     "probability": 0.08,
     "catchRate": 0.00001,
     "rarity": 1,
-    "price": 1
+    "price": 1,
     "description": "毛穴ウルバリン症にかかってしまった犬。"
   },
   {
@@ -131,7 +131,7 @@
     "probability": 0.0003,
     "catchRate": 0.00085,
     "rarity": 7,
-    "price": 125
+    "price": 125,
     "description": "何人もの人たちをBANさせた犬。"
   },
   {
@@ -140,7 +140,7 @@
     "probability": 0.08,
     "catchRate": 0.001,
     "rarity": 1,
-    "price": 20
+    "price": 20,
     "description": "犬の性欲を満たすために出てきてしまった犬。"
   },
   {
@@ -149,7 +149,7 @@
     "probability": 0.1,
     "catchRate": 0.05,
     "rarity": 1,
-    "price": 2
+    "price": 2,
     "description": "きもくてくさい犬。"
   },
   {
@@ -158,7 +158,7 @@
     "probability": 0.0,
     "catchRate": 0.001,
     "rarity": 1,
-    "price": 25
+    "price": 25,
     "description": "受精した瞬間に取り出された犬。"
   },
   {
@@ -167,7 +167,7 @@
     "probability": 0.05,
     "catchRate": 0.001,
     "rarity": 1,
-    "price": 15
+    "price": 15,
     "description": "やり捨てされた犬。"
   },
   {
@@ -176,7 +176,7 @@
     "probability": 0.01,
     "catchRate": 0.5,
     "rarity": 4,
-    "price": 55
+    "price": 55,
     "description": "生まれた瞬間眼鏡をかけてる民族犬。"
   },
   {
@@ -185,7 +185,7 @@
     "probability": 0.006,
     "catchRate": 0.3,
     "rarity": 6,
-    "price": 85
+    "price": 85,
     "description": "素犬腕相撲最強。"
   },
   {
@@ -194,7 +194,7 @@
     "probability": 0.03,
     "catchRate": 0.3,
     "rarity": 2,
-    "price": 30
+    "price": 30,
     "description": "かつて飲食店でお風呂に入った犬。"
   },
   {
@@ -203,7 +203,7 @@
     "probability": 0.0007,
     "catchRate": 0.003,
     "rarity": 9,
-    "price": 170
+    "price": 170,
     "description": "AV最多勝に選ばれた犬。"
   },
   {
@@ -212,7 +212,7 @@
     "probability": 0.1,
     "catchRate": 0.3,
     "rarity": 2,
-    "price": 30
+    "price": 30,
     "description": "精子を出しても皮に吸収されて受精させれない犬。"
   },
   {
@@ -221,7 +221,7 @@
     "probability": 0.00003,
     "catchRate": 0.003,
     "rarity": 10,
-    "price": 270
+    "price": 270,
     "description": "生まれつきの才能を持った犬。"
   },
   {
@@ -230,7 +230,7 @@
     "probability": 0.1,
     "catchRate": 0.3,
     "rarity": 1,
-    "price": 3
+    "price": 3,
     "description": "面白くないノリをする犬。"
   },
   {
@@ -239,7 +239,7 @@
     "probability": 0.003,
     "catchRate": 0.08,
     "rarity": 7,
-    "price": 80
+    "price": 80,
     "description": "けつのあなに何十万匹もの寄生虫を飼っている犬。"
   },
   {
@@ -248,7 +248,7 @@
     "probability": 0.15,
     "catchRate": 0.3,
     "rarity": 3,
-    "price": 40
+    "price": 40,
     "description": "通話をしていることを忘れて放尿してしまった犬。"
   },
   {
@@ -257,7 +257,7 @@
     "probability": 0.03,
     "catchRate": 0.3,
     "rarity": 5,
-    "price": 70
+    "price": 70,
     "description": "犬の夢は終わらねぇ！...言いながらどんぐりの虫を食べる犬。"
   },
   {
@@ -266,7 +266,8 @@
     "probability": 0.15,
     "catchRate": 0.3,
     "rarity": 3,
-    "price": 25
+    "price": 25,
     "description": "急に話しかけられてうんこをちびってしまった犬"
   }
 ]
+
