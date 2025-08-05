@@ -152,38 +152,43 @@ function startFishing() {
   fishingResult.textContent = '';
   fishingUI.style.display = 'block';
 
-  // ランダムな当たり範囲を設定（0.3rad分）
-  const randomCenter = Math.random() * 2 * Math.PI;
-  const zoneSize = Math.PI / 5; // 約36度
-  hitZoneStart = randomCenter - zoneSize / 2;
-  hitZoneEnd = randomCenter + zoneSize / 2;
+  // 例：当たり範囲を 60度 に設定（毎回ランダムにしたい場合はここを動的に変える）
+let hitZoneStart = Math.random() * 2 * Math.PI;
+let hitZoneEnd = hitZoneStart + Math.PI / 6; // 約60度
 
   angle = 0;
-  spinSpeed = 0.25 + Math.random() * 0.25;
+  spinSpeed = 0.3; // 一定値でスタート
   spinning = true;
+  decelerating = false;
 
-  cancelAnimationFrame(animationFrameId); // 前回のループ停止
   drawRoulette();
 }
 
+// リールボタン押下時に減速開始
+reelButton.addEventListener('click', () => {
+  if (!spinning || decelerating) return;
+  decelerating = true;
+});
+
+// 描画ループ
 function drawRoulette() {
   ctx.clearRect(0, 0, canvas.width, canvas.height);
   const center = canvas.width / 2;
 
-  // 背景円
+  // 背景サークル
   ctx.beginPath();
   ctx.arc(center, center, center - 10, 0, 2 * Math.PI);
   ctx.fillStyle = '#eef';
   ctx.fill();
 
-  // ヒットゾーン
+  // 当たりゾーン
   ctx.beginPath();
   ctx.moveTo(center, center);
   ctx.arc(center, center, center - 10, hitZoneStart, hitZoneEnd);
   ctx.fillStyle = '#f00';
   ctx.fill();
 
-  // 針
+  // 針の描画
   const needleLength = center - 20;
   ctx.beginPath();
   ctx.moveTo(center, center);
@@ -195,58 +200,30 @@ function drawRoulette() {
   ctx.lineWidth = 4;
   ctx.stroke();
 
+  // 角度更新
   if (spinning) {
-    if (isSlowingDown) {
-      // 減速処理（必ず速度は正の方向に0へ近づく）
-      spinSpeed = Math.sign(spinSpeed) * Math.max(0, Math.abs(spinSpeed) - 0.002);
+    angle += spinSpeed;
 
-      if (Math.abs(spinSpeed) < 0.001 && !stopCallbackCalled) {
-        stopCallbackCalled = true;
-        evaluateHit();
+    // 減速処理
+    if (decelerating) {
+      spinSpeed -= 0.005; // ゆっくり減速
+      if (spinSpeed <= 0) {
+        spinSpeed = 0;
+        spinning = false;
+        decelerating = false;
+        checkHit(); // 停止後に判定
+        return;
       }
     }
 
-    angle += spinSpeed;
     requestAnimationFrame(drawRoulette);
   }
 }
 
-// 減速して止める処理（reelButtonのイベントとstopRoulette）
-reelButton.addEventListener('click', () => {
-  if (!spinning || stopping) return;
-  stopping = true;
-  startDeceleration();
-});
-
-let stopping = false;
-
-function startDeceleration() {
-  function decelerate() {
-    if (spinSpeed > 0.005) {
-      spinSpeed *= 0.97; // 減速率（ゆっくり止める）
-      angle += spinSpeed;
-      drawRoulette();
-      requestAnimationFrame(decelerate);
-    } else {
-      spinSpeed = 0;
-      spinning = false;
-      stopping = false;
-      checkHit(); // 完全に止まってから判定
-    }
-  }
-  requestAnimationFrame(decelerate);
-}
-
-// 当たり判定
+// 当たり判定関数
 function checkHit() {
   const normalizedAngle = angle % (2 * Math.PI);
-
-  const isHit =
-    hitZoneStart < hitZoneEnd
-      ? normalizedAngle >= hitZoneStart && normalizedAngle <= hitZoneEnd
-      : normalizedAngle >= hitZoneStart || normalizedAngle <= hitZoneEnd;
-
-  if (isHit) {
+  if (normalizedAngle >= hitZoneStart && normalizedAngle <= hitZoneEnd) {
     fishingResult.textContent = '🎯 ヒット！犬が釣れた！';
     if (!caughtDogsMap[selectedDog.dog.name]) {
       caughtDogsMap[selectedDog.dog.name] = selectedDog.dog;
@@ -263,18 +240,6 @@ function checkHit() {
     isFishing = false;
   }, 1500);
 }
-
-// 犬データ読み込み
-window.addEventListener('load', () => {
-  fetch('dog.json')
-    .then(res => res.json())
-    .then(data => {
-      dogData = data;
-      weightedDogs = createWeightedDogs(dogData);
-      spawnDogs();
-    });
-});
-
 
 
 
