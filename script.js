@@ -182,28 +182,31 @@ function drawRoulette() {
   }
 }
 
-// 減速処理
-function stopRoulette() {
+// 減速して止める処理（reelButtonのイベントとstopRoulette）
+reelButton.addEventListener('click', () => {
+  if (!spinning || stopping) return;
+  stopping = true;
+  startDeceleration();
+});
+
+let stopping = false;
+
+function startDeceleration() {
   function decelerate() {
-    if (spinSpeed > 0.01) {
-      spinSpeed *= 0.97; // 減速
+    if (spinSpeed > 0.005) {
+      spinSpeed *= 0.97; // 減速率（ゆっくり止める）
       angle += spinSpeed;
       drawRoulette();
-      animationFrameId = requestAnimationFrame(decelerate);
+      requestAnimationFrame(decelerate);
     } else {
+      spinSpeed = 0;
       spinning = false;
-      checkHit();
+      stopping = false;
+      checkHit(); // 完全に止まってから判定
     }
   }
-  cancelAnimationFrame(animationFrameId);
-  decelerate();
+  requestAnimationFrame(decelerate);
 }
-
-// リールボタン押下
-reelButton.addEventListener('click', () => {
-  if (!spinning) return;
-  stopRoulette();
-});
 
 // 当たり判定
 function checkHit() {
@@ -242,6 +245,7 @@ window.addEventListener('load', () => {
       spawnDogs();
     });
 });
+
 
 
 
