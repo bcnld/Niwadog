@@ -177,8 +177,18 @@ function drawRoulette() {
   ctx.stroke();
 
   if (spinning) {
+    if (isSlowingDown) {
+      // 減速処理（必ず速度は正の方向に0へ近づく）
+      spinSpeed = Math.sign(spinSpeed) * Math.max(0, Math.abs(spinSpeed) - 0.002);
+
+      if (Math.abs(spinSpeed) < 0.001 && !stopCallbackCalled) {
+        stopCallbackCalled = true;
+        evaluateHit();
+      }
+    }
+
     angle += spinSpeed;
-    animationFrameId = requestAnimationFrame(drawRoulette);
+    requestAnimationFrame(drawRoulette);
   }
 }
 
@@ -245,6 +255,7 @@ window.addEventListener('load', () => {
       spawnDogs();
     });
 });
+
 
 
 
