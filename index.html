@@ -112,14 +112,17 @@
     <p>アイテム購入機能などをここに追加します。</p>
   </div>
 
-  <!-- 釣りUI -->
-  <div id="fishing-ui">
-    <h2>犬乱獲</h2>
-    <div id="reel-area">
-      <canvas id="roulette-canvas" width="300" height="300"></canvas>
+  <!-- 釣りルーレットUI -->
+  <div id="fishing-ui" style="display: none;">
+    <h2>犬を拉致する</h2>
+    <div id="roulette-container">
+      <div id="roulette-wheel">
+        <div id="hit-zone"></div>
+        <div id="pointer"></div>
+      </div>
+      <button id="reel-button">リールを引く！</button>
+      <div id="fishing-result"></div>
     </div>
-    <button id="reel-button">リールを止める</button>
-    <div id="fishing-result"></div>
   </div>
 
   <!-- サウンド -->
@@ -131,3 +134,4 @@
   <script src="script.js"></script>
 </body>
 </html>
+
