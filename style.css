@@ -122,9 +122,28 @@ button:hover {
 
 /* 図鑑リスト */
 #zukan-list {
-  display: flex;
-  flex-wrap: wrap;
+  display: grid;
+  grid-template-columns: repeat(6, 1fr); /* 横6列 */
   gap: 10px;
+  max-height: 60vh;
+  overflow-y: auto;
+  padding: 10px;
+}
+
+.zukan-card {
+  background: #fdfdfd;
+  border: 2px solid #ccc;
+  border-radius: 8px;
+  text-align: center;
+  padding: 5px;
+  font-size: 12px;
+  box-shadow: 2px 2px 4px rgba(0,0,0,0.1);
+}
+
+.zukan-card img {
+  width: 100%;
+  height: auto;
+  border-radius: 4px;
 }
 
 /* 図鑑の犬アイテム */
@@ -187,6 +206,7 @@ button:hover {
 }
 
 /* 音量調整などのUIは必要に応じて追加してください */
+
 
 
 
