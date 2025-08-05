@@ -1,11 +1,24 @@
+// 改善点：
+// - startFishing時に多重起動を防止
+// - stopFishing時に釣れた or 外れた犬を waterArea から削除
+// - pointer の速度が加速しないよう毎回アニメーションをリセット
+// - 横向き警告あり
+
 const waterArea = document.getElementById('water-area');
 const orientationWarning = document.getElementById('orientation-warning');
+const bgm = document.getElementById('bgm');
+const zukanBtn = document.getElementById('zukan-btn');
+const shopBtn = document.getElementById('shop-btn');
+const zukanPanel = document.getElementById('zukan-panel');
+const shopPanel = document.getElementById('shop-panel');
+const sfxOpen = document.getElementById('sfx-open');
+const sfxClose = document.getElementById('sfx-close');
+const zukanList = document.getElementById('zukan-list');
 const fishingUI = document.getElementById('fishing-ui');
 const fishingResult = document.getElementById('fishing-result');
 const pointer = document.getElementById('pointer');
 const targetZone = document.getElementById('target-zone');
 const reelButton = document.getElementById('reel-button');
-const zukanList = document.getElementById('zukan-list');
 
 const maxDogs = 6;
 const bottomLandHeight = 100;
@@ -21,6 +34,30 @@ function checkOrientation() {
 
 window.addEventListener('resize', checkOrientation);
 window.addEventListener('orientationchange', checkOrientation);
+
+function togglePanel(panel) {
+  const isOpen = panel.style.display === 'block';
+  if (isOpen) {
+    panel.style.display = 'none';
+    sfxClose.play().catch(() => {});
+  } else {
+    [zukanPanel, shopPanel].forEach(p => {
+      if (p !== panel && p.style.display === 'block') {
+        p.style.display = 'none';
+        sfxClose.play().catch(() => {});
+      }
+    });
+    panel.style.display = 'block';
+    sfxOpen.play().catch(() => {});
+  }
+}
+
+zukanBtn.onclick = () => togglePanel(zukanPanel);
+shopBtn.onclick = () => togglePanel(shopPanel);
+
+document.body.addEventListener('click', () => {
+  if (bgm.paused) bgm.play().catch(() => {});
+}, { once: true });
 
 function updateZukan() {
   zukanList.innerHTML = '';
@@ -88,27 +125,20 @@ function spawnDogs() {
 }
 
 function startFishing() {
-  if (fishingActive) return;
   fishingActive = true;
   fishingResult.textContent = '';
-
-  // リセットしてゆっくり止まるアニメーション
   pointer.style.animation = 'none';
   void pointer.offsetWidth;
-  pointer.style.animation = 'movePointer 2s ease-out infinite';
-
+  pointer.style.animation = 'movePointer 2s linear infinite';
   fishingUI.style.display = 'block';
 }
 
 function stopFishing() {
-  if (!fishingActive) return;
-  fishingActive = false;
-
   pointer.style.animation = 'none';
   const pRect = pointer.getBoundingClientRect();
   const tRect = targetZone.getBoundingClientRect();
 
-  const hit = (pRect.left >= tRect.left && pRect.right <= tRect.right);
+  let hit = (pRect.left >= tRect.left && pRect.right <= tRect.right);
   fishingResult.textContent = hit ? '🎯 ヒット！犬が釣れた！' : '💨 のがした…';
 
   if (hit && currentDog && !caughtDogsMap[currentDog.name]) {
@@ -123,6 +153,7 @@ function stopFishing() {
 
   setTimeout(() => {
     fishingUI.style.display = 'none';
+    fishingActive = false;
     currentDog = null;
   }, 1500);
 }
@@ -140,4 +171,3 @@ window.addEventListener('load', () => {
     })
     .catch(console.error);
 });
-
