@@ -23,7 +23,6 @@ let angle = 0;
 let spinSpeed = 0;
 let spinning = false;
 let slowingDown = false;
-let animationFrameId;
 let hitZoneStart = 0;
 let hitZoneEnd = 0;
 
@@ -54,8 +53,6 @@ shopBtn.addEventListener('click', () => togglePanel(shopPanel));
 // 図鑑更新
 function updateZukan() {
   zukanList.innerHTML = '';
-
-  // 犬データのソート（番号順）
   const sortedDogs = [...dogData].sort((a, b) => a.number - b.number);
 
   for (const dog of sortedDogs) {
@@ -63,7 +60,6 @@ function updateZukan() {
     div.className = 'zukan-card';
 
     if (caughtDogsMap[dog.name]) {
-      // 捕まえた犬：画像と名前を表示
       const img = document.createElement('img');
       img.src = dog.image;
       img.alt = dog.name;
@@ -78,7 +74,6 @@ function updateZukan() {
         alert(dog.description);
       });
     } else {
-      // 未捕獲の犬：番号だけ
       div.textContent = `No.${dog.number} ???`;
     }
 
@@ -152,22 +147,22 @@ function startFishing() {
   fishingResult.textContent = '';
   fishingUI.style.display = 'block';
 
-  // 例：当たり範囲を 60度 に設定（毎回ランダムにしたい場合はここを動的に変える）
+  // 当たりゾーンをランダムに設定
   hitZoneStart = Math.random() * 2 * Math.PI;
-  hitZoneEnd = hitZoneStart + Math.PI / 6; // 約60度
+  hitZoneEnd = hitZoneStart + Math.PI / 6;
 
   angle = 0;
-  spinSpeed = 0.3; // 一定値でスタート
+  spinSpeed = 0.3;
   spinning = true;
-  decelerating = false;
+  slowingDown = false;
 
   drawRoulette();
 }
 
 // リールボタン押下時に減速開始
 reelButton.addEventListener('click', () => {
-  if (!spinning || decelerating) return;
-  decelerating = true;
+  if (!spinning || slowingDown) return;
+  slowingDown = true;
 });
 
 // 描画ループ
@@ -200,18 +195,16 @@ function drawRoulette() {
   ctx.lineWidth = 4;
   ctx.stroke();
 
-  // 角度更新
   if (spinning) {
     angle += spinSpeed;
 
-    // 減速処理
-    if (decelerating) {
-      spinSpeed -= 0.005; // ゆっくり減速
+    if (slowingDown) {
+      spinSpeed -= 0.005;
       if (spinSpeed <= 0) {
         spinSpeed = 0;
         spinning = false;
-        decelerating = false;
-        checkHit(); // 停止後に判定
+        slowingDown = false;
+        checkHit();
         return;
       }
     }
@@ -220,10 +213,10 @@ function drawRoulette() {
   }
 }
 
-// 当たり判定関数
+// 当たり判定
 function checkHit() {
-  const normalizedAngle = angle % (2 * Math.PI);
-  if (normalizedAngle >= hitZoneStart && normalizedAngle <= hitZoneEnd) {
+  const normalized = angle % (2 * Math.PI);
+  if (normalized >= hitZoneStart && normalized <= hitZoneEnd) {
     fishingResult.textContent = '🎯 ヒット！犬が釣れた！';
     if (!caughtDogsMap[selectedDog.dog.name]) {
       caughtDogsMap[selectedDog.dog.name] = selectedDog.dog;
@@ -241,9 +234,13 @@ function checkHit() {
   }, 1500);
 }
 
-
-
-
-
-
-
+// 犬データ読み込み
+window.addEventListener('load', () => {
+  fetch('dog.json')
+    .then(res => res.json())
+    .then(data => {
+      dogData = data;
+      weightedDogs = createWeightedDogs(dogData);
+      spawnDogs();
+    });
+});
