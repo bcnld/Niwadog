@@ -133,7 +133,14 @@ function startFishing() {
   angle = 0;
   spinSpeed = 0.25 + Math.random() * 0.25;
   spinning = true;
-  slowingDown = false;
+
+  // 🎯 当たりゾーンの開始位置（0〜2πのランダム）
+  hitZoneStart = Math.random() * 2 * Math.PI;
+
+  // 当たりゾーンの長さを固定（例：0.3ラジアン ≒ 17度）
+  const hitZoneSize = 0.3;
+  hitZoneEnd = hitZoneStart + hitZoneSize;
+
   drawRoulette();
 }
 
@@ -154,10 +161,10 @@ function drawRoulette() {
   ctx.fillStyle = '#eef';
   ctx.fill();
 
-  // ヒットゾーン
+  // ヒットゾーン（赤）
   ctx.beginPath();
   ctx.moveTo(center, center);
-  ctx.arc(center, center, center - 10, Math.PI * 1.2, Math.PI * 1.5);
+  ctx.arc(center, center, center - 10, hitZoneStart, hitZoneEnd);
   ctx.fillStyle = '#f00';
   ctx.fill();
 
@@ -223,4 +230,5 @@ window.addEventListener('load', () => {
       spawnDogs();
     });
 });
+
 
