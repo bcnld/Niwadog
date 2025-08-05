@@ -42,52 +42,47 @@ body, html {
 
 /* ==== 円形ルーレットUIの追加 ==== */
 #roulette-container {
-  margin: 20px auto;
+  position: relative;
+  width: 300px;
+  height: 300px;
+  margin: 0 auto;
 }
 
 #roulette-wheel {
-  position: relative;
-  width: 200px;
-  height: 200px;
+  width: 100%;
+  height: 100%;
   border-radius: 50%;
-  border: 8px solid #444;
-  margin: 0 auto 10px;
-  background: conic-gradient(
-    #ff9999 0% 25%,
-    #99ff99 25% 50%,
-    #9999ff 50% 75%,
-    #ffff99 75% 100%
-  );
-  box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
+  background: #eef;
+  position: relative;
+  overflow: hidden;
 }
 
 #hit-zone {
   position: absolute;
-  top: 50%;
-  left: 50%;
-  width: 80px;
-  height: 80px;
-  background: rgba(255, 255, 255, 0.4);
-  border-radius: 50%;
-  transform: translate(-50%, -50%);
-  pointer-events: none;
-  border: 2px dashed #000;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  clip-path: polygon(50% 50%, 100% 30%, 100% 70%);
+  background: rgba(255, 0, 0, 0.4);
+  transform: rotate(135deg); /* 1.2π ~ 1.5π相当 */
+  transform-origin: center;
 }
 
 #pointer {
   position: absolute;
-  top: -20px;
-  left: 50%;
   width: 4px;
-  height: 40px;
-  background: red;
+  height: 140px;
+  background: #000;
+  top: 10px;
+  left: 50%;
   transform: translateX(-50%);
-  animation: rotatePointer 2s linear infinite;
-  transform-origin: bottom center;
+  animation: movePointer 2s linear infinite;
+  transform-origin: bottom;
 }
 
-@keyframes rotatePointer {
-  0% { transform: translateX(-50%) rotate(0deg); }
+@keyframes movePointer {
+  0%   { transform: translateX(-50%) rotate(0deg); }
   100% { transform: translateX(-50%) rotate(360deg); }
 }
 
@@ -191,6 +186,7 @@ button:hover {
 }
 
 /* 音量調整などのUIは必要に応じて追加してください */
+
 
 
 
