@@ -10,7 +10,6 @@ const zukanList = document.getElementById('zukan-list');
 const fishingUI = document.getElementById('fishing-ui');
 const fishingResult = document.getElementById('fishing-result');
 const pointer = document.getElementById('pointer');
-const targetZone = document.getElementById('target-zone');
 const reelButton = document.getElementById('reel-button');
 const canvas = document.getElementById('roulette-canvas');
 const ctx = canvas.getContext('2d');
@@ -20,11 +19,17 @@ let caughtDogsMap = {};
 let isFishing = false, selectedDog = null;
 const maxDogs = 6, bottomLandHeight = 100;
 
-// BGM初回再生
+let angle = 0;
+let spinSpeed = 0;
+let spinning = false;
+let slowingDown = false;
+
+// BGM 初回再生
 document.body.addEventListener('click', () => {
   if (bgm.paused) bgm.play().catch(() => {});
 }, { once: true });
 
+// パネル開閉
 function togglePanel(panel) {
   if (fishingUI.style.display === 'block') return;
   const isOpen = panel.style.display === 'block';
@@ -43,6 +48,7 @@ function togglePanel(panel) {
 zukanBtn.addEventListener('click', () => togglePanel(zukanPanel));
 shopBtn.addEventListener('click', () => togglePanel(shopPanel));
 
+// 図鑑更新
 function updateZukan() {
   zukanList.innerHTML = '';
   for (const name in caughtDogsMap) {
@@ -58,6 +64,7 @@ function updateZukan() {
   }
 }
 
+// 重み付き犬配列
 function createWeightedDogs(dogs) {
   const weighted = [];
   dogs.forEach(dog => {
@@ -67,6 +74,7 @@ function createWeightedDogs(dogs) {
   return weighted;
 }
 
+// 犬出現
 function spawnDogs() {
   waterArea.innerHTML = '';
   spawnedDogs = [];
@@ -108,11 +116,8 @@ function spawnDogs() {
 
     img.addEventListener('click', () => {
       if (isFishing || zukanPanel.style.display === 'block' || shopPanel.style.display === 'block') return;
-      isFishing = true;
       selectedDog = { img, dog };
-      fishingUI.style.display = 'block';
-      pointer.style.animation = 'movePointer 2s linear infinite';
-      pointer.style.animationPlayState = 'running';
+      startFishing();
     });
 
     waterArea.appendChild(img);
@@ -120,7 +125,7 @@ function spawnDogs() {
   }
 }
 
-// ルーレット釣り開始
+// 釣り開始
 function startFishing() {
   isFishing = true;
   fishingResult.textContent = '';
@@ -128,48 +133,28 @@ function startFishing() {
   angle = 0;
   spinSpeed = 0.25 + Math.random() * 0.25;
   spinning = true;
+  slowingDown = false;
   drawRoulette();
 }
 
-// リールボタン押下時
+// リールボタン
 reelButton.addEventListener('click', () => {
-  if (!spinning) return;
-  spinning = false;
-
-  const hitZoneStart = Math.PI * 1.2;
-  const hitZoneEnd = Math.PI * 1.5;
-  const normalizedAngle = angle % (2 * Math.PI);
-
-  if (normalizedAngle >= hitZoneStart && normalizedAngle <= hitZoneEnd) {
-    fishingResult.textContent = '🎯 ヒット！犬が釣れた！';
-    if (!caughtDogsMap[selectedDog.dog.name]) {
-      caughtDogsMap[selectedDog.dog.name] = selectedDog.dog;
-      updateZukan();
-    }
-    selectedDog.img.remove();
-  } else {
-    fishingResult.textContent = '💨 のがした…';
-    selectedDog.img.remove();
-  }
-
-  setTimeout(() => {
-    fishingUI.style.display = 'none';
-    isFishing = false;
-  }, 1500);
+  if (!spinning || slowingDown) return;
+  slowingDown = true;
 });
 
-// ルーレット描画
+// ルーレット描画とスローダウン処理
 function drawRoulette() {
   ctx.clearRect(0, 0, canvas.width, canvas.height);
   const center = canvas.width / 2;
 
-  // 背景サークル
+  // 背景
   ctx.beginPath();
   ctx.arc(center, center, center - 10, 0, 2 * Math.PI);
   ctx.fillStyle = '#eef';
   ctx.fill();
 
-  // ヒットゾーン（赤）
+  // ヒットゾーン
   ctx.beginPath();
   ctx.moveTo(center, center);
   ctx.arc(center, center, center - 10, Math.PI * 1.2, Math.PI * 1.5);
@@ -190,8 +175,42 @@ function drawRoulette() {
 
   if (spinning) {
     angle += spinSpeed;
+
+    if (slowingDown) {
+      spinSpeed *= 0.98;
+      if (spinSpeed < 0.01) {
+        spinning = false;
+        finalizeFishing();
+        return;
+      }
+    }
+
     requestAnimationFrame(drawRoulette);
   }
+}
+
+// 釣果判定
+function finalizeFishing() {
+  const hitZoneStart = Math.PI * 1.2;
+  const hitZoneEnd = Math.PI * 1.5;
+  const normalizedAngle = angle % (2 * Math.PI);
+
+  if (normalizedAngle >= hitZoneStart && normalizedAngle <= hitZoneEnd) {
+    fishingResult.textContent = '🎯 ヒット！犬が釣れた！';
+    if (!caughtDogsMap[selectedDog.dog.name]) {
+      caughtDogsMap[selectedDog.dog.name] = selectedDog.dog;
+      updateZukan();
+    }
+    selectedDog.img.remove();
+  } else {
+    fishingResult.textContent = '💨 のがした…';
+    selectedDog.img.remove();
+  }
+
+  setTimeout(() => {
+    fishingUI.style.display = 'none';
+    isFishing = false;
+  }, 1500);
 }
 
 // 犬データ読み込み
@@ -204,4 +223,3 @@ window.addEventListener('load', () => {
       spawnDogs();
     });
 });
-
