@@ -54,15 +54,34 @@ shopBtn.addEventListener('click', () => togglePanel(shopPanel));
 // 図鑑更新
 function updateZukan() {
   zukanList.innerHTML = '';
-  for (const name in caughtDogsMap) {
-    const dog = caughtDogsMap[name];
+
+  // 犬データのソート（番号順）
+  const sortedDogs = [...dogData].sort((a, b) => a.number - b.number);
+
+  for (const dog of sortedDogs) {
     const div = document.createElement('div');
-    div.textContent = dog.name;
-    div.style.cursor = 'pointer';
-    div.style.border = '1px solid #ccc';
-    div.style.margin = '5px';
-    div.style.padding = '5px';
-    div.addEventListener('click', () => alert(dog.description));
+    div.className = 'zukan-card';
+
+    if (caughtDogsMap[dog.name]) {
+      // 捕まえた犬：画像と名前を表示
+      const img = document.createElement('img');
+      img.src = dog.image;
+      img.alt = dog.name;
+      img.title = dog.name;
+      div.appendChild(img);
+
+      const nameLabel = document.createElement('div');
+      nameLabel.textContent = `No.${dog.number} ${dog.name}`;
+      div.appendChild(nameLabel);
+
+      div.addEventListener('click', () => {
+        alert(dog.description);
+      });
+    } else {
+      // 未捕獲の犬：番号だけ
+      div.textContent = `No.${dog.number} ???`;
+    }
+
     zukanList.appendChild(div);
   }
 }
@@ -255,6 +274,7 @@ window.addEventListener('load', () => {
       spawnDogs();
     });
 });
+
 
 
 
