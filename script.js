@@ -23,6 +23,9 @@ let angle = 0;
 let spinSpeed = 0;
 let spinning = false;
 let slowingDown = false;
+let animationFrameId;
+let hitZoneStart = 0;
+let hitZoneEnd = 0;
 
 // BGM 初回再生
 document.body.addEventListener('click', () => {
@@ -124,14 +127,6 @@ function spawnDogs() {
     spawnedDogs.push(img);
   }
 }
-
-// 釣り開始
-let angle = 0;
-let spinSpeed = 0;
-let spinning = false;
-let animationFrameId;
-let hitZoneStart = 0;
-let hitZoneEnd = 0;
 
 function startFishing() {
   isFishing = true;
@@ -247,6 +242,7 @@ window.addEventListener('load', () => {
       spawnDogs();
     });
 });
+
 
 
 
