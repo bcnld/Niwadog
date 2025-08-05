@@ -196,14 +196,14 @@ function finalizeFishing() {
   const normalizedAngle = angle % (2 * Math.PI);
 
   if (normalizedAngle >= hitZoneStart && normalizedAngle <= hitZoneEnd) {
-    fishingResult.textContent = '🎯 ヒット！犬が釣れた！';
+    fishingResult.textContent = '🎯 ヒット！犬を拉致れた！';
     if (!caughtDogsMap[selectedDog.dog.name]) {
       caughtDogsMap[selectedDog.dog.name] = selectedDog.dog;
       updateZukan();
     }
     selectedDog.img.remove();
   } else {
-    fishingResult.textContent = '💨 のがした…';
+    fishingResult.textContent = '💨 逃げられた…';
     selectedDog.img.remove();
   }
 
@@ -223,3 +223,4 @@ window.addEventListener('load', () => {
       spawnDogs();
     });
 });
+
