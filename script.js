@@ -118,36 +118,81 @@ function spawnDogs() {
   }
 }
 
-function stopFishing() {
-  pointer.style.animationPlayState = 'paused';
-  const pointerRect = pointer.getBoundingClientRect();
-  const targetRect = targetZone.getBoundingClientRect();
+// ルーレット釣り開始
+function startFishing() {
+  isFishing = true;
+  fishingResult.textContent = '';
+  fishingUI.style.display = 'block';
+  angle = 0;
+  spinSpeed = 0.25 + Math.random() * 0.25;
+  spinning = true;
+  drawRoulette();
+}
 
-  if (pointerRect.left >= targetRect.left && pointerRect.right <= targetRect.right) {
+// リールボタン押下時
+reelButton.addEventListener('click', () => {
+  if (!spinning) return;
+  spinning = false;
+
+  const hitZoneStart = Math.PI * 1.2;
+  const hitZoneEnd = Math.PI * 1.5;
+  const normalizedAngle = angle % (2 * Math.PI);
+
+  if (normalizedAngle >= hitZoneStart && normalizedAngle <= hitZoneEnd) {
     fishingResult.textContent = '🎯 ヒット！犬が釣れた！';
-    if (selectedDog && !caughtDogsMap[selectedDog.dog.name]) {
+    if (!caughtDogsMap[selectedDog.dog.name]) {
       caughtDogsMap[selectedDog.dog.name] = selectedDog.dog;
       updateZukan();
     }
-    selectedDog?.img.remove();
+    selectedDog.img.remove();
   } else {
     fishingResult.textContent = '💨 のがした…';
-    selectedDog?.img.remove();
+    selectedDog.img.remove();
   }
 
   setTimeout(() => {
     fishingUI.style.display = 'none';
-    pointer.style.animationPlayState = 'running';
-    selectedDog = null;
     isFishing = false;
   }, 1500);
-}
-
-reelButton.addEventListener('click', () => {
-  pointer.style.animation = 'movePointerSlow 2s linear';
-  setTimeout(stopFishing, 2000);
 });
 
+// ルーレット描画
+function drawRoulette() {
+  ctx.clearRect(0, 0, canvas.width, canvas.height);
+  const center = canvas.width / 2;
+
+  // 背景サークル
+  ctx.beginPath();
+  ctx.arc(center, center, center - 10, 0, 2 * Math.PI);
+  ctx.fillStyle = '#eef';
+  ctx.fill();
+
+  // ヒットゾーン（赤）
+  ctx.beginPath();
+  ctx.moveTo(center, center);
+  ctx.arc(center, center, center - 10, Math.PI * 1.2, Math.PI * 1.5);
+  ctx.fillStyle = '#f00';
+  ctx.fill();
+
+  // 回転針
+  const needleLength = center - 20;
+  ctx.beginPath();
+  ctx.moveTo(center, center);
+  ctx.lineTo(
+    center + needleLength * Math.cos(angle),
+    center + needleLength * Math.sin(angle)
+  );
+  ctx.strokeStyle = '#000';
+  ctx.lineWidth = 4;
+  ctx.stroke();
+
+  if (spinning) {
+    angle += spinSpeed;
+    requestAnimationFrame(drawRoulette);
+  }
+}
+
+// 犬データ読み込み
 window.addEventListener('load', () => {
   fetch('dog.json')
     .then(res => res.json())
@@ -155,6 +200,5 @@ window.addEventListener('load', () => {
       dogData = data;
       weightedDogs = createWeightedDogs(dogData);
       spawnDogs();
-    })
-    .catch(err => console.error('dog.json 読み込みエラー:', err));
+    });
 });
