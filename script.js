@@ -51,34 +51,63 @@ zukanBtn.addEventListener('click', () => togglePanel(zukanPanel));
 shopBtn.addEventListener('click', () => togglePanel(shopPanel));
 
 // 図鑑更新
+let currentPage = 0;
+const itemsPerPage = 18;
+
 function updateZukan() {
   zukanList.innerHTML = '';
-  const sortedDogs = [...dogData].sort((a, b) => a.number - b.number);
 
-  for (const dog of sortedDogs) {
+  const sortedDogs = [...dogData].sort((a, b) => a.number - b.number);
+  const totalPages = Math.ceil(sortedDogs.length / itemsPerPage);
+  const startIndex = currentPage * itemsPerPage;
+  const pageDogs = sortedDogs.slice(startIndex, startIndex + itemsPerPage);
+
+  for (const dog of pageDogs) {
     const div = document.createElement('div');
     div.className = 'zukan-card';
 
     if (caughtDogsMap[dog.name]) {
+      div.classList.add('caught');
       const img = document.createElement('img');
       img.src = dog.image;
       img.alt = dog.name;
       img.title = dog.name;
       div.appendChild(img);
-
-      const nameLabel = document.createElement('div');
-      nameLabel.textContent = `No.${dog.number} ${dog.name}`;
-      div.appendChild(nameLabel);
-
       div.addEventListener('click', () => {
-        alert(dog.description);
+        alert(`No.${dog.number} ${dog.name}\n${dog.description}`);
       });
     } else {
-      div.textContent = `No.${dog.number} ???`;
+      div.textContent = '?';
     }
 
     zukanList.appendChild(div);
   }
+
+  // ページナビゲーション
+  const nav = document.createElement('div');
+  nav.style.textAlign = 'center';
+  nav.style.marginTop = '10px';
+
+  const prevBtn = document.createElement('button');
+  prevBtn.textContent = '前へ';
+  prevBtn.disabled = currentPage === 0;
+  prevBtn.onclick = () => {
+    currentPage--;
+    updateZukan();
+  };
+
+  const nextBtn = document.createElement('button');
+  nextBtn.textContent = '次へ';
+  nextBtn.disabled = currentPage >= totalPages - 1;
+  nextBtn.onclick = () => {
+    currentPage++;
+    updateZukan();
+  };
+
+  nav.appendChild(prevBtn);
+  nav.appendChild(document.createTextNode(` ページ ${currentPage + 1} / ${totalPages} `));
+  nav.appendChild(nextBtn);
+  zukanList.appendChild(nav);
 }
 
 // 重み付き犬配列
@@ -244,3 +273,4 @@ window.addEventListener('load', () => {
       spawnDogs();
     });
 });
+
