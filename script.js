@@ -230,20 +230,14 @@ function drawRoulette() {
 
 function checkHit() {
   const normalized = angle % (2 * Math.PI);
-  const normalizedStart = hitZoneStart % (2 * Math.PI);
-  const normalizedEnd = hitZoneEnd % (2 * Math.PI);
+  const hit = normalized >= hitZoneStart && normalized <= hitZoneEnd;
 
-  let isHit = false;
-  if (normalizedStart < normalizedEnd) {
-    isHit = normalized >= normalizedStart && normalized <= normalizedEnd;
-  } else {
-    isHit = normalized >= normalizedStart || normalized <= normalizedEnd;
-  }
+  const fishingUI = document.getElementById('fishing-ui'); // ← 再取得でnull防止
+  const fishingResult = document.getElementById('fishing-result');
 
-  if (isHit) {
+  if (hit) {
     fishingResult.textContent = '🎯 ヒット！犬が釣れた！';
-
-    if (!caughtDogsMap[selectedDog.dog.name]) {
+    if (selectedDog && !caughtDogsMap[selectedDog.dog.name]) {
       caughtDogsMap[selectedDog.dog.name] = selectedDog.dog;
       updateZukan();
     }
@@ -251,17 +245,18 @@ function checkHit() {
     fishingResult.textContent = '💨 のがした…';
   }
 
+  // 犬の画像を削除
   if (selectedDog && selectedDog.img) {
     selectedDog.img.remove();
   }
 
+  // 完全にUIを消して状態をリセット
   setTimeout(() => {
-    fishingUI.style.display = 'none';
-    fishingResult.textContent = '';
+    if (fishingUI) fishingUI.style.display = 'none';
+    if (fishingResult) fishingResult.textContent = '';
     isFishing = false;
+    selectedDog = null;
   }, 2000);
-
-  selectedDog = null; // 🔄ここに移動
 }
 
 // ✅ これを checkHit の外に完全に出す！
@@ -274,6 +269,7 @@ window.addEventListener('load', () => {
       spawnDogs();
     });
 });
+
 
 
 
