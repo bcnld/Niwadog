@@ -248,17 +248,16 @@ function checkHit() {
     fishingResult.textContent = "逃げられた…";
   }
 
-  // 犬画像削除（UIより先）
   if (selectedDog && selectedDog.img) {
     selectedDog.img.remove();
-    selectedDog = null; // ←ここで消すのが確実
   }
 
-  // UIの非表示と状態リセット
   setTimeout(() => {
     fishingUI.style.display = 'none';
     fishingResult.textContent = '';
     isFishing = false;
+    selectedDog = null;
+    // spawnDogs(); ← 削除済み
   }, 2000);
 }
 
@@ -272,6 +271,7 @@ window.addEventListener('load', () => {
       spawnDogs();
     });
 });
+
 
 
 
