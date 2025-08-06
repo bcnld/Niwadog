@@ -245,12 +245,10 @@ function checkHit() {
   selectedDog.img.remove();
 
   setTimeout(() => {
-    fishingUI.style.display = 'none';
-    fishingResult.textContent = '';
-    isFishing = false;
-    selectedDog = null;
-  }, 1500);
-}
+  document.getElementById('roulette-ui').style.display = 'none'; // UIを非表示
+  fishingResult.textContent = ""; // ヒット！のテキストも消す
+  isFishing = false; // フラグもリセット
+}, 1500); // 1秒後に消す
 
 window.addEventListener('load', () => {
   fetch('dog.json')
@@ -261,3 +259,4 @@ window.addEventListener('load', () => {
       spawnDogs();
     });
 });
+
