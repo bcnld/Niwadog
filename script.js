@@ -231,24 +231,36 @@ function drawRoulette() {
 function checkHit() {
   cancelAnimationFrame(animationId);
 
-  const normalized = angle % (2 * Math.PI);
-  if (normalized >= hitZoneStart && normalized <= hitZoneEnd) {
-    fishingResult.textContent = '🎯 ヒット！犬が釣れた！';
-    if (!caughtDogsMap[selectedDog.dog.name]) {
-      caughtDogsMap[selectedDog.dog.name] = selectedDog.dog;
-      updateZukan();
-    }
-  } else {
-    fishingResult.textContent = '💨 のがした…';
+const normalized = angle % (2 * Math.PI);
+const isHit = normalized >= hitZoneStart && normalized <= hitZoneEnd;
+
+if (isHit) {
+  fishingResult.textContent = '🎯 ヒット！犬が釣れた！';
+
+  if (!caughtDogsMap[selectedDog.dog.name]) {
+    caughtDogsMap[selectedDog.dog.name] = selectedDog.dog;
+    updateZukan();
   }
 
-  selectedDog.img.remove();
-
+  // ヒット時はちょっと長めに表示してからUI非表示
   setTimeout(() => {
-  document.getElementById('roulette-ui').style.display = 'none'; // UIを非表示
-  fishingResult.textContent = ""; // ヒット！のテキストも消す
-  isFishing = false; // フラグもリセット
-}, 1500); // 1秒後に消す
+    document.getElementById('roulette-ui').style.display = 'none';
+    fishingResult.textContent = "";
+    isFishing = false;
+  }, 2000); // 2秒後に消す
+} else {
+  fishingResult.textContent = '💨 のがした…';
+
+  // 失敗時は早めにUIを非表示
+  setTimeout(() => {
+    document.getElementById('roulette-ui').style.display = 'none';
+    fishingResult.textContent = "";
+    isFishing = false;
+  }, 1500);
+}
+
+// 犬画像の削除（ヒットでもミスでも共通）
+selectedDog.img.remove();
 
 window.addEventListener('load', () => {
   fetch('dog.json')
@@ -259,4 +271,5 @@ window.addEventListener('load', () => {
       spawnDogs();
     });
 });
+
 
