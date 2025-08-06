@@ -7,9 +7,9 @@ const shopPanel = document.getElementById('shop-panel');
 const sfxOpen = document.getElementById('sfx-open');
 const sfxClose = document.getElementById('sfx-close');
 const zukanList = document.getElementById('zukan-list');
+const zukanNav = document.getElementById('zukan-nav');
 const fishingUI = document.getElementById('fishing-ui');
 const fishingResult = document.getElementById('fishing-result');
-const pointer = document.getElementById('pointer');
 const reelButton = document.getElementById('reel-button');
 const canvas = document.getElementById('roulette-canvas');
 const ctx = canvas.getContext('2d');
@@ -18,20 +18,19 @@ let dogData = [], weightedDogs = [], spawnedDogs = [];
 let caughtDogsMap = {};
 let isFishing = false, selectedDog = null;
 const maxDogs = 6, bottomLandHeight = 100;
+const itemsPerPage = 18;
+let currentPage = 0;
 
-let angle = 0;
-let spinSpeed = 0;
-let spinning = false;
-let slowingDown = false;
-let hitZoneStart = 0;
-let hitZoneEnd = 0;
+let angle = 0, spinSpeed = 0;
+let spinning = false, slowingDown = false;
+let hitZoneStart = 0, hitZoneEnd = 0;
+let animationId = null;
 
 // BGM 初回再生
 document.body.addEventListener('click', () => {
   if (bgm.paused) bgm.play().catch(() => {});
 }, { once: true });
 
-// パネル開閉
 function togglePanel(panel) {
   if (fishingUI.style.display === 'block') return;
   const isOpen = panel.style.display === 'block';
@@ -50,12 +49,9 @@ function togglePanel(panel) {
 zukanBtn.addEventListener('click', () => togglePanel(zukanPanel));
 shopBtn.addEventListener('click', () => togglePanel(shopPanel));
 
-// 図鑑更新
-const zukanNav = document.getElementById('zukan-nav'); // 追加で取得
-
 function updateZukan() {
   zukanList.innerHTML = '';
-  zukanNav.innerHTML = ''; // ← navだけリセット
+  zukanNav.innerHTML = '';
 
   const sortedDogs = [...dogData].sort((a, b) => a.number - b.number);
   const totalPages = Math.ceil(sortedDogs.length / itemsPerPage);
@@ -83,7 +79,6 @@ function updateZukan() {
     zukanList.appendChild(div);
   }
 
-  // ページナビゲーション（zukanNav に追加）
   const nav = document.createElement('div');
   nav.style.textAlign = 'center';
   nav.style.marginTop = '10px';
@@ -111,7 +106,6 @@ function updateZukan() {
   zukanNav.appendChild(nav);
 }
 
-// 重み付き犬配列
 function createWeightedDogs(dogs) {
   const weighted = [];
   dogs.forEach(dog => {
@@ -121,7 +115,6 @@ function createWeightedDogs(dogs) {
   return weighted;
 }
 
-// 犬出現
 function spawnDogs() {
   waterArea.innerHTML = '';
   spawnedDogs = [];
@@ -177,7 +170,6 @@ function startFishing() {
   fishingResult.textContent = '';
   fishingUI.style.display = 'block';
 
-  // 当たりゾーンをランダムに設定
   hitZoneStart = Math.random() * 2 * Math.PI;
   hitZoneEnd = hitZoneStart + Math.PI / 6;
 
@@ -189,42 +181,34 @@ function startFishing() {
   drawRoulette();
 }
 
-// リールボタン押下時に減速開始
 reelButton.addEventListener('click', () => {
   if (!spinning || slowingDown) return;
   slowingDown = true;
 });
 
-// 描画ループ
 function drawRoulette() {
   ctx.clearRect(0, 0, canvas.width, canvas.height);
   const center = canvas.width / 2;
 
-  // 背景サークル
   ctx.beginPath();
   ctx.arc(center, center, center - 10, 0, 2 * Math.PI);
   ctx.fillStyle = '#eef';
   ctx.fill();
 
-  // 当たりゾーン
   ctx.beginPath();
   ctx.moveTo(center, center);
   ctx.arc(center, center, center - 10, hitZoneStart, hitZoneEnd);
   ctx.fillStyle = '#f00';
   ctx.fill();
 
-  // 針の描画
   const needleLength = center - 20;
   ctx.beginPath();
   ctx.moveTo(center, center);
-  ctx.lineTo(
-    center + needleLength * Math.cos(angle),
-    center + needleLength * Math.sin(angle)
-  );
+  ctx.lineTo(center + needleLength * Math.cos(angle), center + needleLength * Math.sin(angle));
   ctx.strokeStyle = '#000';
   ctx.lineWidth = 4;
   ctx.stroke();
-  
+
   if (spinning) {
     angle += spinSpeed;
 
@@ -234,18 +218,18 @@ function drawRoulette() {
         spinSpeed = 0;
         spinning = false;
         slowingDown = false;
-        cancelAnimationFrame(animationId); // ← ここでも明示的に止めてもOK（安全のため）
+        cancelAnimationFrame(animationId);
         checkHit();
         return;
       }
     }
 
-    animationId = requestAnimationFrame(drawRoulette); // ← 追加
+    animationId = requestAnimationFrame(drawRoulette);
   }
 }
 
 function checkHit() {
-  cancelAnimationFrame(animationId); // ← 追加
+  cancelAnimationFrame(animationId);
 
   const normalized = angle % (2 * Math.PI);
   if (normalized >= hitZoneStart && normalized <= hitZoneEnd) {
@@ -254,15 +238,11 @@ function checkHit() {
       caughtDogsMap[selectedDog.dog.name] = selectedDog.dog;
       updateZukan();
     }
-    selectedDog.img.remove();
   } else {
     fishingResult.textContent = '💨 のがした…';
-    selectedDog.img.remove();
   }
 
-  spinning = false;
-  slowingDown = false;
-  spinSpeed = 0;
+  selectedDog.img.remove();
 
   setTimeout(() => {
     fishingUI.style.display = 'none';
@@ -272,7 +252,6 @@ function checkHit() {
   }, 1500);
 }
 
-// 犬データ読み込み
 window.addEventListener('load', () => {
   fetch('dog.json')
     .then(res => res.json())
@@ -282,8 +261,3 @@ window.addEventListener('load', () => {
       spawnDogs();
     });
 });
-
-
-
-
-
