@@ -259,10 +259,6 @@ function checkHit() {
   }, isHit ? 2000 : 1500);
 }
 
-  // 犬画像の削除（ヒットでもミスでも共通）
-  selectedDog.img.remove();
-}
-
 // ✅ これを checkHit の外に完全に出す！
 window.addEventListener('load', () => {
   fetch('dog.json')
@@ -273,6 +269,7 @@ window.addEventListener('load', () => {
       spawnDogs();
     });
 });
+
 
 
 
