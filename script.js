@@ -243,15 +243,20 @@ function checkHit() {
     }
   } else {
     fishingResult.textContent = '💨 のがした…';
+  }
 
-  // 結果表示 → 一定時間後にUI非表示＆状態リセット
+  // 犬の画像削除（ミスでもヒットでも）
+  if (selectedDog && selectedDog.img) {
+    selectedDog.img.remove();
+  }
+
+  // UIの表示を数秒後に非表示へ
   setTimeout(() => {
+    fishingUI.style.display = 'none';
     fishingResult.textContent = '';
-    fishingUI.style.display = 'none';         // 正しい UI を非表示にする
-    document.getElementById('roulette-ui').style.display = 'none'; // 念のため
     isFishing = false;
     selectedDog = null;
-  }, isHit ? 2000 : 1500); // ヒット時は少し長めに表示
+  }, isHit ? 2000 : 1500);
 }
 
   // 犬画像の削除（ヒットでもミスでも共通）
@@ -268,6 +273,7 @@ window.addEventListener('load', () => {
       spawnDogs();
     });
 });
+
 
 
 
