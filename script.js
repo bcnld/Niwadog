@@ -171,7 +171,7 @@ function startFishing() {
   fishingUI.style.display = 'block';
 
   hitZoneStart = Math.random() * 2 * Math.PI;
-  hitZoneEnd = hitZoneStart + Math.PI / 6;
+  hitZoneEnd = hitZoneStart + Math.PI; // ← 半分がヒットゾーン
 
   angle = 0;
   spinSpeed = 0.3;
@@ -270,6 +270,7 @@ window.addEventListener('load', () => {
       spawnDogs();
     });
 });
+
 
 
 
