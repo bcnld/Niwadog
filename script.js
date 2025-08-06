@@ -241,23 +241,22 @@ function checkHit() {
       caughtDogsMap[selectedDog.dog.name] = selectedDog.dog;
       updateZukan();
     }
-
-    // ヒット時はちょっと長めに表示してからUI非表示
-    setTimeout(() => {
-      document.getElementById('roulette-ui').style.display = 'none';
-      fishingResult.textContent = "";
-      isFishing = false;
-    }, 2000);
   } else {
     fishingResult.textContent = '💨 のがした…';
-
-    // 失敗時は早めにUIを非表示
-    setTimeout(() => {
-      document.getElementById('roulette-ui').style.display = 'none';
-      fishingResult.textContent = "";
-      isFishing = false;
-    }, 1500);
   }
+
+  // 犬画像を削除（ヒットでもミスでも）
+  selectedDog.img.remove();
+
+  // 結果表示 → 一定時間後にUI非表示＆状態リセット
+  setTimeout(() => {
+    fishingResult.textContent = '';
+    fishingUI.style.display = 'none';         // 正しい UI を非表示にする
+    document.getElementById('roulette-ui').style.display = 'none'; // 念のため
+    isFishing = false;
+    selectedDog = null;
+  }, isHit ? 2000 : 1500); // ヒット時は少し長めに表示
+}
 
   // 犬画像の削除（ヒットでもミスでも共通）
   selectedDog.img.remove();
@@ -273,3 +272,4 @@ window.addEventListener('load', () => {
       spawnDogs();
     });
 });
+
