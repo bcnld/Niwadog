@@ -231,45 +231,45 @@ function drawRoulette() {
 function checkHit() {
   cancelAnimationFrame(animationId);
 
-const normalized = angle % (2 * Math.PI);
-const isHit = normalized >= hitZoneStart && normalized <= hitZoneEnd;
+  const normalized = angle % (2 * Math.PI);
+  const isHit = normalized >= hitZoneStart && normalized <= hitZoneEnd;
 
-if (isHit) {
-  fishingResult.textContent = '🎯 ヒット！犬が釣れた！';
+  if (isHit) {
+    fishingResult.textContent = '🎯 ヒット！犬が釣れた！';
 
-  if (!caughtDogsMap[selectedDog.dog.name]) {
-    caughtDogsMap[selectedDog.dog.name] = selectedDog.dog;
-    updateZukan();
+    if (!caughtDogsMap[selectedDog.dog.name]) {
+      caughtDogsMap[selectedDog.dog.name] = selectedDog.dog;
+      updateZukan();
+    }
+
+    // ヒット時はちょっと長めに表示してからUI非表示
+    setTimeout(() => {
+      document.getElementById('roulette-ui').style.display = 'none';
+      fishingResult.textContent = "";
+      isFishing = false;
+    }, 2000);
+  } else {
+    fishingResult.textContent = '💨 のがした…';
+
+    // 失敗時は早めにUIを非表示
+    setTimeout(() => {
+      document.getElementById('roulette-ui').style.display = 'none';
+      fishingResult.textContent = "";
+      isFishing = false;
+    }, 1500);
   }
 
-  // ヒット時はちょっと長めに表示してからUI非表示
-  setTimeout(() => {
-    document.getElementById('roulette-ui').style.display = 'none';
-    fishingResult.textContent = "";
-    isFishing = false;
-  }, 2000); // 2秒後に消す
-} else {
-  fishingResult.textContent = '💨 のがした…';
-
-  // 失敗時は早めにUIを非表示
-  setTimeout(() => {
-    document.getElementById('roulette-ui').style.display = 'none';
-    fishingResult.textContent = "";
-    isFishing = false;
-  }, 1500);
+  // 犬画像の削除（ヒットでもミスでも共通）
+  selectedDog.img.remove();
 }
 
-// 犬画像の削除（ヒットでもミスでも共通）
-selectedDog.img.remove();
-
+// ✅ これを checkHit の外に完全に出す！
 window.addEventListener('load', () => {
   fetch('dog.json')
     .then(res => res.json())
     .then(data => {
       dogData = data;
-      weightedDogs = createWeightedDogs(dogData);
+      weightedDogs = createWeightedDogs(data);
       spawnDogs();
     });
 });
-
-
