@@ -212,17 +212,17 @@ function drawRoulette() {
   if (spinning) {
     angle += spinSpeed;
 
-    if (slowingDown) {
-      spinSpeed -= 0.005;
-      if (spinSpeed <= 0) {
-        spinSpeed = 0;
-        spinning = false;
-        slowingDown = false;
-        cancelAnimationFrame(animationId);
-        checkHit();
-        return;
-      }
+  if (slowingDown) {
+    spinSpeed -= 0.005;
+    if (spinSpeed <= 0) {
+      spinSpeed = 0;
+      spinning = false;
+      slowingDown = false;
+      cancelAnimationFrame(animationId); // アニメーション停止
+      checkHit(); // ヒット判定呼び出し
+      return;
     }
+  }
 
     animationId = requestAnimationFrame(drawRoulette);
   }
@@ -273,6 +273,7 @@ window.addEventListener('load', () => {
       spawnDogs();
     });
 });
+
 
 
 
