@@ -130,32 +130,51 @@ button:hover {
   margin: 0 auto;
 }
 
-.zukan-card {
-  width: 100%;
-  aspect-ratio: 1 / 1.3;
-  background: #aaa; /* 未釣りカードの背景色 */
-  border-radius: 10px;
+#zukan-pages {
   display: flex;
-  align-items: center;
+  overflow: hidden;
+  width: 100%;
   justify-content: center;
-  font-size: 2rem;
-  font-weight: bold;
-  color: #333;
-  position: relative;
+  align-items: center;
+}
+
+.zukan-page {
+  display: flex;
+  gap: 40px; /* 本の中心スペース */
+}
+
+.zukan-left-page, .zukan-right-page {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  grid-template-rows: repeat(3, 1fr);
+  gap: 10px;
+  background: #555;
+  padding: 10px;
+  border-radius: 20px;
+}
+
+.zukan-card {
+  background: gray;
+  border: 2px solid white;
+  border-radius: 8px;
+  width: 80px;
+  height: 100px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  color: white;
+  font-size: 24px;
 }
 
 .zukan-card.caught {
-  background: none; /* 釣った犬は背景色なし */
-  padding: 5px;
-  box-sizing: border-box;
+  background: red;
 }
 
-.zukan-card.caught img {
-  width: 100%;
-  height: 100%;
-  object-fit: contain;
-  border: 3px solid white;
-  border-radius: 5px;
+.zukan-card img {
+  width: 80%;
+  height: auto;
+  border: 2px solid white;
+  border-radius: 4px;
 }
 
 /* 図鑑の犬アイテム */
@@ -218,6 +237,7 @@ button:hover {
 }
 
 /* 音量調整などのUIは必要に応じて追加してください */
+
 
 
 
