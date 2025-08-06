@@ -242,7 +242,6 @@ function checkHit() {
     fishingResult.textContent = "ヒット！";
     if (selectedDog && selectedDog.dog) {
       caughtDogsMap[selectedDog.dog.name] = true;
-      updateZukan();
     }
   } else {
     fishingResult.textContent = "逃げられた…";
@@ -271,6 +270,7 @@ window.addEventListener('load', () => {
       spawnDogs();
     });
 });
+
 
 
 
