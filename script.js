@@ -235,29 +235,24 @@ function checkHit() {
   const fishingUI = document.getElementById('fishing-ui'); // ← 再取得でnull防止
   const fishingResult = document.getElementById('fishing-result');
 
-  if (hit) {
-    fishingResult.textContent = '🎯 ヒット！犬が釣れた！';
-    if (selectedDog && !caughtDogsMap[selectedDog.dog.name]) {
-      caughtDogsMap[selectedDog.dog.name] = selectedDog.dog;
-      updateZukan();
-    }
-  } else {
-    fishingResult.textContent = '💨 のがした…';
-  }
-
-  // 犬の画像を削除
-  if (selectedDog && selectedDog.img) {
-    selectedDog.img.remove();
-  }
-
-  // 完全にUIを消して状態をリセット
-  setTimeout(() => {
-    if (fishingUI) fishingUI.style.display = 'none';
-    if (fishingResult) fishingResult.textContent = '';
-    isFishing = false;
-    selectedDog = null;
-  }, 2000);
+  if (isHit(pointerAngle)) {
+  resultText.textContent = "ヒット！";
+} else {
+  resultText.textContent = "逃げられた…";
 }
+
+// 犬の画像を削除（即時）
+if (selectedDog && selectedDog.img) {
+  selectedDog.img.remove();
+}
+
+// UIの非表示と状態リセット（どちらの場合も共通）
+setTimeout(() => {
+  if (fishingUI) fishingUI.style.display = 'none';
+  if (fishingResult) fishingResult.textContent = '';
+  isFishing = false;
+  selectedDog = null;
+}, 2000);
 
 // ✅ これを checkHit の外に完全に出す！
 window.addEventListener('load', () => {
@@ -269,6 +264,7 @@ window.addEventListener('load', () => {
       spawnDogs();
     });
 });
+
 
 
 
