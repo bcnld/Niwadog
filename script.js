@@ -51,11 +51,11 @@ zukanBtn.addEventListener('click', () => togglePanel(zukanPanel));
 shopBtn.addEventListener('click', () => togglePanel(shopPanel));
 
 // 図鑑更新
-let currentPage = 0;
-const itemsPerPage = 18;
+const zukanNav = document.getElementById('zukan-nav'); // 追加で取得
 
 function updateZukan() {
   zukanList.innerHTML = '';
+  zukanNav.innerHTML = ''; // ← navだけリセット
 
   const sortedDogs = [...dogData].sort((a, b) => a.number - b.number);
   const totalPages = Math.ceil(sortedDogs.length / itemsPerPage);
@@ -83,7 +83,7 @@ function updateZukan() {
     zukanList.appendChild(div);
   }
 
-  // ページナビゲーション
+  // ページナビゲーション（zukanNav に追加）
   const nav = document.createElement('div');
   nav.style.textAlign = 'center';
   nav.style.marginTop = '10px';
@@ -107,7 +107,8 @@ function updateZukan() {
   nav.appendChild(prevBtn);
   nav.appendChild(document.createTextNode(` ページ ${currentPage + 1} / ${totalPages} `));
   nav.appendChild(nextBtn);
-  zukanList.appendChild(nav);
+
+  zukanNav.appendChild(nav);
 }
 
 // 重み付き犬配列
@@ -273,4 +274,5 @@ window.addEventListener('load', () => {
       spawnDogs();
     });
 });
+
 
