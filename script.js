@@ -243,10 +243,6 @@ function checkHit() {
     }
   } else {
     fishingResult.textContent = '💨 のがした…';
-  }
-
-  // 犬画像を削除（ヒットでもミスでも）
-  selectedDog.img.remove();
 
   // 結果表示 → 一定時間後にUI非表示＆状態リセット
   setTimeout(() => {
@@ -272,5 +268,6 @@ window.addEventListener('load', () => {
       spawnDogs();
     });
 });
+
 
 
