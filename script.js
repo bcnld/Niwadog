@@ -229,18 +229,14 @@ function drawRoulette() {
 }
 
 function checkHit() {
-  cancelAnimationFrame(animationId);
-
   const normalized = angle % (2 * Math.PI);
   const normalizedStart = hitZoneStart % (2 * Math.PI);
   const normalizedEnd = hitZoneEnd % (2 * Math.PI);
 
   let isHit = false;
-
   if (normalizedStart < normalizedEnd) {
     isHit = normalized >= normalizedStart && normalized <= normalizedEnd;
   } else {
-    // ヒットゾーンが0をまたぐ場合
     isHit = normalized >= normalizedStart || normalized <= normalizedEnd;
   }
 
@@ -259,13 +255,13 @@ function checkHit() {
     selectedDog.img.remove();
   }
 
-  // 結果表示後、UIを必ず非表示にする
   setTimeout(() => {
     fishingUI.style.display = 'none';
     fishingResult.textContent = '';
     isFishing = false;
-    selectedDog = null;
-  }, 2000); // ← isHit によらず 2000ms に統一してもいいです
+  }, 2000);
+
+  selectedDog = null; // 🔄ここに移動
 }
 
 // ✅ これを checkHit の外に完全に出す！
@@ -278,6 +274,7 @@ window.addEventListener('load', () => {
       spawnDogs();
     });
 });
+
 
 
 
