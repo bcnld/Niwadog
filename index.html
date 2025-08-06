@@ -100,21 +100,20 @@
   <img id="shop-btn" src="images/shop_icon.png" alt="ショップ" />
 
   <!-- 図鑑パネル -->
-  <div id="zukan-pages">
-  <!-- ページ1 -->
-    <div class="zukan-page">
-      <div class="zukan-left-page"></div>
-      <div class="zukan-right-page"></div>
+  <!-- 図鑑パネル -->
+  <div id="zukan-panel" class="panel">
+    <div id="zukan-pages">
+      <div class="zukan-page">
+        <div class="zukan-left-page"></div>
+        <div class="zukan-right-page"></div>
+      </div>
     </div>
-  <!-- ページ2以降も追加される -->
+    <div id="zukan-nav">
+      <button id="prev-page">← 前へ</button>
+      <span id="page-number">1 / ?</span>
+      <button id="next-page">次へ →</button>
+    </div>
   </div>
-
-  <div id="zukan-nav">
-    <button id="prev-page">← 前へ</button>
-    <span id="page-number">1 / ?</span>
-    <button id="next-page">次へ →</button>
-  </div>
-
 
   <!-- ショップパネル -->
   <div id="shop-panel" class="panel">
@@ -145,6 +144,7 @@
   <script src="script.js"></script>
 </body>
 </html>
+
 
 
 
