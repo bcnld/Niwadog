@@ -230,11 +230,16 @@ function drawRoulette() {
 
 function checkHit() {
   const normalized = angle % (2 * Math.PI);
-  const hit = normalized >= hitZoneStart && normalized <= hitZoneEnd;
+
+  let hit = false;
+  if (hitZoneStart < hitZoneEnd) {
+    hit = normalized >= hitZoneStart && normalized <= hitZoneEnd;
+  } else {
+    hit = normalized >= hitZoneStart || normalized <= hitZoneEnd;
+  }
 
   if (hit) {
     fishingResult.textContent = "ヒット！";
-    // 捕まえた犬を記録
     if (selectedDog && selectedDog.dog) {
       caughtDogsMap[selectedDog.dog.name] = true;
     }
@@ -242,18 +247,16 @@ function checkHit() {
     fishingResult.textContent = "逃げられた…";
   }
 
-  // 犬の画像を削除
   if (selectedDog && selectedDog.img) {
     selectedDog.img.remove();
   }
 
-  // 状態リセットとUI非表示
   setTimeout(() => {
     fishingUI.style.display = 'none';
     fishingResult.textContent = '';
     isFishing = false;
     selectedDog = null;
-    spawnDogs(); // 再度犬を出現させる
+    // spawnDogs(); ← 削除済み
   }, 2000);
 }
 
@@ -267,6 +270,7 @@ window.addEventListener('load', () => {
       spawnDogs();
     });
 });
+
 
 
 
