@@ -258,9 +258,17 @@ function checkHit() {
     selectedDog.img.remove();
   }
 
+  // 明示的に止める
+  spinning = false;
+  slowingDown = false;
+  spinSpeed = 0;
+
+  // ルーレットUIを1.5秒後に非表示にする
   setTimeout(() => {
     fishingUI.style.display = 'none';
+    fishingResult.textContent = '';
     isFishing = false;
+    selectedDog = null;
   }, 1500);
 }
 
@@ -274,5 +282,6 @@ window.addEventListener('load', () => {
       spawnDogs();
     });
 });
+
 
 
