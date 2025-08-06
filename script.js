@@ -224,7 +224,7 @@ function drawRoulette() {
   ctx.strokeStyle = '#000';
   ctx.lineWidth = 4;
   ctx.stroke();
-
+  
   if (spinning) {
     angle += spinSpeed;
 
@@ -234,17 +234,19 @@ function drawRoulette() {
         spinSpeed = 0;
         spinning = false;
         slowingDown = false;
+        cancelAnimationFrame(animationId); // ← ここでも明示的に止めてもOK（安全のため）
         checkHit();
         return;
       }
     }
 
-    requestAnimationFrame(drawRoulette);
+    animationId = requestAnimationFrame(drawRoulette); // ← 追加
   }
 }
 
-// 当たり判定
 function checkHit() {
+  cancelAnimationFrame(animationId); // ← 追加
+
   const normalized = angle % (2 * Math.PI);
   if (normalized >= hitZoneStart && normalized <= hitZoneEnd) {
     fishingResult.textContent = '🎯 ヒット！犬が釣れた！';
@@ -258,12 +260,10 @@ function checkHit() {
     selectedDog.img.remove();
   }
 
-  // 明示的に止める
   spinning = false;
   slowingDown = false;
   spinSpeed = 0;
 
-  // ルーレットUIを1.5秒後に非表示にする
   setTimeout(() => {
     fishingUI.style.display = 'none';
     fishingResult.textContent = '';
@@ -282,6 +282,7 @@ window.addEventListener('load', () => {
       spawnDogs();
     });
 });
+
 
 
 
