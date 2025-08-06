@@ -232,7 +232,17 @@ function checkHit() {
   cancelAnimationFrame(animationId);
 
   const normalized = angle % (2 * Math.PI);
-  const isHit = normalized >= hitZoneStart && normalized <= hitZoneEnd;
+  const normalizedStart = hitZoneStart % (2 * Math.PI);
+  const normalizedEnd = hitZoneEnd % (2 * Math.PI);
+
+  let isHit = false;
+
+  if (normalizedStart < normalizedEnd) {
+    isHit = normalized >= normalizedStart && normalized <= normalizedEnd;
+  } else {
+    // ヒットゾーンが0をまたぐ場合
+    isHit = normalized >= normalizedStart || normalized <= normalizedEnd;
+  }
 
   if (isHit) {
     fishingResult.textContent = '🎯 ヒット！犬が釣れた！';
@@ -245,18 +255,17 @@ function checkHit() {
     fishingResult.textContent = '💨 のがした…';
   }
 
-  // 犬の画像削除（ミスでもヒットでも）
   if (selectedDog && selectedDog.img) {
     selectedDog.img.remove();
   }
 
-  // UIの表示を数秒後に非表示へ
+  // 結果表示後、UIを必ず非表示にする
   setTimeout(() => {
     fishingUI.style.display = 'none';
     fishingResult.textContent = '';
     isFishing = false;
     selectedDog = null;
-  }, isHit ? 2000 : 1500);
+  }, 2000); // ← isHit によらず 2000ms に統一してもいいです
 }
 
 // ✅ これを checkHit の外に完全に出す！
@@ -269,6 +278,7 @@ window.addEventListener('load', () => {
       spawnDogs();
     });
 });
+
 
 
 
