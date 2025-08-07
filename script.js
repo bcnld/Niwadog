@@ -310,6 +310,7 @@ function checkHit() {
       selectedDog.img.remove();
       selectedDog = null;
       updateZukan();
+      showCatchOverlay();
     }, 1500);
   } else {
     fishingResult.textContent = "逃げられた…";
@@ -338,6 +339,7 @@ window.addEventListener('load', () => {
       spawnDogs();
     });
 });
+
 
 
 
