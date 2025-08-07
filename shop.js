@@ -4,17 +4,29 @@ const sfxOpen = document.getElementById('sfx-open');
 const sfxClose = document.getElementById('sfx-close');
 
 function toggleShop() {
-  const isOpen = shopPanel.style.display === 'block';
+  const isOpen = shopPanel.classList.contains('active');
+
   if (isOpen) {
-    shopPanel.style.display = 'none';
-    sfxClose.play().catch(() => {});
+    shopPanel.classList.remove('active');
+    try {
+      sfxClose.play();
+    } catch (e) {
+      console.warn('Close SFX failed:', e);
+    }
   } else {
-    // 他のパネル（図鑑とか）があるなら閉じる処理ここで追加可能
-    shopPanel.style.display = 'block';
-    sfxOpen.play().catch(() => {});
+    // 他パネルを閉じる処理をここに入れてもOK（例: 図鑑）
+    const zukanPanel = document.getElementById('zukan-panel');
+    if (zukanPanel) {
+      zukanPanel.classList.remove('active');
+    }
+
+    shopPanel.classList.add('active');
+    try {
+      sfxOpen.play();
+    } catch (e) {
+      console.warn('Open SFX failed:', e);
+    }
   }
 }
 
-shopBtn.addEventListener('click', () => {
-  toggleShop();
-});
+shopBtn.addEventListener('click', toggleShop);
