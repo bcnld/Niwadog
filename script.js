@@ -276,10 +276,12 @@ function checkHit() {
     if (selectedDog && selectedDog.dog) {
       caughtDogsMap[selectedDog.dog.number] = selectedDog.dog;
       updateZukan();
-      showCaughtUI(selectedDog.dog); // 釣れたときのUIもここで出す
+      isFishing = false; // ← ここで確実に false に
+      showCaughtUI(selectedDog.dog);
     }
   } else {
     fishingResult.textContent = "逃げられた…";
+    isFishing = false; // ← 外れた時もリセット
   }
 
   if (selectedDog && selectedDog.img) {
@@ -289,8 +291,9 @@ function checkHit() {
   setTimeout(() => {
     fishingUI.style.display = 'none';
     fishingResult.textContent = '';
-    isFishing = false;
     selectedDog = null;
+
+    spawnDogs(); // ← 犬を復活させる
   }, 2000);
 }
 
@@ -304,6 +307,7 @@ window.addEventListener('load', () => {
       spawnDogs();
     });
 });
+
 
 
 
