@@ -1,21 +1,25 @@
 // ==== 図鑑用グローバル変数とページ管理 ====
+let dogData = [];
+let caughtDogsMap = {};
+let currentPage = 0;
+const itemsPerPage = 18;
+
+// DOM要素取得
 const zukanBtn = document.getElementById('zukan-btn');
 const zukanOverlay = document.getElementById('zukan-overlay');
 const zukanList = document.getElementById('zukan-list');
 const zukanNav = document.getElementById('zukan-nav');
+const zukanClose = document.getElementById('zukan-close');
 
-let dogData = [];
-let caughtDogsMap = {};
-
-let currentPage = 0;
-const itemsPerPage = 18;
-
-// 図鑑開閉用関数
+// 図鑑の表示/非表示切り替え
 function toggleZukan() {
-  if (zukanOverlay.classList.contains('active')) {
+  const isActive = zukanOverlay.classList.contains('active');
+  if (isActive) {
     zukanOverlay.classList.remove('active');
+    zukanOverlay.style.display = 'none';
   } else {
     zukanOverlay.classList.add('active');
+    zukanOverlay.style.display = 'block';
     updateZukan();
   }
 }
@@ -23,7 +27,6 @@ function toggleZukan() {
 // 図鑑表示更新関数
 function updateZukan() {
   if (!dogData || dogData.length === 0) return;
-  if (!caughtDogsMap) caughtDogsMap = {};
 
   zukanList.innerHTML = '';
   zukanNav.innerHTML = '';
@@ -36,7 +39,7 @@ function updateZukan() {
   const pageDogs = sortedDogs.slice(startIndex, startIndex + itemsPerPage);
 
   const leftDogs = pageDogs.slice(0, 9);
-  const rightDogs = pageDogs.slice(9, 18);
+  const rightDogs = pageDogs.slice(9);
 
   const leftPage = document.createElement('div');
   leftPage.className = 'zukan-page';
@@ -49,42 +52,32 @@ function updateZukan() {
       const item = document.createElement('div');
       item.className = 'zukan-item';
 
-      if (caughtDogsMap[dog.number]) {
-        item.classList.add('caught');
-        const caughtDog = caughtDogsMap[dog.number];
+      const numberSpan = document.createElement('span');
+      numberSpan.className = 'dog-number';
+      numberSpan.textContent = `No.${dog.number}`;
 
+      if (caughtDogsMap[dog.number]) {
+        const caughtDog = caughtDogsMap[dog.number];
         const img = document.createElement('img');
         img.src = caughtDog.image;
         img.alt = caughtDog.name;
         img.title = caughtDog.name;
         img.className = 'dog-image';
 
-        item.classList.add(caughtDog.rarity || 'common');
-
-        const numberSpan = document.createElement('span');
-        numberSpan.className = 'dog-number';
-        numberSpan.textContent = `No.${dog.number}`;
-
+        item.classList.add('caught', caughtDog.rarity || 'common');
         item.appendChild(img);
-        item.appendChild(numberSpan);
-
         item.addEventListener('click', () => {
           alert(`No.${dog.number} ${dog.name}\n${dog.description}`);
         });
       } else {
-        item.classList.add('not-caught');
-
         const question = document.createElement('div');
         question.className = 'question-mark';
         question.textContent = '?';
-
-        const numberSpan = document.createElement('span');
-        numberSpan.className = 'dog-number';
-        numberSpan.textContent = `No.${dog.number}`;
-
+        item.classList.add('not-caught');
         item.appendChild(question);
-        item.appendChild(numberSpan);
       }
+
+      item.appendChild(numberSpan);
       container.appendChild(item);
     });
   });
@@ -116,26 +109,18 @@ function updateZukan() {
   nav.appendChild(prevBtn);
   nav.appendChild(document.createTextNode(` ページ ${currentPage + 1} / ${totalPages} `));
   nav.appendChild(nextBtn);
-
   zukanNav.appendChild(nav);
 }
 
-// 図鑑ボタンにイベント追加
-zukanBtn.addEventListener('click', () => {
-  toggleZukan();
-});
+// イベント登録
+zukanBtn.addEventListener('click', toggleZukan);
+zukanClose.addEventListener('click', toggleZukan);
 
-// ページ読み込み時にデータ読み込みと初期化
+// ページ読み込み時にデータ読み込み
 window.addEventListener('load', () => {
-  // localStorageから捕まえた犬情報読み込み
   const stored = localStorage.getItem('caughtDogs');
-  if (stored) {
-    caughtDogsMap = JSON.parse(stored);
-  } else {
-    caughtDogsMap = {};
-  }
+  caughtDogsMap = stored ? JSON.parse(stored) : {};
 
-  // dog.jsonをfetchしてdogDataにセット
   fetch('dog.json')
     .then(res => res.json())
     .then(data => {
