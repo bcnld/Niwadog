@@ -255,42 +255,48 @@ button:hover {
 
 #catch-overlay {
   position: fixed;
-  top: 0; left: 0;
-  width: 100vw; height: 100vh;
-  background-color: rgba(0, 0, 0, 0.6);
-  display: flex;
-  align-items: center;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background-color: rgba(255, 255, 255, 0.8);
+  display: none;
   justify-content: center;
-  z-index: 2000;
+  align-items: center;
+  z-index: 9999;
 }
 
 #catch-content {
+  text-align: center;
   background: white;
   padding: 20px;
+  border: 2px solid #444;
   border-radius: 10px;
-  text-align: center;
+  box-shadow: 0 0 10px rgba(0,0,0,0.5);
 }
 
 #caught-dog-img {
   width: 150px;
+  height: auto;
   margin-bottom: 10px;
 }
 
 #caught-message {
-  font-size: 1.2rem;
+  font-size: 1.2em;
   margin-bottom: 10px;
 }
 
 #catch-close {
-  background: #ccc;
-  padding: 5px 15px;
-  border-radius: 5px;
   cursor: pointer;
+  color: blue;
+  font-weight: bold;
+  text-decoration: underline;
 }
 
 
 
 /* 音量調整などのUIは必要に応じて追加してください */
+
 
 
 
