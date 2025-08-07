@@ -1,5 +1,3 @@
-// shop.js
-
 const shopBtn = document.getElementById('shop-btn');
 const shopPanel = document.getElementById('shop-panel');
 const sfxOpen = document.getElementById('sfx-open');
