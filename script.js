@@ -133,6 +133,21 @@ function createWeightedDogs(dogs) {
   return weighted;
 }
 
+window.addEventListener('load', () => {
+  const storedZukan = localStorage.getItem('caughtDogs');
+  if (storedZukan) {
+    caughtDogsMap = JSON.parse(storedZukan);
+  }
+
+  fetch('dog.json')
+    .then(res => res.json())
+    .then(data => {
+      dogData = data;
+      weightedDogs = createWeightedDogs(data);
+      spawnDogs();
+      updateZukan();
+    });
+
 function spawnDogs() {
   waterArea.innerHTML = '';
   spawnedDogs = [];
@@ -322,4 +337,5 @@ window.addEventListener('load', () => {
       spawnDogs();
     });
 });
+
 
