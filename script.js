@@ -25,6 +25,7 @@ document.body.addEventListener('click', () => {
   if (bgm.paused) bgm.play().catch(() => {});
 }, { once: true });
 
+// 画面内の他パネル開閉用関数（Zukan.jsと共通で使う想定）
 function togglePanel(panel) {
   if (isFishing) return;
   const isOpen = panel.style.display === 'block';
@@ -32,7 +33,7 @@ function togglePanel(panel) {
     panel.style.display = 'none';
     sfxClose.play().catch(() => {});
   } else {
-    [shopPanel].forEach(p => {
+    [shopPanel, zukanPanel].forEach(p => {
       if (p !== panel) p.style.display = 'none';
     });
     panel.style.display = 'block';
@@ -42,6 +43,7 @@ function togglePanel(panel) {
 
 shopBtn.addEventListener('click', () => togglePanel(shopPanel));
 
+// 重みづけ配列作成
 function createWeightedDogs(dogs) {
   const weighted = [];
   dogs.forEach(dog => {
@@ -52,6 +54,7 @@ function createWeightedDogs(dogs) {
 }
 
 window.addEventListener('load', () => {
+  // localStorageから捕まえた犬情報読み込み
   const stored = localStorage.getItem('caughtDogs');
   if (stored) caughtDogsMap = JSON.parse(stored);
 
@@ -212,13 +215,18 @@ function checkHit() {
 
       const dogName = selectedDog.dog.name;
       const dogImage = selectedDog.img.src;
+      const dogId = Number(selectedDog.dog.number);
 
       showCatchOverlay(dogName, dogImage);
 
-      const dogId = selectedDog.dog.number;
       if (!caughtDogsMap[dogId]) {
         caughtDogsMap[dogId] = selectedDog.dog;
         localStorage.setItem('caughtDogs', JSON.stringify(caughtDogsMap));
+      }
+
+      // 図鑑更新を呼ぶ（Zukan.jsの関数がグローバルにある前提）
+      if (typeof updateZukan === 'function') {
+        updateZukan();
       }
 
       isFishing = false;
@@ -241,8 +249,7 @@ function checkHit() {
     }, 1500);
   }
 }
-  
-// ✅ これを checkHit の外に完全に出す！
+
 window.addEventListener('load', () => {
   fetch('dog.json')
     .then(res => res.json())
@@ -252,10 +259,3 @@ window.addEventListener('load', () => {
       spawnDogs();
     });
 });
-
-
-
-
-
-
-
