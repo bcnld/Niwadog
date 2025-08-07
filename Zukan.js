@@ -4,19 +4,22 @@ const zukanList = document.getElementById('zukan-list');
 const zukanNav = document.getElementById('zukan-nav');
 
 let currentPage = 0;
-const itemsPerPage = 18;
+const itemsPerPage = 18; // 3x3 + 3x3
 
 // 図鑑の開閉と更新
 zukanBtn.addEventListener('click', () => {
-  togglePanel(zukanPanel);
-  updateZukan();
+  if (zukanPanel.style.display === 'block') {
+    zukanPanel.style.display = 'none';
+  } else {
+    zukanPanel.style.display = 'block';
+    updateZukan();
+  }
 });
 
 function updateZukan() {
   zukanList.innerHTML = '';
   zukanNav.innerHTML = '';
 
-  // dogData と caughtDogsMap はグローバルで共有されている想定
   const sortedDogs = [...dogData].sort((a, b) => a.number - b.number);
   const totalPages = Math.ceil(sortedDogs.length / itemsPerPage);
   const startIndex = currentPage * itemsPerPage;
@@ -37,23 +40,22 @@ function updateZukan() {
       const div = document.createElement('div');
       div.className = 'zukan-item';
 
-      // 捕まえた犬がいれば画像と番号表示
       if (caughtDogsMap[dog.number]) {
         div.classList.add('caught');
-        const caughtDog = caughtDogsMap[dog.number];
 
+        const caughtDog = caughtDogsMap[dog.number];
         const img = document.createElement('img');
         img.src = caughtDog.image;
         img.alt = caughtDog.name;
         img.title = caughtDog.name;
         img.className = 'dog-image';
 
-        // レアリティに応じたクラス付与
-        div.classList.add(caughtDog.rarity || 'common');
-
         const numberSpan = document.createElement('span');
         numberSpan.className = 'dog-number';
         numberSpan.textContent = `No.${dog.number}`;
+
+        // レアリティに応じて枠色のクラス
+        div.classList.add(caughtDog.rarity || 'common');
 
         div.appendChild(img);
         div.appendChild(numberSpan);
@@ -62,7 +64,6 @@ function updateZukan() {
           alert(`No.${dog.number} ${dog.name}\n${dog.description}`);
         });
       } else {
-        // 未捕獲は？マークと番号
         div.classList.add('not-caught');
 
         const question = document.createElement('div');
@@ -84,7 +85,7 @@ function updateZukan() {
   zukanList.appendChild(leftPage);
   zukanList.appendChild(rightPage);
 
-  // ページナビゲーション
+  // ナビゲーション
   const nav = document.createElement('div');
   nav.style.textAlign = 'center';
   nav.style.marginTop = '10px';
