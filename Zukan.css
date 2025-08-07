@@ -1,21 +1,19 @@
 /* 図鑑オーバーレイ全体 */
-#zukan-overlay {
+.overlay {
   position: fixed;
-  top: 0; left: 0;
-  width: 100vw; height: 100vh;
-  background: rgba(0,0,0,0.6);
-  display: flex;
-  justify-content: center;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background-color: rgba(0, 0, 0, 0.5); /* 薄暗く */
+  display: none;
   align-items: center;
-  z-index: 1000;
-  visibility: hidden;
-  opacity: 0;
-  transition: opacity 0.3s ease;
+  justify-content: center;
+  z-index: 999; /* 他より前面に */
 }
 
-#zukan-overlay.active {
-  visibility: visible;
-  opacity: 1;
+.overlay.active {
+  display: flex;
 }
 
 /* 図鑑本体 */
