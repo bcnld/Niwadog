@@ -293,6 +293,7 @@ function checkHit() {
       isFishing = false;
       selectedDog.img.remove();
       selectedDog = null;
+      updateZukan();
     }, 1500);
   } else {
     fishingResult.textContent = "逃げられた…";
@@ -321,3 +322,4 @@ window.addEventListener('load', () => {
       spawnDogs();
     });
 });
+
