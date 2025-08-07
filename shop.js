@@ -6,26 +6,18 @@ const sfxClose = document.getElementById('sfx-close');
 function toggleShop() {
   const isOpen = shopPanel.classList.contains('active');
 
+  // 図鑑のオーバーレイも閉じる
+  const zukanOverlay = document.getElementById('zukan-overlay');
+  if (zukanOverlay.classList.contains('active')) {
+    zukanOverlay.classList.remove('active');
+  }
+
   if (isOpen) {
     shopPanel.classList.remove('active');
-    try {
-      sfxClose.play();
-    } catch (e) {
-      console.warn('Close SFX failed:', e);
-    }
+    try { sfxClose.play(); } catch {}
   } else {
-    // 他パネルを閉じる処理をここに入れてもOK（例: 図鑑）
-    const zukanPanel = document.getElementById('zukan-panel');
-    if (zukanPanel) {
-      zukanPanel.classList.remove('active');
-    }
-
     shopPanel.classList.add('active');
-    try {
-      sfxOpen.play();
-    } catch (e) {
-      console.warn('Open SFX failed:', e);
-    }
+    try { sfxOpen.play(); } catch {}
   }
 }
 
