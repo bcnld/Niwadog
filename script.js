@@ -290,29 +290,30 @@ function checkHit() {
   }
 
   if (hit) {
-    fishingResult.textContent = "ヒット！";
+  fishingResult.textContent = "ヒット！";
 
-    setTimeout(() => {
-      fishingUI.style.display = 'none';
-      fishingResult.textContent = "";
+  setTimeout(() => {
+    fishingUI.style.display = 'none';
+    fishingResult.textContent = "";
 
-      document.getElementById('catch-overlay').style.display = 'flex';
-      document.getElementById('caught-dog-img').src = selectedDog.img.src;
-      document.getElementById('caught-message').textContent = `${selectedDog.dog.name} をつかまえた！`;
+    const dogName = selectedDog.dog.name;
+    const dogImage = selectedDog.img.src;
 
-      const dogId = selectedDog.dog.number;
-      if (!caughtDogsMap[dogId]) {
-        caughtDogsMap[dogId] = selectedDog.dog;
-        localStorage.setItem('caughtDogs', JSON.stringify(caughtDogsMap));
-      }
+    showCatchOverlay(dogName, dogImage); // ✅ 正しく渡す！
 
-      isFishing = false;
-      selectedDog.img.remove();
-      selectedDog = null;
-      updateZukan();
-      showCatchOverlay();
-    }, 1500);
-  } else {
+    const dogId = selectedDog.dog.number;
+    if (!caughtDogsMap[dogId]) {
+      caughtDogsMap[dogId] = selectedDog.dog;
+      localStorage.setItem('caughtDogs', JSON.stringify(caughtDogsMap));
+    }
+
+    isFishing = false;
+    selectedDog.img.remove();
+    selectedDog = null;
+
+    updateZukan();
+  }, 1500);
+} else {
     fishingResult.textContent = "逃げられた…";
 
     setTimeout(() => {
@@ -339,6 +340,7 @@ window.addEventListener('load', () => {
       spawnDogs();
     });
 });
+
 
 
 
