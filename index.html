@@ -99,11 +99,17 @@
   <img id="zukan-btn" src="images/zukan_icon.png" alt="図鑑" />
   <img id="shop-btn" src="images/shop_icon.png" alt="ショップ" />
 
-  <!-- 図鑑パネル -->
-  <div id="zukan-panel" class="panel">
-    <div id="zukan-list"></div> <!-- ← ここだけでOK -->
-    <div id="zukan-nav"></div> <!-- ← 中身はJSで生成 -->
-  </div> <!-- ←ここで #zukan-panel を閉じる -->
+  <div id="zukan-overlay">
+    <div id="zukan-container">
+      <div id="zukan-list">
+      <!-- 左右のページ .zukan-page が2つ入る -->
+      </div>
+      <div id="zukan-nav"></div>
+
+      <button id="zukan-prev">‹</button>
+      <button id="zukan-next">›</button>
+    </div>
+  </div>
 
 <!-- ✅ 図鑑の外に出す -->
   <div id="catch-overlay" style="display: none;">
@@ -145,6 +151,7 @@
   <script src="Zukan.js"></script> <!-- ← 追加！ -->
 </body>
 </html>
+
 
 
 
