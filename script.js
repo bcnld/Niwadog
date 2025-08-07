@@ -1,13 +1,9 @@
 const waterArea = document.getElementById('water-area');
 const bgm = document.getElementById('bgm');
-const zukanBtn = document.getElementById('zukan-btn');
 const shopBtn = document.getElementById('shop-btn');
-const zukanPanel = document.getElementById('zukan-panel');
 const shopPanel = document.getElementById('shop-panel');
 const sfxOpen = document.getElementById('sfx-open');
 const sfxClose = document.getElementById('sfx-close');
-const zukanList = document.getElementById('zukan-list');
-const zukanNav = document.getElementById('zukan-nav');
 const fishingUI = document.getElementById('fishing-ui');
 const fishingResult = document.getElementById('fishing-result');
 const reelButton = document.getElementById('reel-button');
@@ -18,8 +14,6 @@ let dogData = [], weightedDogs = [], spawnedDogs = [];
 let caughtDogsMap = {};
 let isFishing = false, selectedDog = null;
 const maxDogs = 6, bottomLandHeight = 100;
-const itemsPerPage = 18;
-let currentPage = 0;
 
 let angle = 0, spinSpeed = 0;
 let spinning = false, slowingDown = false;
@@ -32,13 +26,13 @@ document.body.addEventListener('click', () => {
 }, { once: true });
 
 function togglePanel(panel) {
-  if (isFishing) return; // ← こちらのチェックに切り替えると正しく動作する
+  if (isFishing) return;
   const isOpen = panel.style.display === 'block';
   if (isOpen) {
     panel.style.display = 'none';
     sfxClose.play().catch(() => {});
   } else {
-    [zukanPanel, shopPanel].forEach(p => {
+    [shopPanel].forEach(p => {
       if (p !== panel) p.style.display = 'none';
     });
     panel.style.display = 'block';
@@ -46,83 +40,7 @@ function togglePanel(panel) {
   }
 }
 
-zukanBtn.addEventListener('click', () => togglePanel(zukanPanel));
 shopBtn.addEventListener('click', () => togglePanel(shopPanel));
-
-function updateZukan() {
-  zukanList.innerHTML = '';
-  zukanNav.innerHTML = '';
-
-  const sortedDogs = [...dogData].sort((a, b) => a.number - b.number);
-  const totalPages = Math.ceil(sortedDogs.length / (itemsPerPage)); // itemsPerPage = 18
-  const startIndex = currentPage * itemsPerPage;
-  const pageDogs = sortedDogs.slice(startIndex, startIndex + itemsPerPage);
-
-  // 左右ページに分ける（片面9匹ずつ）
-  const leftDogs = pageDogs.slice(0, 9);
-  const rightDogs = pageDogs.slice(9, 18);
-
-  const leftPage = document.createElement('div');
-  leftPage.className = 'zukan-page';
-
-  const rightPage = document.createElement('div');
-  rightPage.className = 'zukan-page';
-
-  [leftDogs, rightDogs].forEach((dogSet, i) => {
-    const page = i === 0 ? leftPage : rightPage;
-    for (const dog of dogSet) {
-      const div = document.createElement('div');
-      div.className = 'zukan-card';
-
-  if (caughtDogsMap[dog.number]) {
-    div.classList.add('caught');
-    const caughtDog = caughtDogsMap[dog.number];
-    const img = document.createElement('img');
-    img.src = caughtDog.image;
-    img.alt = caughtDog.name;
-    img.title = caughtDog.name;
-    div.appendChild(img);
-    div.addEventListener('click', () => {
-      alert(`No.${dog.number} ${dog.name}\n${dog.description}`);
-    });
-  } else {
-    div.textContent = '?';
-  }
-
-      page.appendChild(div);
-    }
-  });
-
-  zukanList.appendChild(leftPage);
-  zukanList.appendChild(rightPage);
-
-  // ページナビゲーション
-  const nav = document.createElement('div');
-  nav.style.textAlign = 'center';
-  nav.style.marginTop = '10px';
-
-  const prevBtn = document.createElement('button');
-  prevBtn.textContent = '前へ';
-  prevBtn.disabled = currentPage === 0;
-  prevBtn.onclick = () => {
-    currentPage--;
-    updateZukan();
-  };
-
-  const nextBtn = document.createElement('button');
-  nextBtn.textContent = '次へ';
-  nextBtn.disabled = currentPage >= totalPages - 1;
-  nextBtn.onclick = () => {
-    currentPage++;
-    updateZukan();
-  };
-
-  nav.appendChild(prevBtn);
-  nav.appendChild(document.createTextNode(` ページ ${currentPage + 1} / ${totalPages} `));
-  nav.appendChild(nextBtn);
-
-  zukanNav.appendChild(nav);
-}
 
 function createWeightedDogs(dogs) {
   const weighted = [];
@@ -134,10 +52,8 @@ function createWeightedDogs(dogs) {
 }
 
 window.addEventListener('load', () => {
-  const storedZukan = localStorage.getItem('caughtDogs');
-  if (storedZukan) {
-    caughtDogsMap = JSON.parse(storedZukan);
-  }
+  const stored = localStorage.getItem('caughtDogs');
+  if (stored) caughtDogsMap = JSON.parse(stored);
 
   fetch('dog.json')
     .then(res => res.json())
@@ -145,7 +61,6 @@ window.addEventListener('load', () => {
       dogData = data;
       weightedDogs = createWeightedDogs(data);
       spawnDogs();
-      updateZukan();
     });
 });
 
@@ -189,7 +104,7 @@ function spawnDogs() {
     move();
 
     img.addEventListener('click', () => {
-      if (isFishing || zukanPanel.style.display === 'block' || shopPanel.style.display === 'block') return;
+      if (isFishing || shopPanel.style.display === 'block') return;
       selectedDog = { img, dog };
       startFishing();
     });
@@ -204,6 +119,7 @@ function startFishing() {
   fishingResult.textContent = '';
   fishingUI.style.display = 'block';
 
+  hitZoneStart = Math.random() * 2 * Math.PI;
   hitZoneEnd = hitZoneStart + Math.PI;
   if (hitZoneEnd > 2 * Math.PI) hitZoneEnd -= 2 * Math.PI;
 
@@ -246,17 +162,17 @@ function drawRoulette() {
   if (spinning) {
     angle += spinSpeed;
 
-  if (slowingDown) {
-    spinSpeed -= 0.005;
-    if (spinSpeed <= 0) {
-      spinSpeed = 0;
-      spinning = false;
-      slowingDown = false;
-      cancelAnimationFrame(animationId); // アニメーション停止
-      checkHit(); // ヒット判定呼び出し
-      return;
+    if (slowingDown) {
+      spinSpeed -= 0.005;
+      if (spinSpeed <= 0) {
+        spinSpeed = 0;
+        spinning = false;
+        slowingDown = false;
+        cancelAnimationFrame(animationId);
+        checkHit();
+        return;
+      }
     }
-  }
 
     animationId = requestAnimationFrame(drawRoulette);
   }
@@ -275,8 +191,6 @@ function showCatchOverlay(dogName, dogImageUrl) {
 
 document.getElementById('catch-close').addEventListener('click', () => {
   document.getElementById('catch-overlay').style.display = 'none';
-  updateZukan();
-  // ここで図鑑の更新など必要なら追加
 });
 
 function checkHit() {
@@ -290,30 +204,28 @@ function checkHit() {
   }
 
   if (hit) {
-  fishingResult.textContent = "ヒット！";
+    fishingResult.textContent = "ヒット！";
 
-  setTimeout(() => {
-    fishingUI.style.display = 'none';
-    fishingResult.textContent = "";
+    setTimeout(() => {
+      fishingUI.style.display = 'none';
+      fishingResult.textContent = "";
 
-    const dogName = selectedDog.dog.name;
-    const dogImage = selectedDog.img.src;
+      const dogName = selectedDog.dog.name;
+      const dogImage = selectedDog.img.src;
 
-    showCatchOverlay(dogName, dogImage); // ✅ 正しく渡す！
+      showCatchOverlay(dogName, dogImage);
 
-    const dogId = selectedDog.dog.number;
-    if (!caughtDogsMap[dogId]) {
-      caughtDogsMap[dogId] = selectedDog.dog;
-      localStorage.setItem('caughtDogs', JSON.stringify(caughtDogsMap));
-    }
+      const dogId = selectedDog.dog.number;
+      if (!caughtDogsMap[dogId]) {
+        caughtDogsMap[dogId] = selectedDog.dog;
+        localStorage.setItem('caughtDogs', JSON.stringify(caughtDogsMap));
+      }
 
-    isFishing = false;
-    selectedDog.img.remove();
-    selectedDog = null;
-
-    updateZukan();
-  }, 1500);
-} else {
+      isFishing = false;
+      selectedDog.img.remove();
+      selectedDog = null;
+    }, 1500);
+  } else {
     fishingResult.textContent = "逃げられた…";
 
     setTimeout(() => {
@@ -329,7 +241,7 @@ function checkHit() {
     }, 1500);
   }
 }
-
+  
 // ✅ これを checkHit の外に完全に出す！
 window.addEventListener('load', () => {
   fetch('dog.json')
@@ -340,6 +252,7 @@ window.addEventListener('load', () => {
       spawnDogs();
     });
 });
+
 
 
 
