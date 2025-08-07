@@ -6,12 +6,17 @@ const zukanNav = document.getElementById('zukan-nav');
 let currentPage = 0;
 const itemsPerPage = 18;
 
-zukanBtn.addEventListener('click', () => togglePanel(zukanPanel));
+// 図鑑の開閉と更新
+zukanBtn.addEventListener('click', () => {
+  togglePanel(zukanPanel);
+  updateZukan();
+});
 
 function updateZukan() {
   zukanList.innerHTML = '';
   zukanNav.innerHTML = '';
 
+  // dogData と caughtDogsMap はグローバルで共有されている想定
   const sortedDogs = [...dogData].sort((a, b) => a.number - b.number);
   const totalPages = Math.ceil(sortedDogs.length / itemsPerPage);
   const startIndex = currentPage * itemsPerPage;
@@ -26,16 +31,14 @@ function updateZukan() {
   const rightPage = document.createElement('div');
   rightPage.className = 'zukan-page';
 
-  // 判定：捕まえた犬が0匹なら全部「？」にする
-  const hasCaughtAny = Object.keys(caughtDogsMap).length > 0;
-
   [leftDogs, rightDogs].forEach((dogSet, i) => {
     const page = i === 0 ? leftPage : rightPage;
     for (const dog of dogSet) {
       const div = document.createElement('div');
-      div.className = 'zukan-card';
+      div.className = 'zukan-item';
 
-      if (hasCaughtAny && caughtDogsMap[dog.number]) {
+      // 捕まえた犬がいれば画像と番号表示
+      if (caughtDogsMap[dog.number]) {
         div.classList.add('caught');
         const caughtDog = caughtDogsMap[dog.number];
 
@@ -43,6 +46,10 @@ function updateZukan() {
         img.src = caughtDog.image;
         img.alt = caughtDog.name;
         img.title = caughtDog.name;
+        img.className = 'dog-image';
+
+        // レアリティに応じたクラス付与
+        div.classList.add(caughtDog.rarity || 'common');
 
         const numberSpan = document.createElement('span');
         numberSpan.className = 'dog-number';
@@ -55,12 +62,12 @@ function updateZukan() {
           alert(`No.${dog.number} ${dog.name}\n${dog.description}`);
         });
       } else {
-        // 捕まえてない or 捕まえた犬0匹の時は全部「？」
+        // 未捕獲は？マークと番号
         div.classList.add('not-caught');
 
         const question = document.createElement('div');
-        question.className = 'unknown-dog';
-        question.innerHTML = '?';
+        question.className = 'question-mark';
+        question.textContent = '?';
 
         const numberSpan = document.createElement('span');
         numberSpan.className = 'dog-number';
