@@ -32,7 +32,7 @@ document.body.addEventListener('click', () => {
 }, { once: true });
 
 function togglePanel(panel) {
-  if (fishingUI.style.display === 'block') return;
+  if (isFishing) return; // ← こちらのチェックに切り替えると正しく動作する
   const isOpen = panel.style.display === 'block';
   if (isOpen) {
     panel.style.display = 'none';
@@ -303,6 +303,7 @@ window.addEventListener('load', () => {
       spawnDogs();
     });
 });
+
 
 
 
