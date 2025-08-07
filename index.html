@@ -96,19 +96,24 @@
   <div id="bottom-land"></div>
 
   <!-- ボタン -->
-  <img id="zukan-btn" src="images/zukan_icon.png" alt="図鑑" />
-  <img id="shop-btn" src="images/shop_icon.png" alt="ショップ" />
+<!-- 図鑑ボタン -->
+  <img id="zukan-btn" src="images/zukan_icon.png" alt="図鑑" style="cursor:pointer;" />
+
+<!-- ショップボタン -->
+  <img id="shop-btn" src="images/shop_icon.png" alt="ショップ" style="cursor:pointer;" />
 
 <!-- 図鑑パネル -->
-  <div id="zukan-panel" class="panel">
-    <h2>図鑑</h2>
-    <div id="zukan-list"></div>
-    <div id="zukan-nav"></div>
-    <button id="zukan-close">閉じる</button>
+  <div id="zukan-overlay" class="overlay" style="display:none;">
+    <div id="zukan-panel" class="panel">
+      <h2>図鑑</h2>
+      <div id="zukan-list"></div>
+      <div id="zukan-nav"></div>
+      <button id="zukan-close">閉じる</button>
+    </div>
   </div>
 
 <!-- ショップパネル -->
-  <div id="shop-panel" class="panel">
+  <div id="shop-panel" class="panel" style="display:none;">
     <h2>ショップ</h2>
     <p>アイテム購入機能などをここに追加します。</p>
     <button id="shop-close">閉じる</button>
@@ -148,6 +153,7 @@
   <script src="Zukan.js"></script> <!-- ← 追加！ -->
 </body>
 </html>
+
 
 
 
