@@ -1,14 +1,12 @@
-// グローバル変数として参照されることを想定
+// 図鑑用グローバル変数とページ管理
 const zukanOverlay = document.getElementById('zukan-overlay');
 const zukanList = document.getElementById('zukan-list');
 const zukanNav = document.getElementById('zukan-nav');
 
-window.zukanPanel = zukanOverlay;
-
 let currentPage = 0;
 const itemsPerPage = 18;
 
-// 図鑑開閉用関数（他JSの togglePanel() と連携）
+// 図鑑開閉用関数
 function toggleZukan() {
   const isOpen = zukanOverlay.style.display === 'block';
   if (isOpen) {
@@ -21,24 +19,22 @@ function toggleZukan() {
 
 // 図鑑表示更新関数
 function updateZukan() {
-  if (!window.dogData) return; // dogDataが未ロードなら何もしない
-  if (!window.caughtDogsMap) window.caughtDogsMap = {};
+  if (!dogData || dogData.length === 0) return;
+  if (!caughtDogsMap) caughtDogsMap = {};
 
   zukanList.innerHTML = '';
   zukanNav.innerHTML = '';
 
-  const sortedDogs = [...window.dogData].sort((a, b) => a.number - b.number);
+  const sortedDogs = [...dogData].sort((a, b) => a.number - b.number);
   const totalPages = Math.ceil(sortedDogs.length / itemsPerPage);
   if (currentPage >= totalPages) currentPage = 0;
 
   const startIndex = currentPage * itemsPerPage;
   const pageDogs = sortedDogs.slice(startIndex, startIndex + itemsPerPage);
 
-  // 左右ページに分割（9個ずつ）
   const leftDogs = pageDogs.slice(0, 9);
   const rightDogs = pageDogs.slice(9, 18);
 
-  // ページコンテナ作成
   const leftPage = document.createElement('div');
   leftPage.className = 'zukan-page';
   const rightPage = document.createElement('div');
@@ -50,9 +46,9 @@ function updateZukan() {
       const item = document.createElement('div');
       item.className = 'zukan-item';
 
-      if (window.caughtDogsMap[dog.number]) {
+      if (caughtDogsMap[dog.number]) {
         item.classList.add('caught');
-        const caughtDog = window.caughtDogsMap[dog.number];
+        const caughtDog = caughtDogsMap[dog.number];
 
         const img = document.createElement('img');
         img.src = caughtDog.image;
@@ -73,7 +69,6 @@ function updateZukan() {
           alert(`No.${dog.number} ${dog.name}\n${dog.description}`);
         });
       } else {
-        // 未捕獲
         item.classList.add('not-caught');
 
         const question = document.createElement('div');
@@ -87,7 +82,6 @@ function updateZukan() {
         item.appendChild(question);
         item.appendChild(numberSpan);
       }
-
       container.appendChild(item);
     });
   });
@@ -95,7 +89,7 @@ function updateZukan() {
   zukanList.appendChild(leftPage);
   zukanList.appendChild(rightPage);
 
-  // ページナビゲーション作成
+  // ページナビゲーション
   const nav = document.createElement('div');
   nav.style.textAlign = 'center';
   nav.style.marginTop = '10px';
@@ -123,21 +117,7 @@ function updateZukan() {
   zukanNav.appendChild(nav);
 }
 
-// 図鑑ボタン押下で開閉（script.js側と同じtogglePanelではなく、ここで完結させても良い）
-const zukanBtn = document.getElementById('zukan-btn');
+// 図鑑ボタンにイベント追加
 zukanBtn.addEventListener('click', () => {
-  const isOpen = zukanOverlay.style.display === 'block';
-  if (isOpen) {
-    zukanOverlay.style.display = 'none';
-  } else {
-    zukanOverlay.style.display = 'block';
-    updateZukan();
-  }
-});
-
-// ページ読み込み時に初期化しておく（任意）
-window.addEventListener('load', () => {
-  if (!window.caughtDogsMap) window.caughtDogsMap = {};
-  if (!window.dogData) window.dogData = [];
-  zukanOverlay.style.display = 'none';
+  toggleZukan();
 });
