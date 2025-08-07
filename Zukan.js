@@ -1,7 +1,11 @@
-// 図鑑用グローバル変数とページ管理
+// ==== 図鑑用グローバル変数とページ管理 ====
+const zukanBtn = document.getElementById('zukan-btn');
 const zukanOverlay = document.getElementById('zukan-overlay');
 const zukanList = document.getElementById('zukan-list');
 const zukanNav = document.getElementById('zukan-nav');
+
+let dogData = [];
+let caughtDogsMap = {};
 
 let currentPage = 0;
 const itemsPerPage = 18;
@@ -119,4 +123,22 @@ function updateZukan() {
 // 図鑑ボタンにイベント追加
 zukanBtn.addEventListener('click', () => {
   toggleZukan();
+});
+
+// ページ読み込み時にデータ読み込みと初期化
+window.addEventListener('load', () => {
+  // localStorageから捕まえた犬情報読み込み
+  const stored = localStorage.getItem('caughtDogs');
+  if (stored) {
+    caughtDogsMap = JSON.parse(stored);
+  } else {
+    caughtDogsMap = {};
+  }
+
+  // dog.jsonをfetchしてdogDataにセット
+  fetch('dog.json')
+    .then(res => res.json())
+    .then(data => {
+      dogData = data;
+    });
 });
