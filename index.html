@@ -102,46 +102,46 @@
 <!-- ショップボタン -->
   <img id="shop-btn" src="images/shop_icon.png" alt="ショップ" style="cursor:pointer;" />
 
-<!-- 図鑑パネル -->
-  <div id="zukan-overlay" class="overlay" style="display:none;">
-    <div id="zukan-container" class="list">
-      <h2>図鑑</h2>
-      <div id="zukan-list"></div>  <!-- 図鑑アイテムリスト -->
-      <div id="zukan-nav"></div>   <!-- ページナビゲーション -->
-      <button id="zukan-close">閉じる</button>
-    </div>
+<!-- 図鑑オーバーレイ -->
+<div id="zukan-overlay" class="overlay">
+  <div id="zukan-container">
+    <h2>図鑑</h2>
+    <div id="zukan-list"></div>  <!-- 図鑑アイテムリスト -->
+    <div id="zukan-nav"></div>   <!-- ページナビ -->
+    <button id="zukan-close">閉じる</button>
   </div>
+</div>
 
 <!-- ショップパネル -->
-  <div id="shop-panel" class="panel" style="display:none;">
-    <h2>ショップ</h2>
-    <p>アイテム購入機能などをここに追加します。</p>
-    <button id="shop-close">閉じる</button>
-  </div>
+<div id="shop-panel" class="panel">
+  <h2>ショップ</h2>
+  <p>アイテム購入機能などをここに追加します。</p>
+  <button id="shop-close">閉じる</button>
+</div>
   
 <!-- ✅ 図鑑の外に出す -->
-  <div id="catch-overlay" style="display: none;">
-    <div id="catch-background"></div>
-    <div id="catch-content">
-      <img id="caught-dog-img" src="" alt="釣れた犬" />
-      <div id="caught-message">○○をつかまえた！</div>
-      <div id="catch-close">閉じる</div>
-    </div>
+<div id="catch-overlay" style="display: none;">
+  <div id="catch-background"></div>
+  <div id="catch-content">
+    <img id="caught-dog-img" src="" alt="釣れた犬" />
+    <div id="caught-message">○○をつかまえた！</div>
+    <div id="catch-close">閉じる</div>
   </div>
+</div>
 
   <!-- 釣りルーレットUI -->
-  <div id="fishing-ui" style="display: none;">
-    <h2>犬を拉致する</h2>
-    <canvas id="roulette-canvas" width="300" height="300"></canvas>
-    <div id="roulette-container">
-      <div id="roulette-wheel">
-        <div id="hit-zone"></div>
-        <div id="pointer"></div>
-      </div>
-      <button id="reel-button">止める</button>
-      <div id="fishing-result"></div>
+<div id="fishing-ui" style="display: none;">
+  <h2>犬を拉致する</h2>
+  <canvas id="roulette-canvas" width="300" height="300"></canvas>
+  <div id="roulette-container">
+    <div id="roulette-wheel">
+      <div id="hit-zone"></div>
+      <div id="pointer"></div>
     </div>
+    <button id="reel-button">止める</button>
+    <div id="fishing-result"></div>
   </div>
+</div>
 
   <!-- サウンド -->
   <audio id="bgm" src="Sounds/bata.wav" loop></audio>
@@ -154,6 +154,7 @@
   <script src="shop.js"></script>
 </body>
 </html>
+
 
 
 
