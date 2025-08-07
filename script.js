@@ -245,6 +245,20 @@ function drawRoulette() {
   }
 }
 
+function showCaughtUI(dog) {
+  const overlay = document.getElementById("catch-overlay");
+  const img = document.getElementById("caught-dog-img");
+  const msg = document.getElementById("caught-message");
+
+  img.src = dog.img.src;
+  msg.textContent = `${dog.name}をつかまえた！`;
+  overlay.style.display = "flex";
+}
+
+document.getElementById("catch-close").addEventListener("click", () => {
+  document.getElementById("catch-overlay").style.display = "none";
+});
+
 function checkHit() {
   const normalized = angle % (2 * Math.PI);
 
@@ -288,6 +302,7 @@ window.addEventListener('load', () => {
       spawnDogs();
     });
 });
+
 
 
 
