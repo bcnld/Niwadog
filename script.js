@@ -246,19 +246,21 @@ function drawRoulette() {
   }
 }
 
-function showCaughtUI(dogObj) {
-  const overlay = document.getElementById("catch-overlay");
-  const img = document.getElementById("caught-dog-img");
-  const msg = document.getElementById("caught-message");
+function showCatchOverlay(dog) {
+  const overlay = document.getElementById('catch-overlay');
+  const dogImg = document.getElementById('caught-dog-img');
+  const message = document.getElementById('caught-message');
 
-  // 修正：imgはselectedDog.imgから取得すべき
-  img.src = selectedDog.img.src;  
-  msg.textContent = `${dogObj.name}をつかまえた！`;
-  overlay.style.display = "flex";
+  dogImg.src = dog.img; // dog.img は画像パス（例："images/dog01.png"）
+  message.textContent = `${dog.name} をつかまえた！`; // dog.name 例: "ポチ"
+
+  overlay.style.display = 'block';
 }
 
-  document.getElementById("catch-close").addEventListener("click", () => {
-  document.getElementById("catch-overlay").style.display = "none";
+document.getElementById('catch-close').addEventListener('click', () => {
+  document.getElementById('catch-overlay').style.display = 'none';
+  updateZukan();
+  // ここで図鑑の更新など必要なら追加
 });
 
 function checkHit() {
@@ -275,7 +277,6 @@ function checkHit() {
     fishingResult.textContent = "ヒット！";
     if (selectedDog && selectedDog.dog) {
       caughtDogsMap[selectedDog.dog.number] = selectedDog.dog;
-      updateZukan();
       isFishing = false; // ← ここで確実に false に
       showCaughtUI(selectedDog.dog);
     }
@@ -307,6 +308,7 @@ window.addEventListener('load', () => {
       spawnDogs();
     });
 });
+
 
 
 
