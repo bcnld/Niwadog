@@ -8,11 +8,10 @@ const itemsPerPage = 18;
 
 // 図鑑開閉用関数
 function toggleZukan() {
-  const isOpen = zukanOverlay.style.display === 'block';
-  if (isOpen) {
-    zukanOverlay.style.display = 'none';
+  if (zukanOverlay.classList.contains('active')) {
+    zukanOverlay.classList.remove('active');
   } else {
-    zukanOverlay.style.display = 'block';
+    zukanOverlay.classList.add('active');
     updateZukan();
   }
 }
