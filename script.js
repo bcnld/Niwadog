@@ -54,31 +54,48 @@ function updateZukan() {
   zukanNav.innerHTML = '';
 
   const sortedDogs = [...dogData].sort((a, b) => a.number - b.number);
-  const totalPages = Math.ceil(sortedDogs.length / itemsPerPage);
+  const totalPages = Math.ceil(sortedDogs.length / (itemsPerPage)); // itemsPerPage = 18
   const startIndex = currentPage * itemsPerPage;
   const pageDogs = sortedDogs.slice(startIndex, startIndex + itemsPerPage);
 
-  for (const dog of pageDogs) {
-    const div = document.createElement('div');
-    div.className = 'zukan-card';
+  // 左右ページに分ける（片面9匹ずつ）
+  const leftDogs = pageDogs.slice(0, 9);
+  const rightDogs = pageDogs.slice(9, 18);
 
-    if (caughtDogsMap[dog.name]) {
-      div.classList.add('caught');
-      const img = document.createElement('img');
-      img.src = dog.image;
-      img.alt = dog.name;
-      img.title = dog.name;
-      div.appendChild(img);
-      div.addEventListener('click', () => {
-        alert(`No.${dog.number} ${dog.name}\n${dog.description}`);
-      });
-    } else {
-      div.textContent = '?';
+  const leftPage = document.createElement('div');
+  leftPage.className = 'zukan-page';
+
+  const rightPage = document.createElement('div');
+  rightPage.className = 'zukan-page';
+
+  [leftDogs, rightDogs].forEach((dogSet, i) => {
+    const page = i === 0 ? leftPage : rightPage;
+    for (const dog of dogSet) {
+      const div = document.createElement('div');
+      div.className = 'zukan-card';
+
+      if (caughtDogsMap[dog.name]) {
+        div.classList.add('caught');
+        const img = document.createElement('img');
+        img.src = dog.image;
+        img.alt = dog.name;
+        img.title = dog.name;
+        div.appendChild(img);
+        div.addEventListener('click', () => {
+          alert(`No.${dog.number} ${dog.name}\n${dog.description}`);
+        });
+      } else {
+        div.textContent = '?';
+      }
+
+      page.appendChild(div);
     }
+  });
 
-    zukanList.appendChild(div);
-  }
+  zukanList.appendChild(leftPage);
+  zukanList.appendChild(rightPage);
 
+  // ページナビゲーション
   const nav = document.createElement('div');
   nav.style.textAlign = 'center';
   nav.style.marginTop = '10px';
@@ -271,6 +288,7 @@ window.addEventListener('load', () => {
       spawnDogs();
     });
 });
+
 
 
 
