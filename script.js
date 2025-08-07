@@ -1,7 +1,5 @@
 const waterArea = document.getElementById('water-area');
 const bgm = document.getElementById('bgm');
-const shopBtn = document.getElementById('shop-btn');
-const shopPanel = document.getElementById('shop-panel');
 const sfxOpen = document.getElementById('sfx-open');
 const sfxClose = document.getElementById('sfx-close');
 const fishingUI = document.getElementById('fishing-ui');
@@ -33,17 +31,13 @@ function togglePanel(panel) {
     panel.style.display = 'none';
     sfxClose.play().catch(() => {});
   } else {
-    [shopPanel, zukanPanel].forEach(p => {
-      if (p !== panel) p.style.display = 'none';
-    });
+    // shopPanelは無くなったのでzukanPanelだけ閉じる
+    if (panel !== zukanPanel) zukanPanel.style.display = 'none';
     panel.style.display = 'block';
     sfxOpen.play().catch(() => {});
   }
 }
 
-shopBtn.addEventListener('click', () => togglePanel(shopPanel));
-
-// 重みづけ配列作成
 function createWeightedDogs(dogs) {
   const weighted = [];
   dogs.forEach(dog => {
@@ -54,7 +48,6 @@ function createWeightedDogs(dogs) {
 }
 
 window.addEventListener('load', () => {
-  // localStorageから捕まえた犬情報読み込み
   const stored = localStorage.getItem('caughtDogs');
   if (stored) caughtDogsMap = JSON.parse(stored);
 
@@ -107,7 +100,7 @@ function spawnDogs() {
     move();
 
     img.addEventListener('click', () => {
-      if (isFishing || shopPanel.style.display === 'block') return;
+      if (isFishing) return;
       selectedDog = { img, dog };
       startFishing();
     });
@@ -224,7 +217,6 @@ function checkHit() {
         localStorage.setItem('caughtDogs', JSON.stringify(caughtDogsMap));
       }
 
-      // 図鑑更新を呼ぶ（Zukan.jsの関数がグローバルにある前提）
       if (typeof updateZukan === 'function') {
         updateZukan();
       }
