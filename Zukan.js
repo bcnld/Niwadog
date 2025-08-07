@@ -35,16 +35,33 @@ function updateZukan() {
       if (caughtDogsMap[dog.number]) {
         div.classList.add('caught');
         const caughtDog = caughtDogsMap[dog.number];
+
         const img = document.createElement('img');
         img.src = caughtDog.image;
         img.alt = caughtDog.name;
         img.title = caughtDog.name;
+
+        const numberSpan = document.createElement('span');
+        numberSpan.className = 'dog-number';
+        numberSpan.textContent = `No.${dog.number}`;
+
         div.appendChild(img);
+        div.appendChild(numberSpan);
+
         div.addEventListener('click', () => {
           alert(`No.${dog.number} ${dog.name}\n${dog.description}`);
         });
       } else {
-        div.textContent = '?';
+        const question = document.createElement('div');
+        question.className = 'unknown-dog';
+        question.innerHTML = '?';
+
+        const numberSpan = document.createElement('span');
+        numberSpan.className = 'dog-number';
+        numberSpan.textContent = `No.${dog.number}`;
+
+        div.appendChild(question);
+        div.appendChild(numberSpan);
       }
 
       page.appendChild(div);
@@ -54,7 +71,7 @@ function updateZukan() {
   zukanList.appendChild(leftPage);
   zukanList.appendChild(rightPage);
 
-  // ページナビ
+  // ページナビゲーション
   const nav = document.createElement('div');
   nav.style.textAlign = 'center';
   nav.style.marginTop = '10px';
