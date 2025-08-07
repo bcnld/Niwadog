@@ -99,18 +99,20 @@
   <img id="zukan-btn" src="images/zukan_icon.png" alt="図鑑" />
   <img id="shop-btn" src="images/shop_icon.png" alt="ショップ" />
 
-  <div id="zukan-overlay">
-    <div id="zukan-container">
-      <div id="zukan-list">
-      <!-- 左右のページ .zukan-page が2つ入る -->
-      </div>
-      <div id="zukan-nav"></div>
-
-      <button id="zukan-prev">‹</button>
-      <button id="zukan-next">›</button>
-    </div>
+<!-- 図鑑パネル -->
+  <div id="zukan-panel" class="panel">
+    <h2>図鑑</h2>
+    <div id="zukan-list"></div>
+    <div id="zukan-nav"></div>
+    <button id="zukan-close">閉じる</button>
   </div>
 
+<!-- ショップパネル -->
+  <div id="shop-panel" class="panel">
+    <h2>ショップ</h2>
+    <p>アイテム購入機能などをここに追加します。</p>
+    <button id="shop-close">閉じる</button>
+  </div>
 <!-- ✅ 図鑑の外に出す -->
   <div id="catch-overlay" style="display: none;">
     <div id="catch-background"></div>
@@ -119,12 +121,6 @@
       <div id="caught-message">○○をつかまえた！</div>
       <div id="catch-close">閉じる</div>
     </div>
-  </div>
-
-  <!-- ショップパネル -->
-  <div id="shop-panel" class="panel">
-    <h2>ショップ</h2>
-    <p>アイテム購入機能などをここに追加します。</p>
   </div>
 
   <!-- 釣りルーレットUI -->
@@ -151,6 +147,7 @@
   <script src="Zukan.js"></script> <!-- ← 追加！ -->
 </body>
 </html>
+
 
 
 
