@@ -26,13 +26,16 @@ function updateZukan() {
   const rightPage = document.createElement('div');
   rightPage.className = 'zukan-page';
 
+  // 判定：捕まえた犬が0匹なら全部「？」にする
+  const hasCaughtAny = Object.keys(caughtDogsMap).length > 0;
+
   [leftDogs, rightDogs].forEach((dogSet, i) => {
     const page = i === 0 ? leftPage : rightPage;
     for (const dog of dogSet) {
       const div = document.createElement('div');
       div.className = 'zukan-card';
 
-      if (caughtDogsMap[dog.number]) {
+      if (hasCaughtAny && caughtDogsMap[dog.number]) {
         div.classList.add('caught');
         const caughtDog = caughtDogsMap[dog.number];
 
@@ -52,6 +55,9 @@ function updateZukan() {
           alert(`No.${dog.number} ${dog.name}\n${dog.description}`);
         });
       } else {
+        // 捕まえてない or 捕まえた犬0匹の時は全部「？」
+        div.classList.add('not-caught');
+
         const question = document.createElement('div');
         question.className = 'unknown-dog';
         question.innerHTML = '?';
