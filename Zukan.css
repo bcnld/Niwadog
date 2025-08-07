@@ -1,31 +1,31 @@
-/* 図鑑オーバーレイ全体 */
+/* --- 既存: 図鑑オーバーレイ全体 --- */
 #zukan-overlay {
   position: fixed;
   top: 0;
   left: 0;
   width: 100vw;
   height: 100vh;
-  background: rgba(0,0,0,0.6); /* 半透明暗め背景 */
+  background: rgba(0,0,0,0.6);
   display: flex;
   justify-content: center;
   align-items: center;
   z-index: 1000;
-  visibility: hidden; /* 表示非表示制御用 */
+  visibility: hidden;
   opacity: 0;
   transition: opacity 0.3s ease;
 }
 
-/* 表示時 */
+/* --- 表示時 --- */
 #zukan-overlay.active {
   visibility: visible;
   opacity: 1;
 }
 
-/* 図鑑本体 */
+/* --- 図鑑本体 --- */
 #zukan-container {
   width: 900px;
   height: 600px;
-  background: #f7f1e1; /* 本のページ色 */
+  background: #f7f1e1;
   border-radius: 12px;
   box-shadow: 0 8px 24px rgba(0,0,0,0.4);
   display: flex;
@@ -36,7 +36,7 @@
   position: relative;
 }
 
-/* 左右のページ */
+/* --- 左右のページ --- */
 .zukan-page {
   flex: 1;
   display: grid;
@@ -51,8 +51,8 @@
   position: relative;
 }
 
-/* 犬アイテム共通 */
-.zukan-item {
+/* ✅ 統合: 犬カードコンテナ（JS側と統一） */
+.zukan-card {
   background: #eee;
   border-radius: 8px;
   border: 2px solid transparent;
@@ -64,63 +64,60 @@
   transition: border-color 0.3s;
   position: relative;
   padding: 6px;
+  aspect-ratio: 1 / 1;
 }
 
-/* 捕まえた犬 */
-.zukan-item.caught {
-  background: #fdd;
-  border-color: #e33;
+/* ✅ 捕まえた犬：白い枠 */
+.zukan-card.caught {
+  border: 2px solid white;
+  background: #fefefe;
 }
 
-/* 犬画像のレアリティ別枠色 */
-.zukan-item.common img.dog-image {
-  border: 2px solid #aaa; /* グレー系（common） */
-  box-shadow: 0 0 6px rgba(170, 170, 170, 0.8);
-}
-
-.zukan-item.rare img.dog-image {
-  border: 2px solid #3a7dd9; /* 青系（rare） */
-  box-shadow: 0 0 8px rgba(58, 125, 217, 0.9);
-}
-
-.zukan-item.epic img.dog-image {
-  border: 2px solid #d44343; /* 赤系（epic） */
-  box-shadow: 0 0 10px rgba(212, 67, 67, 1);
-}
-
-/* 犬画像 */
-.zukan-item img.dog-image {
+/* ✅ 犬画像 */
+.zukan-card img {
   width: 60px;
   height: 60px;
   object-fit: contain;
-  border-radius: 8px;
+  border-radius: 6px;
   margin-bottom: 6px;
 }
 
-/* 捕まえていない犬（？アイコンと番号） */
-.zukan-item.not-caught {
-  background: #ccc;
-  color: #555;
-  font-size: 16px;
-  font-weight: bold;
-  user-select: none;
-}
-
-.zukan-item.not-caught .question-mark {
-  font-size: 32px;
-  font-weight: bold;
-  margin-bottom: 4px;
-  user-select: none;
-}
-
-/* 犬番号表示（共通） */
-.zukan-item .dog-number {
+/* ✅ 犬番号表示 */
+.zukan-card .dog-number {
   font-size: 14px;
   color: #666;
   user-select: none;
 }
 
-/* ページ送りボタン */
+/* ✅ 捕まえていない犬：？だけ表示 */
+.zukan-card .unknown-dog {
+  font-size: 32px;
+  color: #999;
+  margin-bottom: 6px;
+  user-select: none;
+}
+
+/* --- 捕まえた犬（旧） --- */
+.zukan-item.caught {
+  background: #fdd;
+  border-color: #e33;
+}
+
+/* --- 犬画像のレアリティ枠色（必要なら使う） --- */
+.zukan-item.common img.dog-image {
+  border: 2px solid #aaa;
+  box-shadow: 0 0 6px rgba(170, 170, 170, 0.8);
+}
+.zukan-item.rare img.dog-image {
+  border: 2px solid #3a7dd9;
+  box-shadow: 0 0 8px rgba(58, 125, 217, 0.9);
+}
+.zukan-item.epic img.dog-image {
+  border: 2px solid #d44343;
+  box-shadow: 0 0 10px rgba(212, 67, 67, 1);
+}
+
+/* --- ページ送りボタン --- */
 #zukan-prev, #zukan-next {
   position: absolute;
   top: 50%;
