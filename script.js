@@ -74,19 +74,20 @@ function updateZukan() {
       const div = document.createElement('div');
       div.className = 'zukan-card';
 
-      if (caughtDogsMap[dog.name]) {
-        div.classList.add('caught');
-        const img = document.createElement('img');
-        img.src = dog.image;
-        img.alt = dog.name;
-        img.title = dog.name;
-        div.appendChild(img);
-        div.addEventListener('click', () => {
-          alert(`No.${dog.number} ${dog.name}\n${dog.description}`);
-        });
-      } else {
-        div.textContent = '?';
-      }
+  if (caughtDogsMap[dog.number]) {
+    div.classList.add('caught');
+    const caughtDog = caughtDogsMap[dog.number];
+    const img = document.createElement('img');
+    img.src = caughtDog.image;
+    img.alt = caughtDog.name;
+    img.title = caughtDog.name;
+    div.appendChild(img);
+    div.addEventListener('click', () => {
+      alert(`No.${dog.number} ${dog.name}\n${dog.description}`);
+    });
+  } else {
+    div.textContent = '?';
+  }
 
       page.appendChild(div);
     }
@@ -272,8 +273,9 @@ function checkHit() {
   if (hit) {
     fishingResult.textContent = "ヒット！";
     if (selectedDog && selectedDog.dog) {
-      caughtDogsMap[selectedDog.dog.name] = true;
+      caughtDogsMap[selectedDog.dog.number] = selectedDog.dog;
       updateZukan();
+      showCaughtUI(selectedDog.dog); // 釣れたときのUIもここで出す
     }
   } else {
     fishingResult.textContent = "逃げられた…";
@@ -288,7 +290,6 @@ function checkHit() {
     fishingResult.textContent = '';
     isFishing = false;
     selectedDog = null;
-    // spawnDogs(); ← 削除済み
   }, 2000);
 }
 
@@ -302,6 +303,7 @@ window.addEventListener('load', () => {
       spawnDogs();
     });
 });
+
 
 
 
