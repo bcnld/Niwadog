@@ -305,7 +305,6 @@ function checkHit() {
 
       isFishing = false;
       selectedDog = null;
-      spawnDogs(); // 外れたら犬復活
     }, 1500);
   }
 }
@@ -320,6 +319,7 @@ window.addEventListener('load', () => {
       spawnDogs();
     });
 });
+
 
 
 
