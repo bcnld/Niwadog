@@ -251,10 +251,10 @@ function showCatchOverlay(dog) {
   const dogImg = document.getElementById('caught-dog-img');
   const message = document.getElementById('caught-message');
 
-  dogImg.src = dog.img; // dog.img は画像パス（例："images/dog01.png"）
-  message.textContent = `${dog.name} をつかまえた！`; // dog.name 例: "ポチ"
+  dogImg.src = dog.image;
+  message.textContent = `${dog.name} をつかまえた！`;
 
-  overlay.style.display = 'block';
+  overlay.style.display = 'flex';
 }
 
 document.getElementById('catch-close').addEventListener('click', () => {
@@ -320,6 +320,7 @@ window.addEventListener('load', () => {
       spawnDogs();
     });
 });
+
 
 
 
