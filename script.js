@@ -147,6 +147,7 @@ window.addEventListener('load', () => {
       spawnDogs();
       updateZukan();
     });
+});
 
 function spawnDogs() {
   waterArea.innerHTML = '';
@@ -337,5 +338,6 @@ window.addEventListener('load', () => {
       spawnDogs();
     });
 });
+
 
 
