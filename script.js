@@ -265,8 +265,8 @@ document.getElementById('catch-close').addEventListener('click', () => {
 
 function checkHit() {
   const normalized = angle % (2 * Math.PI);
-
   let hit = false;
+
   if (hitZoneStart < hitZoneEnd) {
     hit = normalized >= hitZoneStart && normalized <= hitZoneEnd;
   } else {
@@ -275,27 +275,39 @@ function checkHit() {
 
   if (hit) {
     fishingResult.textContent = "ヒット！";
-    if (selectedDog && selectedDog.dog) {
-      caughtDogsMap[selectedDog.dog.number] = selectedDog.dog;
-      isFishing = false; // ← ここで確実に false に
-      showCaughtUI(selectedDog.dog);
-    }
+
+    setTimeout(() => {
+      fishingUI.style.display = 'none';
+      fishingResult.textContent = "";
+
+      if (selectedDog && selectedDog.dog) {
+        caughtDogsMap[selectedDog.dog.number] = selectedDog.dog;
+        showCatchOverlay(selectedDog.dog);
+      }
+
+      if (selectedDog && selectedDog.img) {
+        selectedDog.img.remove();
+      }
+
+      isFishing = false;
+      selectedDog = null;
+    }, 1000); // ← ヒット表示してから1秒後に表示切替
   } else {
     fishingResult.textContent = "逃げられた…";
-    isFishing = false; // ← 外れた時もリセット
+
+    setTimeout(() => {
+      fishingUI.style.display = 'none';
+      fishingResult.textContent = "";
+
+      if (selectedDog && selectedDog.img) {
+        selectedDog.img.remove();
+      }
+
+      isFishing = false;
+      selectedDog = null;
+      spawnDogs(); // 外れたら犬復活
+    }, 1500);
   }
-
-  if (selectedDog && selectedDog.img) {
-    selectedDog.img.remove();
-  }
-
-  setTimeout(() => {
-    fishingUI.style.display = 'none';
-    fishingResult.textContent = '';
-    selectedDog = null;
-
-    spawnDogs(); // ← 犬を復活させる
-  }, 2000);
 }
 
 // ✅ これを checkHit の外に完全に出す！
@@ -308,6 +320,7 @@ window.addEventListener('load', () => {
       spawnDogs();
     });
 });
+
 
 
 
