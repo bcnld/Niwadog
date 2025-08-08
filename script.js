@@ -6,6 +6,12 @@ const reelButton = document.getElementById('reel-button');
 const canvas = document.getElementById('roulette-canvas');
 const ctx = canvas.getContext('2d');
 
+const sfxRouletteLoop = document.getElementById('sfx-roulette-loop');
+const sfxStopClick = document.getElementById('sfx-stop-click');
+const sfxWheelStop = document.getElementById('sfx-wheel-stop');
+const sfxHit = document.getElementById('sfx-hit');
+const sfxMiss = document.getElementById('sfx-miss');
+
 let dogData = [], weightedDogs = [], spawnedDogs = [];
 let caughtDogsMap = {};
 let isFishing = false, selectedDog = null;
@@ -107,12 +113,20 @@ function startFishing() {
   spinning = true;
   slowingDown = false;
 
+  // 回転音再生開始（ループ）
+  sfxRouletteLoop.currentTime = 0;
+  sfxRouletteLoop.play();
+
   drawRoulette();
 }
 
 reelButton.addEventListener('click', () => {
   if (!spinning || slowingDown) return;
   slowingDown = true;
+
+  // 止めるボタンクリック音
+  sfxStopClick.currentTime = 0;
+  sfxStopClick.play();
 });
 
 function drawRoulette() {
@@ -148,6 +162,12 @@ function drawRoulette() {
         spinning = false;
         slowingDown = false;
         cancelAnimationFrame(animationId);
+
+        // 回転音停止 & 停止音再生
+        sfxRouletteLoop.pause();
+        sfxWheelStop.currentTime = 0;
+        sfxWheelStop.play();
+
         checkHit();
         return;
       }
@@ -185,6 +205,10 @@ function checkHit() {
   if (hit) {
     fishingResult.textContent = "ヒット！";
 
+    // ヒット音再生
+    sfxHit.currentTime = 0;
+    sfxHit.play();
+
     setTimeout(() => {
       fishingUI.style.display = 'none';
       fishingResult.textContent = "";
@@ -211,6 +235,10 @@ function checkHit() {
   } else {
     fishingResult.textContent = "逃げられた…";
 
+    // ハズレ音再生
+    sfxMiss.currentTime = 0;
+    sfxMiss.play();
+
     setTimeout(() => {
       fishingUI.style.display = 'none';
       fishingResult.textContent = "";
@@ -234,5 +262,3 @@ window.addEventListener('load', () => {
       spawnDogs();
     });
 });
-
-
