@@ -82,10 +82,13 @@ function renderZukanPage() {
       entry.classList.add('caught');
       entry.classList.add(dog.rarity);
 
-      const img = document.createElement('img');
+    const img = document.createElement('img');
       img.src = dog.image;
       img.alt = dog.name || '犬の画像';
       img.style.cursor = 'pointer';
+      img.style.width = '60px';
+      img.style.height = '60px';
+      img.style.objectFit = 'cover';
 
       img.addEventListener('click', () => {
         showDogProfile(dog);
