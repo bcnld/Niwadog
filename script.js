@@ -9,7 +9,7 @@ const ctx = canvas.getContext('2d');
 const sfxRouletteLoop = document.getElementById('sfx-roulette-loop');
 const sfxStopClick = document.getElementById('sfx-stop-click');
 const sfxWheelStop = document.getElementById('sfx-wheel-stop');
-sfxWheelstop.volume = 0.3
+sfxWheelStop.volume = 0.3;  // ← 大文字Sに注意
 const sfxHit = document.getElementById('sfx-hit');
 const sfxMiss = document.getElementById('sfx-miss');
 
@@ -263,4 +263,5 @@ window.addEventListener('load', () => {
       spawnDogs();
     });
 });
+
 
