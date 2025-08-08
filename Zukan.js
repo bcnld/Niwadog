@@ -2,12 +2,16 @@ const zukanBtn = document.getElementById('zukan-btn');
 const zukanPanel = document.getElementById('zukan-panel');
 const zukanClose = document.getElementById('zukan-close');
 
-// 開く
+// トグル開閉処理
 zukanBtn.addEventListener('click', () => {
-  zukanPanel.style.display = 'block';
+  if (zukanPanel.style.display === 'block') {
+    zukanPanel.style.display = 'none';
+  } else {
+    zukanPanel.style.display = 'block';
+  }
 });
 
-// 閉じる
+// 閉じるボタンでも閉じられるように
 zukanClose.addEventListener('click', () => {
   zukanPanel.style.display = 'none';
 });
