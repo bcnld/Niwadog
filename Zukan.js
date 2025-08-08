@@ -4,6 +4,8 @@ const zukanClose = document.getElementById('zukan-close');
 const zukanEntries = document.getElementById('zukan-entries');
 const prevPageBtn = document.getElementById('prev-page');
 const nextPageBtn = document.getElementById('next-page');
+const sfxOpen = document.getElementById('sfx-open');  // HTMLに<audio id="sfx-open">が必要
+const sfxClose = document.getElementById('sfx-close'); // HTMLに<audio id="sfx-close">が必要
 
 let allDogs = []; // dog.json の中身をここに格納
 let caughtDogs = []; // 釣った犬のIDだけを格納
