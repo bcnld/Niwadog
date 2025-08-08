@@ -182,34 +182,36 @@ function drawRoulette() {
   }
 }
 
-function showCatchOverlay(dogName, dogImageUrl) {
-  const overlay = document.getElementById('catch-overlay');
-  const img = document.getElementById('caught-dog-img');
-  const message = document.getElementById('caught-message');
-  const sfxCatch = document.getElementById('sfx-catch');
-
-  img.src = dogImageUrl;
-  message.textContent = `${dogName} をつかまえた！`;
-  overlay.style.display = 'block';
-
-  if (sfxCatch) {
-    sfxCatch.currentTime = 0;
-    sfxCatch.play();
-  }
-}
-
-// ←この下に追加してOK
 const catchOverlay = document.getElementById('catch-overlay');
-const closeOverlayBtn = document.getElementById('close-catch-overlay');
+const closeBtn = document.getElementById('catch-close');
+const sfxCatch = document.getElementById('sfx-catch');
 
-if (closeOverlayBtn) {
-  closeOverlayBtn.addEventListener('click', () => {
-    catchOverlay.style.display = 'none';
+// 閉じるボタンでオーバーレイを閉じる＆効果音再生
+if (closeBtn) {
+  closeBtn.addEventListener('click', () => {
+    catchOverlay.classList.remove('active');
     if (sfxStopClick) {
       sfxStopClick.currentTime = 0;
       sfxStopClick.play();
     }
   });
+}
+
+// 犬を捕まえたときにオーバーレイを表示＆効果音再生
+function showCatchOverlay(dogImageSrc, dogName) {
+  const caughtImg = document.getElementById('caught-dog-img');
+  const caughtMessage = document.getElementById('caught-message');
+
+  if (caughtImg && caughtMessage && catchOverlay) {
+    caughtImg.src = dogImageSrc;
+    caughtMessage.textContent = `${dogName} をつかまえた！`;
+    catchOverlay.classList.add('active');
+
+    if (sfxCatch) {
+      sfxCatch.currentTime = 0;
+      sfxCatch.play();
+    }
+  }
 }
 
 function checkHit() {
@@ -282,6 +284,7 @@ function checkHit() {
     }, 1500);
   }
 }
+
 
 
 
