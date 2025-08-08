@@ -132,23 +132,21 @@
   <img id="shop-btn" src="images/shop_icon.png" alt="ショップ" style="cursor:pointer;" />
 
   <!-- 図鑑パネル -->
-  <div id="zukan-panel" class="panel" style="display: none;">
-    <h2>図鑑</h2>
-    <div id="zukan-content">
-    <!-- 見開き2ページ（左・右） -->
-      <div class="zukan-page" id="zukan-page-left"></div>
-      <div class="zukan-page" id="zukan-page-right"></div>
-    </div>
-    <div class="zukan-controls">
-      <button id="prev-page">前のページ</button>
-      <span id="page-indicator">1 / 1</span>
-      <button id="next-page">次のページ</button>
-    </div>
+<div id="zukan-panel" class="panel" style="display: none;">
+  <h2>図鑑</h2>
+  <div id="zukan-entries" class="zukan-entries">
+    <!-- JSがここにentryを挿入する -->
   </div>
+  <div class="zukan-controls">
+    <button id="prev-page">前のページ</button>
+    <span id="page-indicator">1 / 1</span>
+    <button id="next-page">次のページ</button>
+  </div>
+</div>
 <!-- ショップパネル -->
   <div id="shop-panel" class="panel" style="display: none;">
     <h2>ショップ</h2>
-    <p>アイテムはまだありません。</p>
+    <p>犬がありません。</p>
   </div>
   
   <!-- ✅ 図鑑の外に出す -->
@@ -186,6 +184,7 @@
   <script src="shop.js"></script>
 </body>
 </html>
+
 
 
 
