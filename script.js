@@ -1,7 +1,5 @@
 const waterArea = document.getElementById('water-area');
 const bgm = document.getElementById('bgm');
-const sfxOpen = document.getElementById('sfx-open');
-const sfxClose = document.getElementById('sfx-close');
 const fishingUI = document.getElementById('fishing-ui');
 const fishingResult = document.getElementById('fishing-result');
 const reelButton = document.getElementById('reel-button');
@@ -236,4 +234,5 @@ window.addEventListener('load', () => {
       spawnDogs();
     });
 });
+
 
