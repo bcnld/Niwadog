@@ -10,16 +10,20 @@ const profileCloseBtn = document.getElementById('profile-close');
 const profileName = document.getElementById('profile-name');
 const profileImage = document.getElementById('profile-image');
 const profileDescription = document.getElementById('profile-description');
+const profileRarity = document.getElementById('profile-rarity');
+const profilePrice = document.getElementById('profile-price');
 
 let allDogs = [];
 let caughtDogs = [];
 let currentPage = 0;
 
+// 捕まえた犬情報をローカルストレージから読み込み
 function loadCaughtDogs() {
   const saved = localStorage.getItem('caughtDogs');
   caughtDogs = saved ? Object.keys(JSON.parse(saved)).map(id => Number(id)) : [];
 }
 
+// dog.jsonから犬データ読み込み＆初期表示
 fetch('dog.json')
   .then(res => res.json())
   .then(data => {
@@ -28,6 +32,7 @@ fetch('dog.json')
     renderZukanPage();
   });
 
+// 図鑑ボタンで開閉
 zukanBtn.addEventListener('click', () => {
   if (window.isFishing) return;
 
@@ -43,13 +48,13 @@ zukanBtn.addEventListener('click', () => {
   }
 });
 
+// ページ移動ボタン
 prevPageBtn.addEventListener('click', () => {
   if (currentPage > 0) {
     currentPage--;
     renderZukanPage();
   }
 });
-
 nextPageBtn.addEventListener('click', () => {
   const maxPage = Math.ceil(allDogs.length / 18) - 1;
   if (currentPage < maxPage) {
@@ -58,10 +63,12 @@ nextPageBtn.addEventListener('click', () => {
   }
 });
 
+// プロフィールモーダルの閉じるボタン
 profileCloseBtn.addEventListener('click', () => {
   profileModal.style.display = 'none';
 });
 
+// 図鑑ページの描画
 function renderZukanPage() {
   const leftPage = document.getElementById('zukan-page-left');
   const rightPage = document.getElementById('zukan-page-right');
@@ -88,7 +95,7 @@ function renderZukanPage() {
       img.addEventListener('click', () => showDogProfile(dog));
     } else {
       entry.classList.add('not-caught');
-      img.src = 'images/hatena.png'; // ← あなたの「？」画像パス
+      img.src = 'images/hatena.png'; // 「？」画像パス
     }
 
     entry.appendChild(img);
@@ -99,22 +106,7 @@ function renderZukanPage() {
   document.getElementById('page-indicator').textContent = `${currentPage + 1} / ${maxPage}`;
 }
 
-function showDogProfile(dog) {
-  profileName.textContent = dog.name || '名前不明';
-  profileImage.src = dog.image;
-  profileImage.alt = dog.name || '犬の画像';
-  profileDescription.textContent = dog.description || '説明なし';
-  profileModal.style.display = 'flex';
-}
-
-function updateZukan() {
-  loadCaughtDogs();
-  renderZukanPage();
-}
-
-const profileRarity = document.getElementById('profile-rarity');
-const profilePrice = document.getElementById('profile-price');
-
+// 犬プロフィール表示
 function showDogProfile(dog) {
   profileName.textContent = dog.name || '名前不明';
   profileImage.src = dog.image;
@@ -125,36 +117,8 @@ function showDogProfile(dog) {
   profileModal.style.display = 'flex';
 }
 
-function renderZukan(data) {
-  const zukanList = document.getElementById('zukan-list');
-  zukanList.innerHTML = '';
-
-  const currentPageDogs = getCurrentPageDogs(data);
-  currentPageDogs.forEach(dog => {
-    const dogDiv = document.createElement('div');
-    dogDiv.className = 'zukan-dog';
-
-    if (dog.caught) {
-      const img = document.createElement('img');
-      img.src = dog.image;
-      img.alt = dog.name;
-      dogDiv.appendChild(img);
-
-      // プロフィール表示イベントを追加
-      dogDiv.addEventListener('click', () => {
-        document.getElementById('profile-image').src = dog.image;
-        document.getElementById('profile-name').textContent = dog.name;
-        document.getElementById('profile-rarity').textContent = `レアリティ: ${dog.rarity}`;
-        document.getElementById('profile-price').textContent = `売値: ${dog.price}円`;
-        document.getElementById('profile-description').textContent = dog.description || '';
-        document.getElementById('zukan-profile').style.display = 'block';
-      });
-
-    } else {
-      dogDiv.textContent = `No.${dog.id}`;
-      dogDiv.classList.add('unknown');
-    }
-
-    zukanList.appendChild(dogDiv);
-  });
+// 図鑑更新（外部呼び出し用）
+function updateZukan() {
+  loadCaughtDogs();
+  renderZukanPage();
 }
