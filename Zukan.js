@@ -111,3 +111,16 @@ function updateZukan() {
   loadCaughtDogs();
   renderZukanPage();
 }
+
+const profileRarity = document.getElementById('profile-rarity');
+const profilePrice = document.getElementById('profile-price');
+
+function showDogProfile(dog) {
+  profileName.textContent = dog.name || '名前不明';
+  profileImage.src = dog.image;
+  profileImage.alt = dog.name || '犬の画像';
+  profileDescription.textContent = dog.description || '説明なし';
+  profileRarity.textContent = `レアリティ: ${dog.rarity || '不明'}`;
+  profilePrice.textContent = `売値: ${dog.price || 0} 円`;
+  profileModal.style.display = 'flex';
+}
