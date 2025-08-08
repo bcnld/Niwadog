@@ -23,21 +23,6 @@ document.body.addEventListener('click', () => {
   if (bgm.paused) bgm.play().catch(() => {});
 }, { once: true });
 
-// 画面内の他パネル開閉用関数（Zukan.jsと共通で使う想定）
-function togglePanel(panel) {
-  if (isFishing) return;
-  const isOpen = panel.style.display === 'block';
-  if (isOpen) {
-    panel.style.display = 'none';
-    sfxClose.play().catch(() => {});
-  } else {
-    // shopPanelは無くなったのでzukanPanelだけ閉じる
-    if (panel !== zukanPanel) zukanPanel.style.display = 'none';
-    panel.style.display = 'block';
-    sfxOpen.play().catch(() => {});
-  }
-}
-
 function createWeightedDogs(dogs) {
   const weighted = [];
   dogs.forEach(dog => {
@@ -251,3 +236,4 @@ window.addEventListener('load', () => {
       spawnDogs();
     });
 });
+
