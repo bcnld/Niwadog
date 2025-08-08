@@ -11,8 +11,8 @@ const profileCloseBtn = document.getElementById('profile-close');
 const profileName = document.getElementById('profile-name');
 const profileImage = document.getElementById('profile-image');
 const profileDescription = document.getElementById('profile-description');
-const profileRarity = document.getElementById('profile-rarity'); // 追加
-const profilePrice = document.getElementById('profile-price');   // 追加
+const profileRarity = document.getElementById('profile-rarity');
+const profilePrice = document.getElementById('profile-price');
 
 let allDogs = [];
 let caughtDogs = [];
@@ -81,19 +81,18 @@ function renderZukanPage() {
 
     const img = document.createElement('img');
     img.className = 'zukan-image';
-    img.alt = dog.name || '犬の画像';
+    img.alt = dog?.name || '犬の画像';
     img.width = 60;
     img.height = 60;
 
     if (caughtDogs.includes(dog.number)) {
-      entry.classList.add('caught', dog.rarity);
-      img.src = dog.image;
+      entry.classList.add('caught', dog.rarity || '');
+      img.src = dog?.image || 'images/noimage.png';
       img.style.cursor = 'pointer';
-      // ▼ 画像クリックでプロフィール表示
       img.addEventListener('click', () => showDogProfile(dog));
     } else {
       entry.classList.add('not-caught');
-      img.src = 'images/hatena.png'; // 「？」画像
+      img.src = 'images/hatena.png';
     }
 
     entry.appendChild(img);
@@ -104,14 +103,16 @@ function renderZukanPage() {
   document.getElementById('page-indicator').textContent = `${currentPage + 1} / ${maxPage}`;
 }
 
-// ▼ 犬プロフィール表示関数（新規追加）
+// ▼ 犬プロフィール表示関数（修正版）
 function showDogProfile(dog) {
-  profileName.textContent = dog.name || '名前不明';
-  profileImage.src = dog.image;
-  profileImage.alt = dog.name || '犬の画像';
-  profileDescription.textContent = dog.description || '説明なし';
-  profileRarity.textContent = `レアリティ: ${dog.rarity || '不明'}`;
-  profilePrice.textContent = `売値: ${dog.price || 0} 円`;
+  console.log('Dog data for profile:', dog); // デバッグ出力
+
+  profileName.textContent = dog?.name ?? '名前不明';
+  profileImage.src = dog?.image || 'images/noimage.png';
+  profileImage.alt = dog?.name || '犬の画像';
+  profileDescription.textContent = dog?.description || '説明なし';
+  profileRarity.textContent = `レアリティ: ${dog?.rarity || '不明'}`;
+  profilePrice.textContent = `売値: ${dog?.price ?? 0} 円`;
   profileModal.style.display = 'flex';
 }
 
