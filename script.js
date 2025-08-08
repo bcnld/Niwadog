@@ -198,6 +198,20 @@ function showCatchOverlay(dogName, dogImageUrl) {
   }
 }
 
+// ←この下に追加してOK
+const catchOverlay = document.getElementById('catch-overlay');
+const closeOverlayBtn = document.getElementById('close-catch-overlay');
+
+if (closeOverlayBtn) {
+  closeOverlayBtn.addEventListener('click', () => {
+    catchOverlay.style.display = 'none';
+    if (sfxStopClick) {
+      sfxStopClick.currentTime = 0;
+      sfxStopClick.play();
+    }
+  });
+}
+
 function checkHit() {
   const normalized = angle % (2 * Math.PI);
   let hit = false;
@@ -268,6 +282,7 @@ function checkHit() {
     }, 1500);
   }
 }
+
 
 
 
