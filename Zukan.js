@@ -15,7 +15,13 @@ let allDogs = [];
 let caughtDogs = [];
 let currentPage = 0;
 
-// dog.json読み込み
+// ▼ ローカルストレージから caughtDogs を読み込み
+const savedCaught = localStorage.getItem('caughtDogs');
+if (savedCaught) {
+  caughtDogs = JSON.parse(savedCaught);
+}
+
+// ▼ dog.json読み込み
 fetch('dog.json')
   .then(res => res.json())
   .then(data => {
@@ -23,7 +29,7 @@ fetch('dog.json')
     renderZukanPage();
   });
 
-// 図鑑ボタンの開閉
+// ▼ 図鑑ボタンの開閉
 zukanBtn.addEventListener('click', () => {
   if (zukanPanel.style.display === 'block') {
     zukanPanel.style.display = 'none';
@@ -35,6 +41,7 @@ zukanBtn.addEventListener('click', () => {
   }
 });
 
+// ▼ ページ移動
 prevPageBtn.addEventListener('click', () => {
   if (currentPage > 0) {
     currentPage--;
@@ -50,17 +57,21 @@ nextPageBtn.addEventListener('click', () => {
   }
 });
 
+// ▼ プロフィールモーダル閉じる
 profileCloseBtn.addEventListener('click', () => {
   profileModal.style.display = 'none';
 });
 
-// 捕まえた犬を登録する関数（例）
+// ▼ 犬を釣ったときに呼ぶ関数
 function registerCaughtDog(dogId) {
   if (!caughtDogs.includes(dogId)) {
     caughtDogs.push(dogId);
+    localStorage.setItem('caughtDogs', JSON.stringify(caughtDogs));
+    renderZukanPage(); // 図鑑を自動更新
   }
 }
 
+// ▼ 図鑑ページ描画
 function renderZukanPage() {
   const leftPage = document.getElementById('zukan-page-left');
   const rightPage = document.getElementById('zukan-page-right');
@@ -76,14 +87,13 @@ function renderZukanPage() {
 
     if (caughtDogs.includes(dog.id)) {
       entry.classList.add('caught');
-      entry.classList.add(dog.rarity);
+      entry.classList.add(dog.rarity); // レアリティに応じた枠などに使う
 
       const img = document.createElement('img');
       img.src = dog.image;
       img.alt = dog.name || '犬の画像';
       img.style.cursor = 'pointer';
 
-      // 画像クリックでプロフィール表示
       img.addEventListener('click', () => {
         showDogProfile(dog);
       });
@@ -108,6 +118,7 @@ function renderZukanPage() {
   document.getElementById('page-indicator').textContent = `${currentPage + 1} / ${maxPage}`;
 }
 
+// ▼ プロフィール表示
 function showDogProfile(dog) {
   profileName.textContent = dog.name || '名前不明';
   profileImage.src = dog.image;
