@@ -116,15 +116,26 @@ function startFishing() {
   fishingResult.textContent = '';
   fishingUI.style.display = 'block';
 
-  // 選択した犬の確率に応じて当たり範囲の角度幅を決める（例: probabilityに比例して0～180度の範囲）
-  const maxAngle = Math.PI; // 180度の最大範囲
-  const prob = selectedDog.dog.probability || 0.5; // 犬の確率（なければ0.5）
-  const hitRange = prob * maxAngle; // 確率に応じて範囲を決める（例）
+  const maxSegments = 5; // 最大5分割
+  const segmentAngle = (2 * Math.PI) / maxSegments; // 1区間の角度
 
-  // hitZoneStartは0〜2πのランダム
-  hitZoneStart = Math.random() * 2 * Math.PI;
+  const prob = selectedDog.dog.probability || 0.5; // 確率（0～1想定）
 
-  // hitZoneEndはstartからhitRangeだけ角度を進める。2πを超えたら戻す
+  // 確率を最大区間数(5)に掛けて当たり区間数にする（少なくとも1区間）
+  // Math.ceil で切り上げて1以上に
+  const hitZonesCount = Math.min(maxSegments, Math.max(1, Math.ceil(prob * maxSegments)));
+
+  // 当たり範囲の総角度
+  const hitRange = segmentAngle * hitZonesCount;
+
+  // 当たり範囲の開始区間は 0～(maxSegments - hitZonesCount) からランダム選択
+  const maxStartIndex = maxSegments - hitZonesCount;
+  const startSegmentIndex = Math.floor(Math.random() * (maxStartIndex + 1));
+
+  // 開始角度
+  hitZoneStart = startSegmentIndex * segmentAngle;
+
+  // 終了角度は開始角度 + 当たり範囲
   hitZoneEnd = hitZoneStart + hitRange;
   if (hitZoneEnd > 2 * Math.PI) hitZoneEnd -= 2 * Math.PI;
 
@@ -292,4 +303,5 @@ function checkHit() {
     }, 1500);
   }
 }
+
 
