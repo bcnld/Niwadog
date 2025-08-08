@@ -11,6 +11,7 @@ const sfxStopClick = document.getElementById('sfx-stop-click');
 const sfxWheelStop = document.getElementById('sfx-wheel-stop');
 sfxWheelStop.volume = 0.3;  // ← 大文字Sに注意
 const sfxHit = document.getElementById('sfx-hit');
+sfxHit.volume = 1.0;
 const sfxMiss = document.getElementById('sfx-miss');
 
 let dogData = [], weightedDogs = [], spawnedDogs = [];
@@ -263,5 +264,6 @@ window.addEventListener('load', () => {
       spawnDogs();
     });
 });
+
 
 
