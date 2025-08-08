@@ -1,3 +1,6 @@
+/* =============================
+   図鑑パネル
+============================= */
 #zukan-panel {
   position: fixed;
   top: 50%;
@@ -15,7 +18,7 @@
   flex-direction: column;
   align-items: center;
   padding: 20px;
-  overflow-y: auto; /* 画面外はスクロール */
+  overflow-y: auto;
 }
 
 #close-zukan-btn {
@@ -35,7 +38,7 @@
   display: flex;
   justify-content: space-between;
   width: 100%;
-  max-height: calc(100% - 60px); /* 閉じるボタン領域を除いた高さ */
+  max-height: calc(100% - 60px);
   overflow-y: auto;
   margin-top: 40px;
 }
@@ -80,9 +83,11 @@
   border-radius: 8px;
 }
 
-/* モーダル全体（背景半透明） */
+/* =============================
+   犬プロフィールモーダル
+============================= */
 #dog-profile-modal {
-  display: none; /* 初期は非表示 */
+  display: none;
   position: fixed;
   top: 0;
   left: 0;
@@ -94,13 +99,12 @@
   z-index: 1000;
 }
 
-/* モーダル内容（白いカード部分） */
 #dog-profile-modal .modal-content {
   background: #fff;
   width: 90vw;
-  max-width: 800px;  /* PC最大幅 */
+  max-width: 800px;
   height: auto;
-  max-height: 90vh;  /* 高さ制限 */
+  max-height: 90vh;
   display: flex;
   flex-direction: column;
   padding: 16px;
@@ -110,7 +114,6 @@
   overflow: hidden;
 }
 
-/* 閉じるボタン */
 #profile-close {
   position: absolute;
   top: 8px;
@@ -124,7 +127,6 @@
   font-size: 14px;
 }
 
-/* 上部：画像＋テキスト */
 .profile-header {
   display: flex;
   flex-direction: row;
@@ -132,19 +134,19 @@
   gap: 16px;
 }
 
-/* 犬画像 */
+/* 犬画像（PCでは200px、画面に応じて縮小） */
 #profile-image {
-  width: 200px;
-  height: 200px;
+  width: min(200px, 40vw);
+  height: auto;
+  aspect-ratio: 1 / 1;
   object-fit: cover;
   border: 3px solid #ccc;
   border-radius: 10px;
 }
 
-/* 名前部分 */
 #profile-name {
   margin: 0;
-  font-size: 22px;
+  font-size: clamp(18px, 2vw, 22px);
 }
 
 #profile-rarity,
@@ -153,7 +155,6 @@
   font-weight: bold;
 }
 
-/* 説明欄 */
 .profile-description {
   margin-top: 16px;
   flex: 1;
@@ -163,7 +164,6 @@
   font-size: 14px;
 }
 
-/* スクロールバー細く */
 .profile-description::-webkit-scrollbar {
   width: 6px;
 }
@@ -172,7 +172,9 @@
   border-radius: 3px;
 }
 
-/* ----------- スマホ（幅600px以下）用調整 ----------- */
+/* =============================
+   レスポンシブ調整
+============================= */
 @media (max-width: 600px) {
   #dog-profile-modal .modal-content {
     width: 95vw;
@@ -187,8 +189,7 @@
   }
 
   #profile-image {
-    width: 150px;
-    height: 150px;
+    width: min(150px, 70vw);
   }
 
   #profile-name {
@@ -199,9 +200,23 @@
   .profile-description {
     font-size: 13px;
   }
+
+  #zukan-panel {
+    width: 95vw;
+    max-width: none;
+    height: 85vh;
+    padding: 15px;
+  }
+
+  .zukan-page {
+    width: 100%;
+    grid-template-columns: repeat(3, 1fr);
+  }
 }
 
-/* レアリティ別枠色 */
+/* =============================
+   レアリティ別枠色
+============================= */
 .dog-slot.common {
   border-color: gray;
 }
@@ -213,20 +228,4 @@
 }
 .dog-slot.legendary {
   border-color: gold;
-}
-
-/* 追加でレスポンシブ調整（必要に応じて） */
-@media screen and (max-width: 600px) {
-  #zukan-panel {
-    width: 95vw;
-    max-width: none;
-    height: 85vh;
-    padding: 15px;
-  }
-
-  .zukan-page {
-    width: 100%;
-    grid-template-columns: repeat(3, 1fr);
-    grid-template-rows: repeat(3, 1fr);
-  }
 }
