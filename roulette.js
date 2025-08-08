@@ -1,10 +1,29 @@
 const waterArea = document.getElementById('water-area');
 const bgm = document.getElementById('bgm');
+const fishingUI = document.getElementById('fishing-ui');
+const fishingResult = document.getElementById('fishing-result');
+const reelButton = document.getElementById('reel-button');
+const canvas = document.getElementById('roulette-canvas');
+const ctx = canvas.getContext('2d');
+
+const sfxRouletteLoop = document.getElementById('sfx-roulette-loop');
+sfxRouletteLoop.volume = 0.5;
+const sfxStopClick = document.getElementById('sfx-stop-click');
+const sfxWheelStop = document.getElementById('sfx-wheel-stop');
+sfxWheelStop.volume = 0.3;
+const sfxHit = document.getElementById('sfx-hit');
+sfxHit.volume = 1.0;
+const sfxMiss = document.getElementById('sfx-miss');
 
 let dogData = [], weightedDogs = [], spawnedDogs = [];
 let caughtDogsMap = {};
 let isFishing = false, selectedDog = null;
 const maxDogs = 6, bottomLandHeight = 100;
+
+let angle = 0, spinSpeed = 0;
+let spinning = false, slowingDown = false;
+let hitZoneStart = 0, hitZoneEnd = 0;
+let animationId = null;
 
 // BGM 初回再生
 document.body.addEventListener('click', () => {
@@ -78,28 +97,108 @@ function spawnDogs() {
     img._moveAnimationId = moveAnimationId;
 
     img.addEventListener('click', () => {
-      if (isFishing || window.isZukanOpen || window.isShopOpen) return;
-      selectedDog = { img, dog };
-      // ルーレット開始コードは抜いてあるので、ここで何か他の処理に繋げてください
-      // 例: startFishing();
-    });
+  if (isFishing || window.isZukanOpen || window.isShopOpen) return;
+  selectedDog = { img, dog };
+  startFishing();
+});
     
     waterArea.appendChild(img);
     spawnedDogs.push(img);
   }
 }
 
-// 捕獲成功時のオーバーレイ表示・処理（例）
+function startFishing() {
+  isFishing = true;
+  window.isFishing = isFishing;
+  fishingResult.textContent = '';
+  fishingUI.style.display = 'block';
+
+  hitZoneStart = Math.random() * 2 * Math.PI;
+  hitZoneEnd = hitZoneStart + Math.PI;
+  if (hitZoneEnd > 2 * Math.PI) hitZoneEnd -= 2 * Math.PI;
+
+  angle = 0;
+  spinSpeed = 0.3;
+  spinning = true;
+  slowingDown = false;
+
+  sfxRouletteLoop.currentTime = 0;
+  sfxRouletteLoop.play();
+
+  drawRoulette();
+}
+
+reelButton.addEventListener('click', () => {
+  if (!spinning || slowingDown) return;
+  slowingDown = true;
+
+  sfxStopClick.currentTime = 0;
+  sfxStopClick.play();
+});
+
+function drawRoulette() {
+  ctx.clearRect(0, 0, canvas.width, canvas.height);
+  const center = canvas.width / 2;
+
+  ctx.beginPath();
+  ctx.arc(center, center, center - 10, 0, 2 * Math.PI);
+  ctx.fillStyle = '#eef';
+  ctx.fill();
+
+  ctx.beginPath();
+  ctx.moveTo(center, center);
+  ctx.arc(center, center, center - 10, hitZoneStart, hitZoneEnd);
+  ctx.fillStyle = '#f00';
+  ctx.fill();
+
+  const needleLength = center - 20;
+  ctx.beginPath();
+  ctx.moveTo(center, center);
+  ctx.lineTo(center + needleLength * Math.cos(angle), center + needleLength * Math.sin(angle));
+  ctx.strokeStyle = '#000';
+  ctx.lineWidth = 4;
+  ctx.stroke();
+
+  if (spinning) {
+    angle += spinSpeed;
+
+    if (slowingDown) {
+      spinSpeed -= 0.005;
+      if (spinSpeed <= 0) {
+        spinSpeed = 0;
+        spinning = false;
+        slowingDown = false;
+        cancelAnimationFrame(animationId);
+
+        sfxRouletteLoop.pause();
+        sfxWheelStop.currentTime = 0;
+        sfxWheelStop.play();
+
+        checkHit();
+        return;
+      }
+    }
+
+    animationId = requestAnimationFrame(drawRoulette);
+  }
+}
+
 const catchOverlay = document.getElementById('catch-overlay');
 const closeBtn = document.getElementById('catch-close');
 const sfxCatch = document.getElementById('sfx-catch');
 
+// 閉じるボタンでオーバーレイを閉じる＆効果音再生
 if (closeBtn) {
   closeBtn.addEventListener('click', () => {
     catchOverlay.classList.remove('active');
+    if (sfxStopClick) {
+      sfxStopClick.currentTime = 0;
+      sfxStopClick.play();
+    }
   });
 }
 
+// 犬を捕まえたときにオーバーレイを表示＆効果音再生
 function showCatchOverlay(dogImageSrc, dogName) {
   const caughtImg = document.getElementById('caught-dog-img');
   const caughtMessage = document.getElementById('caught-message');
@@ -115,3 +214,86 @@ function showCatchOverlay(dogImageSrc, dogName) {
     }
   }
 }
+
+function checkHit() {
+  const normalized = angle % (2 * Math.PI);
+  let hit = false;
+
+  if (hitZoneStart < hitZoneEnd) {
+    hit = normalized >= hitZoneStart && normalized <= hitZoneEnd;
+  } else {
+    hit = normalized >= hitZoneStart || normalized <= hitZoneEnd;
+  }
+
+  if (hit) {
+    fishingResult.textContent = "ヒット！";
+
+    sfxHit.currentTime = 0;
+    sfxHit.play();
+
+    setTimeout(() => {
+      fishingUI.style.display = 'none';
+      fishingResult.textContent = "";
+
+      const dogName = selectedDog.dog.name;
+      const dogImage = selectedDog.img.src;
+      const dogId = Number(selectedDog.dog.number);
+
+      showCatchOverlay(dogImage, dogName);
+
+      if (!caughtDogsMap[dogId]) {
+        caughtDogsMap[dogId] = selectedDog.dog;
+        localStorage.setItem('caughtDogs', JSON.stringify(caughtDogsMap));
+      }
+
+      // 犬の移動アニメーションを停止
+      if (selectedDog.img._moveAnimationId) {
+        cancelAnimationFrame(selectedDog.img._moveAnimationId);
+      }
+
+      // 犬画像を消す
+      selectedDog.img.remove();
+
+      isFishing = false;
+      window.isFishing = isFishing;
+      selectedDog = null;
+
+      // 図鑑更新用関数があれば呼ぶ
+      if (typeof updateZukan === 'function') {
+        updateZukan();
+      }
+    }, 1500);
+  } else {
+    fishingResult.textContent = "逃げられた…";
+
+    sfxMiss.currentTime = 0;
+    sfxMiss.play();
+
+    setTimeout(() => {
+      fishingUI.style.display = 'none';
+      fishingResult.textContent = "";
+
+      // 犬画像消す（逃げられた場合も）
+      if (selectedDog && selectedDog.img) {
+        if (selectedDog.img._moveAnimationId) {
+          cancelAnimationFrame(selectedDog.img._moveAnimationId);
+        }
+        selectedDog.img.remove();
+      }
+
+      isFishing = false;
+      window.isFishing = isFishing;
+      selectedDog = null;
+    }, 1500);
+  }
+}
+
+
+
+
+
+
+
+
+
+
