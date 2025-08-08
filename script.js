@@ -110,34 +110,37 @@ function spawnDogs() {
   }
 }
 
+let hitZones = []; // 当たり区間の配列 [{start, end}, ...]
+
 function startFishing() {
   isFishing = true;
   window.isFishing = isFishing;
   fishingResult.textContent = '';
   fishingUI.style.display = 'block';
 
-  const maxSegments = 5; // 最大5分割
-  const segmentAngle = (2 * Math.PI) / maxSegments; // 1区間の角度
+  const maxSegments = 5;
+  const segmentAngle = (2 * Math.PI) / maxSegments;
+  const hitZoneRatio = 0.4; // 各区間の当たり範囲は40%に縮小
 
-  const prob = selectedDog.dog.probability || 0.5; // 確率（0～1想定）
-
-  // 確率を最大区間数(5)に掛けて当たり区間数にする（少なくとも1区間）
-  // Math.ceil で切り上げて1以上に
+  const prob = selectedDog.dog.probability || 0.5;
+  // 当たり区間数を1〜maxSegmentsの整数に
   const hitZonesCount = Math.min(maxSegments, Math.max(1, Math.ceil(prob * maxSegments)));
 
-  // 当たり範囲の総角度
-  const hitRange = segmentAngle * hitZonesCount;
+  // 5区間のうちhitZonesCount個をランダムに選ぶ（重複なし）
+  const segments = [0,1,2,3,4];
+  segments.sort(() => Math.random() - 0.5);
+  const chosenSegments = segments.slice(0, hitZonesCount);
 
-  // 当たり範囲の開始区間は 0～(maxSegments - hitZonesCount) からランダム選択
-  const maxStartIndex = maxSegments - hitZonesCount;
-  const startSegmentIndex = Math.floor(Math.random() * (maxStartIndex + 1));
-
-  // 開始角度
-  hitZoneStart = startSegmentIndex * segmentAngle;
-
-  // 終了角度は開始角度 + 当たり範囲
-  hitZoneEnd = hitZoneStart + hitRange;
-  if (hitZoneEnd > 2 * Math.PI) hitZoneEnd -= 2 * Math.PI;
+  // hitZonesをクリアして新しく作成
+  hitZones = chosenSegments.map(i => {
+    const center = i * segmentAngle + segmentAngle / 2;
+    let start = center - (segmentAngle * hitZoneRatio) / 2;
+    let end = center + (segmentAngle * hitZoneRatio) / 2;
+    // 2πを超えたら丸める
+    if (start < 0) start += 2 * Math.PI;
+    if (end > 2 * Math.PI) end -= 2 * Math.PI;
+    return { start, end };
+  });
 
   angle = 0;
   spinSpeed = 0.3;
@@ -148,6 +151,64 @@ function startFishing() {
   sfxRouletteLoop.play();
 
   drawRoulette();
+}
+
+function drawRoulette() {
+  ctx.clearRect(0, 0, canvas.width, canvas.height);
+  const center = canvas.width / 2;
+
+  // ベース円
+  ctx.beginPath();
+  ctx.arc(center, center, center - 10, 0, 2 * Math.PI);
+  ctx.fillStyle = '#eef';
+  ctx.fill();
+
+  // 複数の当たり範囲を赤で描画
+  hitZones.forEach(zone => {
+    ctx.beginPath();
+    ctx.moveTo(center, center);
+    if(zone.start < zone.end) {
+      ctx.arc(center, center, center - 10, zone.start, zone.end);
+    } else {
+      // start > end の場合は２つに分けて描画
+      ctx.arc(center, center, center - 10, zone.start, 2 * Math.PI);
+      ctx.arc(center, center, center - 10, 0, zone.end);
+    }
+    ctx.fillStyle = '#f00';
+    ctx.fill();
+  });
+
+  // 針
+  const needleLength = center - 20;
+  ctx.beginPath();
+  ctx.moveTo(center, center);
+  ctx.lineTo(center + needleLength * Math.cos(angle), center + needleLength * Math.sin(angle));
+  ctx.strokeStyle = '#000';
+  ctx.lineWidth = 4;
+  ctx.stroke();
+
+  if (spinning) {
+    angle += spinSpeed;
+
+    if (slowingDown) {
+      spinSpeed -= 0.005;
+      if (spinSpeed <= 0) {
+        spinSpeed = 0;
+        spinning = false;
+        slowingDown = false;
+        cancelAnimationFrame(animationId);
+
+        sfxRouletteLoop.pause();
+        sfxWheelStop.currentTime = 0;
+        sfxWheelStop.play();
+
+        checkHit();
+        return;
+      }
+    }
+
+    animationId = requestAnimationFrame(drawRoulette);
+  }
 }
 
 reelButton.addEventListener('click', () => {
@@ -239,10 +300,19 @@ function checkHit() {
   const normalized = angle % (2 * Math.PI);
   let hit = false;
 
-  if (hitZoneStart < hitZoneEnd) {
-    hit = normalized >= hitZoneStart && normalized <= hitZoneEnd;
-  } else {
-    hit = normalized >= hitZoneStart || normalized <= hitZoneEnd;
+  for(const zone of hitZones) {
+    if (zone.start < zone.end) {
+      if(normalized >= zone.start && normalized <= zone.end) {
+        hit = true;
+        break;
+      }
+    } else {
+      // start > end の場合はまたがる範囲
+      if(normalized >= zone.start || normalized <= zone.end) {
+        hit = true;
+        break;
+      }
+    }
   }
 
   if (hit) {
