@@ -23,12 +23,13 @@
       background-size: 64px 64px;
       z-index: 10;
     }
-    #zukan-btn, #shop-btn {
-      position: fixed; bottom: 120px; width: 70px; height: 70px; cursor: pointer;
+    #zukan-btn, #shop-btn, #inventory-btn {
+      position: fixed; width: 70px; height: 70px; cursor: pointer;
       z-index: 20;
     }
-    #zukan-btn { right: 30px; }
-    #shop-btn { left: 30px; }
+    #zukan-btn { right: 30px; bottom: 120px; }
+    #shop-btn { left: 30px; bottom: 120px; }
+    #inventory-btn { left: 30px; bottom: 200px; }
 
     .panel {
       display: none;
@@ -131,30 +132,39 @@
   <!-- ショップボタン -->
   <img id="shop-btn" src="images/shop_icon.png" alt="ショップ" style="cursor:pointer;" />
 
+  <!-- 持ち物ボタン -->
+  <img id="inventory-btn" src="images/inventory_icon.png" alt="持ち物" style="cursor:pointer;" />
+
   <!-- 図鑑パネル -->
-<!-- 図鑑パネル -->
-<div id="zukan-panel" class="panel" style="display: none;">
-  <h2>犬の図鑑</h2>
-  <div id="zukan-content" style="display:flex; justify-content:space-between; height: calc(100% - 90px);">
-    <!-- 左ページ -->
-    <div id="zukan-page-left" class="zukan-page" style="width:48%; background:#fff; border:1px solid #ccc; border-radius:8px; box-shadow: inset 0 0 6px rgba(0,0,0,0.1); padding:10px; box-sizing:border-box; display:grid; grid-template-columns:repeat(3,1fr); grid-template-rows:repeat(3,1fr); gap:12px; overflow-y:auto;"></div>
+  <div id="zukan-panel" class="panel" style="display: none;">
+    <h2>犬の図鑑</h2>
+    <div id="zukan-content" style="display:flex; justify-content:space-between; height: calc(100% - 90px);">
+      <!-- 左ページ -->
+      <div id="zukan-page-left" class="zukan-page" style="width:48%; background:#fff; border:1px solid #ccc; border-radius:8px; box-shadow: inset 0 0 6px rgba(0,0,0,0.1); padding:10px; box-sizing:border-box; display:grid; grid-template-columns:repeat(3,1fr); grid-template-rows:repeat(3,1fr); gap:12px; overflow-y:auto;"></div>
 
-    <!-- 右ページ -->
-    <div id="zukan-page-right" class="zukan-page" style="width:48%; background:#fff; border:1px solid #ccc; border-radius:8px; box-shadow: inset 0 0 6px rgba(0,0,0,0.1); padding:10px; box-sizing:border-box; display:grid; grid-template-columns:repeat(3,1fr); grid-template-rows:repeat(3,1fr); gap:12px; overflow-y:auto;"></div>
+      <!-- 右ページ -->
+      <div id="zukan-page-right" class="zukan-page" style="width:48%; background:#fff; border:1px solid #ccc; border-radius:8px; box-shadow: inset 0 0 6px rgba(0,0,0,0.1); padding:10px; box-sizing:border-box; display:grid; grid-template-columns:repeat(3,1fr); grid-template-rows:repeat(3,1fr); gap:12px; overflow-y:auto;"></div>
+    </div>
+
+    <div class="zukan-controls" style="margin-top:10px; text-align:center; user-select:none;">
+      <button id="prev-page" style="padding:6px 12px; margin:0 8px; font-size:1rem; border-radius:6px; border:1.5px solid #666; background-color:white; cursor:pointer; transition:background-color 0.3s ease;">前のページ</button>
+      <span id="page-indicator" style="font-weight:bold; font-size:1.1rem; vertical-align:middle;">1 / 1</span>
+      <button id="next-page" style="padding:6px 12px; margin:0 8px; font-size:1rem; border-radius:6px; border:1.5px solid #666; background-color:white; cursor:pointer; transition:background-color 0.3s ease;">次のページ</button>
+    </div>
   </div>
 
-  <div class="zukan-controls" style="margin-top:10px; text-align:center; user-select:none;">
-    <button id="prev-page" style="padding:6px 12px; margin:0 8px; font-size:1rem; border-radius:6px; border:1.5px solid #666; background-color:white; cursor:pointer; transition:background-color 0.3s ease;">前のページ</button>
-    <span id="page-indicator" style="font-weight:bold; font-size:1.1rem; vertical-align:middle;">1 / 1</span>
-    <button id="next-page" style="padding:6px 12px; margin:0 8px; font-size:1rem; border-radius:6px; border:1.5px solid #666; background-color:white; cursor:pointer; transition:background-color 0.3s ease;">次のページ</button>
-  </div>
-</div>
-<!-- ショップパネル -->
+  <!-- ショップパネル -->
   <div id="shop-panel" class="panel" style="display: none;">
     <h2>ショップ</h2>
     <p>犬がありません。</p>
   </div>
-  
+
+  <!-- 持ち物パネル -->
+  <div id="inventory-panel" class="panel" style="display: none;">
+    <h2>持ち物</h2>
+    <p>ここに持ち物の内容が入ります。</p>
+  </div>
+
   <!-- ✅ 図鑑の外に出す -->
   <div id="catch-overlay" style="display: none;">
     <div id="catch-background"></div>
@@ -193,15 +203,6 @@
   <script src="script.js"></script>
   <script src="Zukan.js"></script>
   <script src="shop.js"></script>
+
 </body>
 </html>
-
-
-
-
-
-
-
-
-
-
