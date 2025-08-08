@@ -1,123 +1,117 @@
-const fishingUI = document.getElementById('fishing-ui');
-const fishingResult = document.getElementById('fishing-result');
-const reelButton = document.getElementById('reel-button');
-const canvas = document.getElementById('roulette-canvas');
-const ctx = canvas.getContext('2d');
+const waterArea = document.getElementById('water-area');
+const bgm = document.getElementById('bgm');
 
-const sfxRouletteLoop = document.getElementById('sfx-roulette-loop');
-sfxRouletteLoop.volume = 0.5;
-const sfxStopClick = document.getElementById('sfx-stop-click');
-const sfxWheelStop = document.getElementById('sfx-wheel-stop');
-sfxWheelStop.volume = 0.3;
-const sfxHit = document.getElementById('sfx-hit');
-sfxHit.volume = 1.0;
-const sfxMiss = document.getElementById('sfx-miss');
+let dogData = [], weightedDogs = [], spawnedDogs = [];
+let caughtDogsMap = {};
+let isFishing = false, selectedDog = null;
+const maxDogs = 6, bottomLandHeight = 100;
 
-let angle = 0, spinSpeed = 0;
-let spinning = false, slowingDown = false;
-let hitZoneStart = 0, hitZoneEnd = 0;
-let animationId = null;
+// BGM 初回再生
+document.body.addEventListener('click', () => {
+  if (bgm.paused) bgm.play().catch(() => {});
+}, { once: true });
 
-function startFishing() {
-  fishingResult.textContent = '';
-  fishingUI.style.display = 'block';
-
-  hitZoneStart = Math.random() * 2 * Math.PI;
-  hitZoneEnd = hitZoneStart + Math.PI;
-  if (hitZoneEnd > 2 * Math.PI) hitZoneEnd -= 2 * Math.PI;
-
-  angle = 0;
-  spinSpeed = 0.3;
-  spinning = true;
-  slowingDown = false;
-
-  sfxRouletteLoop.currentTime = 0;
-  sfxRouletteLoop.play();
-
-  drawRoulette();
+function createWeightedDogs(dogs) {
+  const weighted = [];
+  dogs.forEach(dog => {
+    const times = Math.max(1, Math.round(100 * dog.probability));
+    for (let i = 0; i < times; i++) weighted.push(dog);
+  });
+  return weighted;
 }
 
-reelButton.addEventListener('click', () => {
-  if (!spinning || slowingDown) return;
-  slowingDown = true;
+window.addEventListener('load', () => {
+  const stored = localStorage.getItem('caughtDogs');
+  if (stored) caughtDogsMap = JSON.parse(stored);
 
-  sfxStopClick.currentTime = 0;
-  sfxStopClick.play();
+  fetch('dog.json')
+    .then(res => res.json())
+    .then(data => {
+      dogData = data;
+      weightedDogs = createWeightedDogs(data);
+      spawnDogs();
+    });
 });
 
-function drawRoulette() {
-  ctx.clearRect(0, 0, canvas.width, canvas.height);
-  const center = canvas.width / 2;
+function spawnDogs() {
+  waterArea.innerHTML = '';
+  spawnedDogs = [];
+  const isMobile = window.innerWidth <= 600;
+  const dogSize = isMobile ? 50 : 70;
+  const maxX = waterArea.clientWidth - dogSize;
+  const maxY = waterArea.clientHeight - bottomLandHeight - dogSize;
 
-  // 背景の円
-  ctx.beginPath();
-  ctx.arc(center, center, center - 10, 0, 2 * Math.PI);
-  ctx.fillStyle = '#eef';
-  ctx.fill();
+  for (let i = 0; i < maxDogs; i++) {
+    const dog = weightedDogs[Math.floor(Math.random() * weightedDogs.length)];
+    const img = document.createElement('img');
+    img.src = dog.image;
+    img.alt = dog.name;
+    img.title = `${dog.name}（${dog.rarity}）\n${dog.description}`;
+    img.className = 'dog';
+    img.style.position = 'absolute';
+    img.style.width = `${dogSize}px`;
+    img.style.height = `${dogSize}px`;
+    img.style.pointerEvents = 'auto';
 
-  // 当たり範囲の赤い扇形
-  ctx.beginPath();
-  ctx.moveTo(center, center);
-  ctx.arc(center, center, center - 10, hitZoneStart, hitZoneEnd);
-  ctx.fillStyle = '#f00';
-  ctx.fill();
+    let posX = Math.random() * maxX;
+    let posY = Math.random() * maxY;
+    let vx = (Math.random() * 2 - 1) * 0.5;
+    let vy = (Math.random() * 2 - 1) * 0.5;
 
-  // 針の描画
-  const needleLength = center - 20;
-  ctx.beginPath();
-  ctx.moveTo(center, center);
-  ctx.lineTo(center + needleLength * Math.cos(angle), center + needleLength * Math.sin(angle));
-  ctx.strokeStyle = '#000';
-  ctx.lineWidth = 4;
-  ctx.stroke();
+    img.style.left = `${posX}px`;
+    img.style.top = `${posY}px`;
 
-  if (spinning) {
-    angle += spinSpeed;
+    let moveAnimationId;
 
-    if (slowingDown) {
-      spinSpeed -= 0.005;
-      if (spinSpeed <= 0) {
-        spinSpeed = 0;
-        spinning = false;
-        slowingDown = false;
-        cancelAnimationFrame(animationId);
-
-        sfxRouletteLoop.pause();
-        sfxWheelStop.currentTime = 0;
-        sfxWheelStop.play();
-
-        checkHit();
-        return;
-      }
+    function move() {
+      posX += vx;
+      posY += vy;
+      if (posX < 0 || posX > maxX) vx = -vx;
+      if (posY < 0 || posY > maxY) vy = -vy;
+      img.style.left = `${Math.max(0, Math.min(maxX, posX))}px`;
+      img.style.top = `${Math.max(0, Math.min(maxY, posY))}px`;
+      moveAnimationId = requestAnimationFrame(move);
     }
+    move();
 
-    animationId = requestAnimationFrame(drawRoulette);
+    // 移動用のアニメーションIDをimgに保持
+    img._moveAnimationId = moveAnimationId;
+
+    img.addEventListener('click', () => {
+      if (isFishing || window.isZukanOpen || window.isShopOpen) return;
+      selectedDog = { img, dog };
+      // ルーレット開始コードは抜いてあるので、ここで何か他の処理に繋げてください
+      // 例: startFishing();
+    });
+    
+    waterArea.appendChild(img);
+    spawnedDogs.push(img);
   }
 }
 
-function checkHit() {
-  const normalized = angle % (2 * Math.PI);
-  let hit = false;
+// 捕獲成功時のオーバーレイ表示・処理（例）
+const catchOverlay = document.getElementById('catch-overlay');
+const closeBtn = document.getElementById('catch-close');
+const sfxCatch = document.getElementById('sfx-catch');
 
-  if (hitZoneStart < hitZoneEnd) {
-    hit = normalized >= hitZoneStart && normalized <= hitZoneEnd;
-  } else {
-    hit = normalized >= hitZoneStart || normalized <= hitZoneEnd;
-  }
+if (closeBtn) {
+  closeBtn.addEventListener('click', () => {
+    catchOverlay.classList.remove('active');
+  });
+}
 
-  if (hit) {
-    fishingResult.textContent = "ヒット！";
+function showCatchOverlay(dogImageSrc, dogName) {
+  const caughtImg = document.getElementById('caught-dog-img');
+  const caughtMessage = document.getElementById('caught-message');
 
-    sfxHit.currentTime = 0;
-    sfxHit.play();
+  if (caughtImg && caughtMessage && catchOverlay) {
+    caughtImg.src = dogImageSrc;
+    caughtMessage.textContent = `${dogName} をつかまえた！`;
+    catchOverlay.classList.add('active');
 
-    // ヒット後の処理はここで呼び出す想定（UI非表示などは呼び出し元に任せる）
-  } else {
-    fishingResult.textContent = "逃げられた…";
-
-    sfxMiss.currentTime = 0;
-    sfxMiss.play();
-
-    // ミス後の処理も呼び出し元に任せる
+    if (sfxCatch) {
+      sfxCatch.currentTime = 0;
+      sfxCatch.play();
+    }
   }
 }
