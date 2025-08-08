@@ -12,7 +12,6 @@ const zukanNav = document.getElementById('zukan-nav');
 const zukanClose = document.getElementById('zukan-close');
 
 // 図鑑の表示/非表示切り替え
-
 function toggleZukan() {
   const isActive = zukanOverlay.classList.contains('active');
   if (isActive) {
@@ -124,7 +123,6 @@ window.addEventListener('load', () => {
     .then(res => res.json())
     .then(data => {
       dogData = data;
-      // 図鑑を開いているなら更新する
       if (zukanOverlay.classList.contains('active')) {
         updateZukan();
       }
