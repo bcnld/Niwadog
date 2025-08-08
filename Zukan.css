@@ -37,6 +37,24 @@
   overflow: hidden;
 }
 
+.zukan-entries {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  grid-gap: 10px;
+}
+
+.zukan-entry {
+  width: 100%;
+  aspect-ratio: 1/1;
+  background: #eee;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: 4px solid #aaa;
+  border-radius: 8px;
+  font-weight: bold;
+}
+
 /* 左右のページ（9匹ずつ） */
 .zukan-page {
   flex: 1;
@@ -163,3 +181,4 @@
 #zukan-next {
   right: 8px;
 }
+
