@@ -21,6 +21,19 @@ window.addEventListener('load', () => {
       return; // 釣り中や捕獲結果表示中は開かない
     }
 
+    // トグル動作: どれか開いてたら閉じる
+    if (
+      shopMenu.style.display === 'block' ||
+      shopSellPanel.style.display === 'block' ||
+      shopBuyPanel.style.display === 'block'
+    ) {
+      shopMenu.style.display = 'none';
+      shopSellPanel.style.display = 'none';
+      shopBuyPanel.style.display = 'none';
+      sfxClose.play().catch(() => {});
+      return;
+    }
+
     // すべて閉じてからメニュー開く
     shopMenu.style.display = 'block';
     shopSellPanel.style.display = 'none';
@@ -29,7 +42,7 @@ window.addEventListener('load', () => {
     sfxOpen.play().catch(() => {});
   });
 
-  // メニューの閉じる
+  // メニューの閉じるボタン
   shopMenuClose.addEventListener('click', () => {
     shopMenu.style.display = 'none';
     sfxClose.play().catch(() => {});
@@ -49,13 +62,13 @@ window.addEventListener('load', () => {
     shopBuyPanel.style.display = 'block';
   });
 
-  // 売るパネルの閉じる
+  // 売るパネルの閉じるボタン
   sellClose.addEventListener('click', () => {
     shopSellPanel.style.display = 'none';
     sfxClose.play().catch(() => {});
   });
 
-  // 買うパネルの閉じる
+  // 買うパネルの閉じるボタン
   buyClose.addEventListener('click', () => {
     shopBuyPanel.style.display = 'none';
     sfxClose.play().catch(() => {});
