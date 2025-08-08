@@ -16,22 +16,11 @@ window.addEventListener('load', () => {
     const fishingUI = document.getElementById('fishing-ui');
     const resultOverlay = document.getElementById('result-overlay');
 
-    if ((fishingUI && fishingUI.style.display === 'block') ||
+    // isFishing グローバルフラグも判定に追加
+    if (window.isFishing ||
+        (fishingUI && fishingUI.style.display === 'block') ||
         (resultOverlay && resultOverlay.style.display === 'flex')) {
       return; // 釣り中や捕獲結果表示中は開かない
-    }
-
-    // トグル動作: どれか開いてたら閉じる
-    if (
-      shopMenu.style.display === 'block' ||
-      shopSellPanel.style.display === 'block' ||
-      shopBuyPanel.style.display === 'block'
-    ) {
-      shopMenu.style.display = 'none';
-      shopSellPanel.style.display = 'none';
-      shopBuyPanel.style.display = 'none';
-      sfxClose.play().catch(() => {});
-      return;
     }
 
     // すべて閉じてからメニュー開く
@@ -42,7 +31,7 @@ window.addEventListener('load', () => {
     sfxOpen.play().catch(() => {});
   });
 
-  // メニューの閉じるボタン
+  // メニューの閉じる
   shopMenuClose.addEventListener('click', () => {
     shopMenu.style.display = 'none';
     sfxClose.play().catch(() => {});
@@ -62,13 +51,13 @@ window.addEventListener('load', () => {
     shopBuyPanel.style.display = 'block';
   });
 
-  // 売るパネルの閉じるボタン
+  // 売るパネルの閉じる
   sellClose.addEventListener('click', () => {
     shopSellPanel.style.display = 'none';
     sfxClose.play().catch(() => {});
   });
 
-  // 買うパネルの閉じるボタン
+  // 買うパネルの閉じる
   buyClose.addEventListener('click', () => {
     shopBuyPanel.style.display = 'none';
     sfxClose.play().catch(() => {});
