@@ -20,14 +20,15 @@ fetch('dog.json')
 
 // 図鑑ボタン開閉
 zukanBtn.addEventListener('click', () => {
+  sfxOpen.play(); // ← 効果音を再生
   zukanPanel.style.display = (zukanPanel.style.display === 'block') ? 'none' : 'block';
   renderZukanPage(); // ページを更新
 });
 
 zukanClose.addEventListener('click', () => {
+  sfxOpen.play(); // ← 閉じるときにも効果音を再生
   zukanPanel.style.display = 'none';
 });
-
 // ページ切り替え
 prevPageBtn.addEventListener('click', () => {
   if (currentPage > 0) {
