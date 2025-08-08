@@ -188,8 +188,7 @@ const img = document.getElementById('caught-dog-img');
 const message = document.getElementById('caught-message');
 
 img.src = dogImageUrl;
-message.textContent = ${dogName} をつかまえた！;
-
+message.textContent = `${dogName} をつかまえた！`;
 overlay.style.display = 'block';
 }
 
@@ -267,6 +266,7 @@ function checkHit() {
     }, 1500);
   }
 }
+
 
 
 
