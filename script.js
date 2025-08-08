@@ -154,12 +154,35 @@ function drawRoulette() {
   for (const zone of hitZones) {
     ctx.beginPath();
     ctx.moveTo(center, center);
-    ctx.arc(center, center, center - 10, zone.start, zone.end);
-    ctx.fillStyle = '#f00';
-    ctx.fill();
+
+    if (zone.start < zone.end) {
+      ctx.arc(center, center, center - 10, zone.start, zone.end, false);
+      ctx.lineTo(center, center);
+      ctx.closePath();
+      ctx.fillStyle = '#f00';
+      ctx.fill();
+    } else {
+      // 逆転している場合、2つに分けて描画
+
+      // 1つめの扇形
+      ctx.arc(center, center, center - 10, zone.start, 2 * Math.PI, false);
+      ctx.lineTo(center, center);
+      ctx.closePath();
+      ctx.fillStyle = '#f00';
+      ctx.fill();
+
+      // 2つめの扇形
+      ctx.beginPath();
+      ctx.moveTo(center, center);
+      ctx.arc(center, center, center - 10, 0, zone.end, false);
+      ctx.lineTo(center, center);
+      ctx.closePath();
+      ctx.fillStyle = '#f00';
+      ctx.fill();
+    }
   }
 
-  // 針
+  // 針の描画
   const needleLength = center - 20;
   ctx.beginPath();
   ctx.moveTo(center, center);
@@ -167,6 +190,9 @@ function drawRoulette() {
   ctx.strokeStyle = '#000';
   ctx.lineWidth = 4;
   ctx.stroke();
+
+  // 釣り中の回転処理は外部で行う想定
+}
 
   if (spinning) {
     angle += spinSpeed;
@@ -295,3 +321,4 @@ function checkHit() {
 
   return hit;
 }
+
