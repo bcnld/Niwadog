@@ -69,6 +69,7 @@
   width: 60px;
   height: 60px;
   object-fit: contain;
+  border-radius: 50%; /* ← ここを追加 */
 }
 
 /* 未発見の犬（？画像） */
@@ -77,10 +78,12 @@
   border-color: #aaa;
 }
 
+/* 未発見の犬（？画像） */
 .dog-slot.locked img {
   width: 60px;
   height: 60px;
   opacity: 0.7;
+  border-radius: 50%; /* ← ここも追加 */
 }
 
 /* レアリティによる枠色（例） */
