@@ -1,6 +1,7 @@
 const zukanBtn = document.getElementById('zukan-btn');
 const zukanPanel = document.getElementById('zukan-panel');
 const zukanClose = document.getElementById('zukan-close');
+const zukanEntries = document.getElementById('zukan-entries');
 const prevPageBtn = document.getElementById('prev-page');
 const nextPageBtn = document.getElementById('next-page');
 const sfxOpen = document.getElementById('sfx-open');  // HTMLに<audio id="sfx-open">が必要
