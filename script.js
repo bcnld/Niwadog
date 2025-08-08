@@ -238,7 +238,7 @@ function checkHit() {
       const dogImage = selectedDog.img.src;
       const dogId = Number(selectedDog.dog.number);
 
-      showCatchOverlay(dogName, dogImage);
+      showCatchOverlay(dogImage, dogName);
 
       if (!caughtDogsMap[dogId]) {
         caughtDogsMap[dogId] = selectedDog.dog;
@@ -284,6 +284,7 @@ function checkHit() {
     }, 1500);
   }
 }
+
 
 
 
