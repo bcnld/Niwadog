@@ -10,7 +10,7 @@ const sfxRouletteLoop = document.getElementById('sfx-roulette-loop');
 sfxRouletteLoop.volume = 0.5;
 const sfxStopClick = document.getElementById('sfx-stop-click');
 const sfxWheelStop = document.getElementById('sfx-wheel-stop');
-sfxWheelStop.volume = 0.3;  // ← 大文字Sに注意
+sfxWheelStop.volume = 0.3;
 const sfxHit = document.getElementById('sfx-hit');
 sfxHit.volume = 1.0;
 const sfxMiss = document.getElementById('sfx-miss');
@@ -80,6 +80,8 @@ function spawnDogs() {
     img.style.left = `${posX}px`;
     img.style.top = `${posY}px`;
 
+    let moveAnimationId;
+
     function move() {
       posX += vx;
       posY += vy;
@@ -87,9 +89,12 @@ function spawnDogs() {
       if (posY < 0 || posY > maxY) vy = -vy;
       img.style.left = `${Math.max(0, Math.min(maxX, posX))}px`;
       img.style.top = `${Math.max(0, Math.min(maxY, posY))}px`;
-      requestAnimationFrame(move);
+      moveAnimationId = requestAnimationFrame(move);
     }
     move();
+
+    // 移動用のアニメーションIDをimgに保持
+    img._moveAnimationId = moveAnimationId;
 
     img.addEventListener('click', () => {
       if (isFishing) return;
@@ -116,7 +121,6 @@ function startFishing() {
   spinning = true;
   slowingDown = false;
 
-  // 回転音再生開始（ループ）
   sfxRouletteLoop.currentTime = 0;
   sfxRouletteLoop.play();
 
@@ -127,7 +131,6 @@ reelButton.addEventListener('click', () => {
   if (!spinning || slowingDown) return;
   slowingDown = true;
 
-  // 止めるボタンクリック音
   sfxStopClick.currentTime = 0;
   sfxStopClick.play();
 });
@@ -166,7 +169,6 @@ function drawRoulette() {
         slowingDown = false;
         cancelAnimationFrame(animationId);
 
-        // 回転音停止 & 停止音再生
         sfxRouletteLoop.pause();
         sfxWheelStop.currentTime = 0;
         sfxWheelStop.play();
@@ -208,7 +210,6 @@ function checkHit() {
   if (hit) {
     fishingResult.textContent = "ヒット！";
 
-    // ヒット音再生
     sfxHit.currentTime = 0;
     sfxHit.play();
 
@@ -227,18 +228,25 @@ function checkHit() {
         localStorage.setItem('caughtDogs', JSON.stringify(caughtDogsMap));
       }
 
+      // 犬の移動アニメーションを停止
+      if (selectedDog.img._moveAnimationId) {
+        cancelAnimationFrame(selectedDog.img._moveAnimationId);
+      }
+
+      // 犬画像を消す
+      selectedDog.img.remove();
+
+      isFishing = false;
+      selectedDog = null;
+
+      // 図鑑更新用関数があれば呼ぶ
       if (typeof updateZukan === 'function') {
         updateZukan();
       }
-
-      isFishing = false;
-      selectedDog.img.remove();
-      selectedDog = null;
     }, 1500);
   } else {
     fishingResult.textContent = "逃げられた…";
 
-    // ハズレ音再生
     sfxMiss.currentTime = 0;
     sfxMiss.play();
 
@@ -246,7 +254,11 @@ function checkHit() {
       fishingUI.style.display = 'none';
       fishingResult.textContent = "";
 
+      // 犬画像消す（逃げられた場合も）
       if (selectedDog && selectedDog.img) {
+        if (selectedDog.img._moveAnimationId) {
+          cancelAnimationFrame(selectedDog.img._moveAnimationId);
+        }
         selectedDog.img.remove();
       }
 
@@ -255,17 +267,3 @@ function checkHit() {
     }, 1500);
   }
 }
-
-window.addEventListener('load', () => {
-  fetch('dog.json')
-    .then(res => res.json())
-    .then(data => {
-      dogData = data;
-      weightedDogs = createWeightedDogs(data);
-      spawnDogs();
-    });
-});
-
-
-
-
