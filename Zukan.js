@@ -122,4 +122,3 @@ function updateZukan() {
   loadCaughtDogs();
   renderZukanPage();
 }
-
