@@ -1,24 +1,27 @@
-// 要素の取得
 const inventoryBtn = document.getElementById('inventory-btn');
 const inventoryPanel = document.getElementById('inventory-panel');
 const sfxOpen = document.getElementById('sfx-open');
 const sfxClose = document.getElementById('sfx-close');
+const inventoryCount = document.getElementById('inventory-count'); // ← 所持数表示要素
 
-let isInventoryOpen = false;
+let inventoryOpen = false;
 
-// 閉じる・開ける切り替え関数
-function toggleInventory() {
-  if (isInventoryOpen) {
-    inventoryPanel.classList.add('hidden');
-    sfxClose.currentTime = 0;
-    sfxClose.play();
-  } else {
-    inventoryPanel.classList.remove('hidden');
+// 仮の所持犬データ（実際のデータに差し替えてください）
+let ownedDogs = []; // 例: ['shiba', 'pug', 'shiba'] など
+
+inventoryBtn.addEventListener('click', () => {
+  inventoryOpen = !inventoryOpen;
+  inventoryPanel.style.display = inventoryOpen ? 'block' : 'none';
+
+  if (inventoryOpen) {
     sfxOpen.currentTime = 0;
     sfxOpen.play();
-  }
-  isInventoryOpen = !isInventoryOpen;
-}
 
-// ボタンにイベントを付与
-inventoryBtn.addEventListener('click', toggleInventory);
+    // 所持数カウントを更新
+    inventoryCount.textContent = ownedDogs.length;
+
+  } else {
+    sfxClose.currentTime = 0;
+    sfxClose.play();
+  }
+});
