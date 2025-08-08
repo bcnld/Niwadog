@@ -15,7 +15,7 @@
   flex-direction: column;
   align-items: center;
   padding: 20px;
-  overflow-y: auto; /* ← 追加 */
+  overflow-y: auto; /* 画面外はスクロール */
 }
 
 #close-zukan-btn {
@@ -35,7 +35,7 @@
   display: flex;
   justify-content: space-between;
   width: 100%;
-  max-height: calc(100% - 60px); /* ← 高さを制限してスクロール対応 */
+  max-height: calc(100% - 60px); /* 閉じるボタン領域を除いた高さ */
   overflow-y: auto;
   margin-top: 40px;
 }
@@ -45,7 +45,7 @@
   display: grid;
   grid-template-columns: repeat(3, 1fr);
   grid-template-rows: repeat(3, 1fr);
-  gap: 8px; /* ← 縦の隙間を減らす */
+  gap: 8px;
 }
 
 .dog-slot {
@@ -80,7 +80,32 @@
   border-radius: 8px;
 }
 
-.dog-slot.common { border-color: gray; }
-.dog-slot.rare { border-color: blue; }
-.dog-slot.epic { border-color: purple; }
-.dog-slot.legendary { border-color: gold; }
+/* レアリティ別枠色 */
+.dog-slot.common {
+  border-color: gray;
+}
+.dog-slot.rare {
+  border-color: blue;
+}
+.dog-slot.epic {
+  border-color: purple;
+}
+.dog-slot.legendary {
+  border-color: gold;
+}
+
+/* 追加でレスポンシブ調整（必要に応じて） */
+@media screen and (max-width: 600px) {
+  #zukan-panel {
+    width: 95vw;
+    max-width: none;
+    height: 85vh;
+    padding: 15px;
+  }
+
+  .zukan-page {
+    width: 100%;
+    grid-template-columns: repeat(3, 1fr);
+    grid-template-rows: repeat(3, 1fr);
+  }
+}
