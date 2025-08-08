@@ -132,15 +132,21 @@
   <img id="shop-btn" src="images/shop_icon.png" alt="ショップ" style="cursor:pointer;" />
 
   <!-- 図鑑パネル -->
+<!-- 図鑑パネル -->
 <div id="zukan-panel" class="panel" style="display: none;">
-  <h2>図鑑</h2>
-  <div id="zukan-entries" class="zukan-entries">
-    <!-- JSがここにentryを挿入する -->
+  <h2>犬の図鑑</h2>
+  <div id="zukan-content" style="display:flex; justify-content:space-between; height: calc(100% - 90px);">
+    <!-- 左ページ -->
+    <div id="zukan-page-left" class="zukan-page" style="width:48%; background:#fff; border:1px solid #ccc; border-radius:8px; box-shadow: inset 0 0 6px rgba(0,0,0,0.1); padding:10px; box-sizing:border-box; display:grid; grid-template-columns:repeat(3,1fr); grid-template-rows:repeat(3,1fr); gap:12px; overflow-y:auto;"></div>
+
+    <!-- 右ページ -->
+    <div id="zukan-page-right" class="zukan-page" style="width:48%; background:#fff; border:1px solid #ccc; border-radius:8px; box-shadow: inset 0 0 6px rgba(0,0,0,0.1); padding:10px; box-sizing:border-box; display:grid; grid-template-columns:repeat(3,1fr); grid-template-rows:repeat(3,1fr); gap:12px; overflow-y:auto;"></div>
   </div>
-  <div class="zukan-controls">
-    <button id="prev-page">前のページ</button>
-    <span id="page-indicator">1 / 1</span>
-    <button id="next-page">次のページ</button>
+
+  <div class="zukan-controls" style="margin-top:10px; text-align:center; user-select:none;">
+    <button id="prev-page" style="padding:6px 12px; margin:0 8px; font-size:1rem; border-radius:6px; border:1.5px solid #666; background-color:white; cursor:pointer; transition:background-color 0.3s ease;">前のページ</button>
+    <span id="page-indicator" style="font-weight:bold; font-size:1.1rem; vertical-align:middle;">1 / 1</span>
+    <button id="next-page" style="padding:6px 12px; margin:0 8px; font-size:1rem; border-radius:6px; border:1.5px solid #666; background-color:white; cursor:pointer; transition:background-color 0.3s ease;">次のページ</button>
   </div>
 </div>
 <!-- ショップパネル -->
@@ -189,6 +195,7 @@
   <script src="shop.js"></script>
 </body>
 </html>
+
 
 
 
