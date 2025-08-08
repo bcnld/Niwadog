@@ -132,12 +132,16 @@
   <img id="shop-btn" src="images/shop_icon.png" alt="ショップ" style="cursor:pointer;" />
 
   <!-- 図鑑パネル -->
-  <div id="zukan-panel" style="display: none;">
-    <button id="zukan-close">閉じる</button>
+  <!-- 図鑑パネル -->
+  <div id="zukan-panel" class="panel" style="display: none;">
+    <h2>図鑑</h2>
     <div id="zukan-pages">
-      <button id="prev-page">←</button>
-      <div id="zukan-entries" class="zukan-grid"></div>
-      <button id="next-page">→</button>
+    <!-- ページごとの図鑑内容がここに入る -->
+    </div>
+    <div class="zukan-controls">
+      <button id="prev-page">前のページ</button>
+      <span id="page-indicator">1 / 1</span>
+      <button id="next-page">次のページ</button>
     </div>
   </div>
 
@@ -182,6 +186,7 @@
   <script src="shop.js"></script>
 </body>
 </html>
+
 
 
 
