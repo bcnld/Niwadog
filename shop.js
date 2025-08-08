@@ -5,21 +5,18 @@ window.addEventListener('load', () => {
   const sfxOpen = document.getElementById('sfx-open');
   const sfxClose = document.getElementById('sfx-close');
 
-  function toggleShop() {
-  const isVisible = shopPanel.style.display === 'block';
-  if (isVisible) {
-    shopPanel.style.display = 'none';
-    sfxClose.play?.().catch(() => {});
-  } else {
-    // 図鑑オーバーレイが開いていたら閉じる（共存しない想定）
-    if (zukanOverlay.classList.contains('active')) {
-      zukanOverlay.classList.remove('active');
+  shopBtn.addEventListener('click', () => {
+    if (shopPanel.style.display === 'block') {
+      shopPanel.style.display = 'none';
+      sfxClose.play().catch(() => {});
+    } else {
+      shopPanel.style.display = 'block';
+      sfxOpen.play().catch(() => {});
     }
-    shopPanel.style.display = 'block';
-    sfxOpen.play?.().catch(() => {});
-  }
-}
+  });
 
-// イベント登録
-shopBtn.addEventListener('click', toggleShop);
-shopClose.addEventListener('click', toggleShop);
+  shopClose.addEventListener('click', () => {
+    shopPanel.style.display = 'none';
+    sfxClose.play().catch(() => {});
+  });
+});
