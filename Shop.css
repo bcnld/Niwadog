@@ -1,1 +1,11 @@
+#shop-sell-panel, #shop-buy-panel {
+  height: 60vh; /* 必要に応じて変更 */
+  display: flex;
+  flex-direction: column;
+}
 
+#sell-dogs-list, #shop-items-list {
+  flex-grow: 1;
+  overflow-y: auto;
+  margin-top: 10px;
+}
