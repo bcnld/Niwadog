@@ -1,3 +1,5 @@
+import { calculateHitZones } from './fishingCalc.js';
+
 const waterArea = document.getElementById('water-area');
 const bgm = document.getElementById('bgm');
 const fishingUI = document.getElementById('fishing-ui');
@@ -26,7 +28,7 @@ const maxDogs = 6, bottomLandHeight = 100;
 
 let angle = 0, spinSpeed = 0;
 let spinning = false, slowingDown = false;
-let hitZoneStart = 0, hitZoneEnd = 0;
+let hitZones = []; // 複数の当たり判定ゾーン（start,endの配列）
 let animationId = null;
 
 // BGM 初回再生
@@ -110,37 +112,14 @@ function spawnDogs() {
   }
 }
 
-let hitZones = []; // 当たり区間の配列 [{start, end}, ...]
-
 function startFishing() {
   isFishing = true;
   window.isFishing = isFishing;
   fishingResult.textContent = '';
   fishingUI.style.display = 'block';
 
-  const maxSegments = 5;
-  const segmentAngle = (2 * Math.PI) / maxSegments;
-  const hitZoneRatio = 0.4; // 各区間の当たり範囲は40%に縮小
-
-  const prob = selectedDog.dog.probability || 0.5;
-  // 当たり区間数を1〜maxSegmentsの整数に
-  const hitZonesCount = Math.min(maxSegments, Math.max(1, Math.ceil(prob * maxSegments)));
-
-  // 5区間のうちhitZonesCount個をランダムに選ぶ（重複なし）
-  const segments = [0,1,2,3,4];
-  segments.sort(() => Math.random() - 0.5);
-  const chosenSegments = segments.slice(0, hitZonesCount);
-
-  // hitZonesをクリアして新しく作成
-  hitZones = chosenSegments.map(i => {
-    const center = i * segmentAngle + segmentAngle / 2;
-    let start = center - (segmentAngle * hitZoneRatio) / 2;
-    let end = center + (segmentAngle * hitZoneRatio) / 2;
-    // 2πを超えたら丸める
-    if (start < 0) start += 2 * Math.PI;
-    if (end > 2 * Math.PI) end -= 2 * Math.PI;
-    return { start, end };
-  });
+  // ルーレットの当たり判定ゾーンを複数計算 (fishingCalc.jsの関数利用)
+  hitZones = calculateHitZones(selectedDog.dog.probability);
 
   angle = 0;
   spinSpeed = 0.3;
@@ -151,64 +130,6 @@ function startFishing() {
   sfxRouletteLoop.play();
 
   drawRoulette();
-}
-
-function drawRoulette() {
-  ctx.clearRect(0, 0, canvas.width, canvas.height);
-  const center = canvas.width / 2;
-
-  // ベース円
-  ctx.beginPath();
-  ctx.arc(center, center, center - 10, 0, 2 * Math.PI);
-  ctx.fillStyle = '#eef';
-  ctx.fill();
-
-  // 複数の当たり範囲を赤で描画
-  hitZones.forEach(zone => {
-    ctx.beginPath();
-    ctx.moveTo(center, center);
-    if(zone.start < zone.end) {
-      ctx.arc(center, center, center - 10, zone.start, zone.end);
-    } else {
-      // start > end の場合は２つに分けて描画
-      ctx.arc(center, center, center - 10, zone.start, 2 * Math.PI);
-      ctx.arc(center, center, center - 10, 0, zone.end);
-    }
-    ctx.fillStyle = '#f00';
-    ctx.fill();
-  });
-
-  // 針
-  const needleLength = center - 20;
-  ctx.beginPath();
-  ctx.moveTo(center, center);
-  ctx.lineTo(center + needleLength * Math.cos(angle), center + needleLength * Math.sin(angle));
-  ctx.strokeStyle = '#000';
-  ctx.lineWidth = 4;
-  ctx.stroke();
-
-  if (spinning) {
-    angle += spinSpeed;
-
-    if (slowingDown) {
-      spinSpeed -= 0.005;
-      if (spinSpeed <= 0) {
-        spinSpeed = 0;
-        spinning = false;
-        slowingDown = false;
-        cancelAnimationFrame(animationId);
-
-        sfxRouletteLoop.pause();
-        sfxWheelStop.currentTime = 0;
-        sfxWheelStop.play();
-
-        checkHit();
-        return;
-      }
-    }
-
-    animationId = requestAnimationFrame(drawRoulette);
-  }
 }
 
 reelButton.addEventListener('click', () => {
@@ -229,12 +150,14 @@ function drawRoulette() {
   ctx.fillStyle = '#eef';
   ctx.fill();
 
-  // 当たり範囲表示（赤）
-  ctx.beginPath();
-  ctx.moveTo(center, center);
-  ctx.arc(center, center, center - 10, hitZoneStart, hitZoneEnd);
-  ctx.fillStyle = '#f00';
-  ctx.fill();
+  // 複数の当たり判定ゾーンを赤で表示
+  for (const zone of hitZones) {
+    ctx.beginPath();
+    ctx.moveTo(center, center);
+    ctx.arc(center, center, center - 10, zone.start, zone.end);
+    ctx.fillStyle = '#f00';
+    ctx.fill();
+  }
 
   // 針
   const needleLength = center - 20;
@@ -260,7 +183,64 @@ function drawRoulette() {
         sfxWheelStop.currentTime = 0;
         sfxWheelStop.play();
 
-        checkHit();
+        const hit = checkHit();
+
+        if (hit) {
+          fishingResult.textContent = "ヒット！";
+          sfxHit.currentTime = 0;
+          sfxHit.play();
+
+          setTimeout(() => {
+            fishingUI.style.display = 'none';
+            fishingResult.textContent = "";
+
+            const dogName = selectedDog.dog.name;
+            const dogImage = selectedDog.img.src;
+            const dogId = Number(selectedDog.dog.number);
+
+            showCatchOverlay(dogImage, dogName);
+
+            if (!caughtDogsMap[dogId]) {
+              caughtDogsMap[dogId] = selectedDog.dog;
+              localStorage.setItem('caughtDogs', JSON.stringify(caughtDogsMap));
+            }
+
+            if (selectedDog.img._moveAnimationId) {
+              cancelAnimationFrame(selectedDog.img._moveAnimationId);
+            }
+
+            selectedDog.img.remove();
+
+            isFishing = false;
+            window.isFishing = isFishing;
+            selectedDog = null;
+
+            if (typeof updateZukan === 'function') {
+              updateZukan();
+            }
+          }, 1500);
+        } else {
+          fishingResult.textContent = "逃げられた…";
+          sfxMiss.currentTime = 0;
+          sfxMiss.play();
+
+          setTimeout(() => {
+            fishingUI.style.display = 'none';
+            fishingResult.textContent = "";
+
+            if (selectedDog && selectedDog.img) {
+              if (selectedDog.img._moveAnimationId) {
+                cancelAnimationFrame(selectedDog.img._moveAnimationId);
+              }
+              selectedDog.img.remove();
+            }
+
+            isFishing = false;
+            window.isFishing = isFishing;
+            selectedDog = null;
+          }, 1500);
+        }
+
         return;
       }
     }
@@ -269,7 +249,6 @@ function drawRoulette() {
   }
 }
 
-// オーバーレイ閉じる処理
 if (closeBtn) {
   closeBtn.addEventListener('click', () => {
     catchOverlay.classList.remove('active');
@@ -300,78 +279,19 @@ function checkHit() {
   const normalized = angle % (2 * Math.PI);
   let hit = false;
 
-  for(const zone of hitZones) {
+  for (const zone of hitZones) {
     if (zone.start < zone.end) {
-      if(normalized >= zone.start && normalized <= zone.end) {
+      if (normalized >= zone.start && normalized <= zone.end) {
         hit = true;
         break;
       }
     } else {
-      // start > end の場合はまたがる範囲
-      if(normalized >= zone.start || normalized <= zone.end) {
+      if (normalized >= zone.start || normalized <= zone.end) {
         hit = true;
         break;
       }
     }
   }
 
-  if (hit) {
-    fishingResult.textContent = "ヒット！";
-
-    sfxHit.currentTime = 0;
-    sfxHit.play();
-
-    setTimeout(() => {
-      fishingUI.style.display = 'none';
-      fishingResult.textContent = "";
-
-      const dogName = selectedDog.dog.name;
-      const dogImage = selectedDog.img.src;
-      const dogId = Number(selectedDog.dog.number);
-
-      showCatchOverlay(dogImage, dogName);
-
-      if (!caughtDogsMap[dogId]) {
-        caughtDogsMap[dogId] = selectedDog.dog;
-        localStorage.setItem('caughtDogs', JSON.stringify(caughtDogsMap));
-      }
-
-      if (selectedDog.img._moveAnimationId) {
-        cancelAnimationFrame(selectedDog.img._moveAnimationId);
-      }
-
-      selectedDog.img.remove();
-
-      isFishing = false;
-      window.isFishing = isFishing;
-      selectedDog = null;
-
-      if (typeof updateZukan === 'function') {
-        updateZukan();
-      }
-    }, 1500);
-  } else {
-    fishingResult.textContent = "逃げられた…";
-
-    sfxMiss.currentTime = 0;
-    sfxMiss.play();
-
-    setTimeout(() => {
-      fishingUI.style.display = 'none';
-      fishingResult.textContent = "";
-
-      if (selectedDog && selectedDog.img) {
-        if (selectedDog.img._moveAnimationId) {
-          cancelAnimationFrame(selectedDog.img._moveAnimationId);
-        }
-        selectedDog.img.remove();
-      }
-
-      isFishing = false;
-      window.isFishing = isFishing;
-      selectedDog = null;
-    }, 1500);
-  }
+  return hit;
 }
-
-
