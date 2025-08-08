@@ -34,6 +34,8 @@ fetch('dog.json')
   });
 
 zukanBtn.addEventListener('click', () => {
+  if (window.isFishing) return; // 釣り中は図鑑を開かない
+
   const willOpen = zukanPanel.style.display !== 'block';
   zukanPanel.style.display = willOpen ? 'block' : 'none';
   window.isZukanOpen = willOpen;
