@@ -7,6 +7,7 @@ const canvas = document.getElementById('roulette-canvas');
 const ctx = canvas.getContext('2d');
 
 const sfxRouletteLoop = document.getElementById('sfx-roulette-loop');
+sfxRouletteLoop.volume = 0.5;
 const sfxStopClick = document.getElementById('sfx-stop-click');
 const sfxWheelStop = document.getElementById('sfx-wheel-stop');
 sfxWheelStop.volume = 0.3;  // ← 大文字Sに注意
@@ -264,6 +265,7 @@ window.addEventListener('load', () => {
       spawnDogs();
     });
 });
+
 
 
 
