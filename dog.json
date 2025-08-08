@@ -5,7 +5,7 @@
     "image": "images/dog.png",
     "probability": 0.6,
     "catchRate": 1.0,
-    "rarity": かす,
+    "rarity": "かす",
     "price": 10,
     "description": "いつもの犬。"
   },
@@ -15,7 +15,7 @@
     "image": "images/dogc.png",
     "probability": 0.4,
     "catchRate": 0.95,
-    "rarity": かす,
+    "rarity": "かす",
     "price": 10,
     "description": "灰色のハスキー犬。"
   },
@@ -25,7 +25,7 @@
     "image": "images/doga.png",
     "probability": 0.3,
     "catchRate": 0.70,
-    "rarity": ごみ,
+    "rarity": "ごみ",
     "price": 15,
     "description": "緑がかった毛並みが特徴の犬。"
   },
@@ -35,7 +35,7 @@
     "image": "images/dogr.png",
     "probability": 0.2,
     "catchRate": 0.45,
-    "rarity": いらない,
+    "rarity": "いらない",
     "price": 20,
     "description": "顔色が悪い犬。"
   },
@@ -45,7 +45,7 @@
     "image": "images/doge.png",
     "probability": 0.1,
     "catchRate": 0.23,
-    "rarity": まあまあ,
+    "rarity": "まあまあ",
     "price": 30,
     "description": "風呂キャンで紫のオーラを放っている犬。"
   },
@@ -55,7 +55,7 @@
     "image": "images/dogre.png",
     "probability": 0.05,
     "catchRate": 0.22,
-    "rarity": ふつう,
+    "rarity": "ふつう",
     "price": 40,
     "description": "光の速さで腰を振ることで光っている犬。"
   },
@@ -65,7 +65,7 @@
     "image": "images/dogpa.png",
     "probability": 0.01,
     "catchRate": 0.20,
-    "rarity": 甘えんなって,
+    "rarity": "甘えんなって",
     "price": 50,
     "description": "風呂キャン初心者の犬。"
   },
@@ -75,7 +75,7 @@
     "image": "images/dogred.png",
     "probability": 0.1,
     "catchRate": 0.38,
-    "rarity": まあまあ,
+    "rarity": "まあまあ",
     "price": 25,
     "description": "生理で血が飛び出た犬。"
   },
@@ -85,7 +85,7 @@
     "image": "images/dogblue.png",
     "probability": 0.2,
     "catchRate": 0.42,
-    "rarity": まあまあ,
+    "rarity": "まあまあ",
     "price": 25,
     "description": "ブルーチーズを食いすぎた犬。"
   },
@@ -95,7 +95,7 @@
     "image": "images/dogcraz.png",
     "probability": 1.0,
     "catchRate": 0.1,
-    "rarity": ごみ,
+    "rarity": "ごみ",
     "price": 3,
     "description": "ホモによって犯された犬。"
   },
@@ -105,7 +105,7 @@
     "image": "images/doggo.png",
     "probability": 0.02,
     "catchRate": 0.15,
-    "rarity": ちらちら見てたよな？,
+    "rarity": "ちらちら見てたよな？",
     "price": 75,
     "description": "金魂を食べたら金色の毛になった金色の犬。"
   },
@@ -115,7 +115,7 @@
     "image": "images/dogsu.png",
     "probability": 0.006,
     "catchRate": 0.005,
-    "rarity": ふーん、えっちじゃん,
+    "rarity": "ふーん、えっちじゃん",
     "price": 100,
     "description": "ホモから逃げ切った実績のある犬"
   },
@@ -125,7 +125,7 @@
     "image": "images/dogur.png",
     "probability": 0.004,
     "catchRate": 0.00085,
-    "rarity": どしたん話きこか,
+    "rarity": "どしたん話きこか",
     "price": 150,
     "description": "伝説の毛穴ウルバリンから逃げ切った実績がある犬。"
   },
@@ -135,7 +135,7 @@
     "image": "images/dogku.png",
     "probability": 0.08,
     "catchRate": 0.00001,
-    "rarity": かす,
+    "rarity": "かす",
     "price": 1,
     "description": "毛穴ウルバリン症にかかってしまった犬。"
   },
@@ -145,7 +145,7 @@
     "image": "images/dogkfc.png",
     "probability": 0.0003,
     "catchRate": 0.00085,
-    "rarity": ちらちら見てたよな？,
+    "rarity": "ちらちら見てたよな？",
     "price": 125,
     "description": "何人もの人たちをBANさせた犬。"
   },
@@ -155,7 +155,7 @@
     "image": "images/dogsc.png",
     "probability": 0.08,
     "catchRate": 0.001,
-    "rarity": かす,
+    "rarity": "かす",
     "price": 20,
     "description": "犬の性欲を満たすために出てきてしまった犬。"
   },
@@ -165,7 +165,7 @@
     "image": "images/dogot.png",
     "probability": 0.1,
     "catchRate": 0.05,
-    "rarity": かす,
+    "rarity": "かす",
     "price": 2,
     "description": "きもくてくさい犬。"
   },
@@ -175,7 +175,7 @@
     "image": "images/dogtg.png",
     "probability": 0.0,
     "catchRate": 0.001,
-    "rarity": かす,
+    "rarity": "かす",
     "price": 25,
     "description": "受精した瞬間に取り出された犬。"
   },
@@ -185,7 +185,7 @@
     "image": "images/doggn.png",
     "probability": 0.05,
     "catchRate": 0.001,
-    "rarity": かす,
+    "rarity": "かす",
     "price": 15,
     "description": "やり捨てされた犬。"
   },
@@ -195,7 +195,7 @@
     "image": "images/dognb.png",
     "probability": 0.01,
     "catchRate": 0.5,
-    "rarity": まあまあ,
+    "rarity": "まあまあ",
     "price": 55,
     "description": "生まれた瞬間眼鏡をかけてる民族犬。"
   },
@@ -205,7 +205,7 @@
     "image": "images/dogmdm.png",
     "probability": 0.006,
     "catchRate": 0.3,
-    "rarity": 甘えんなって,
+    "rarity": "甘えんなって",
     "price": 85,
     "description": "素犬腕相撲最強。"
   },
@@ -215,7 +215,7 @@
     "image": "images/dognm.png",
     "probability": 0.03,
     "catchRate": 0.3,
-    "rarity": ごみ,
+    "rarity": "ごみ",
     "price": 30,
     "description": "かつて飲食店でお風呂に入った犬。"
   },
@@ -225,7 +225,7 @@
     "image": "images/doghs.png",
     "probability": 0.0007,
     "catchRate": 0.003,
-    "rarity": どしたん話きこか,
+    "rarity": "どしたん話きこか",
     "price": 170,
     "description": "AV最多勝に選ばれた犬。"
   },
@@ -235,7 +235,7 @@
     "image": "images/dogho.png",
     "probability": 0.1,
     "catchRate": 0.3,
-    "rarity": ごみ,
+    "rarity": "ごみ",
     "price": 30,
     "description": "精子を出しても皮に吸収されて受精させれない犬。"
   },
@@ -245,7 +245,7 @@
     "image": "images/dogsr.png",
     "probability": 0.00003,
     "catchRate": 0.003,
-    "rarity": じゃあ挿れるね,
+    "rarity": "じゃあ挿れるね",
     "price": 270,
     "description": "生まれつきの才能を持った犬。"
   },
@@ -255,7 +255,7 @@
     "image": "images/dogin.png",
     "probability": 0.1,
     "catchRate": 0.3,
-    "rarity": かす,
+    "rarity": "かす",
     "price": 3,
     "description": "面白くないノリをする犬。"
   },
@@ -265,7 +265,7 @@
     "image": "images/dogks.png",
     "probability": 0.003,
     "catchRate": 0.08,
-    "rarity": ちらちら見てたよな？,
+    "rarity": "ちらちら見てたよな？",
     "price": 80,
     "description": "けつのあなに何十万匹もの寄生虫を飼っている犬。"
   },
@@ -275,7 +275,7 @@
     "image": "images/dogos.png",
     "probability": 0.15,
     "catchRate": 0.3,
-    "rarity": いらない,
+    "rarity": "いらない",
     "price": 40,
     "description": "通話をしていることを忘れて放尿してしまった犬。"
   },
@@ -285,7 +285,7 @@
     "image": "images/dogkh.png",
     "probability": 0.03,
     "catchRate": 0.3,
-    "rarity": ふつう,
+    "rarity": "ふつう",
     "price": 70,
     "description": "犬の夢は終わらねぇ！...言いながらどんぐりの虫を食べる犬。"
   },
@@ -295,10 +295,8 @@
     "image": "images/dogut.png",
     "probability": 0.15,
     "catchRate": 0.3,
-    "rarity": いらない,
+    "rarity": "いらない",
     "price": 25,
     "description": "急に話しかけられてうんこをちびってしまった犬"
   }
 ]
-
-
