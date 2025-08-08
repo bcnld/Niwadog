@@ -217,6 +217,15 @@
 /* =============================
    レアリティ別枠色
 ============================= */
+.dog-slot {
+  border: 4px solid transparent;
+  border-radius: 10px;
+  overflow: hidden;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
 .dog-slot.かす {
   border-color: #353839; /* 黒曜石 */
 }
