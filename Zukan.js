@@ -76,28 +76,32 @@ function renderZukanPage() {
   const dogsToDisplay = allDogs.slice(start, start + 18);
 
   dogsToDisplay.forEach((dog, i) => {
-    const entry = document.createElement('div');
-    entry.className = 'zukan-entry';
+  const entry = document.createElement('div');
+  entry.className = 'dog-slot';  // ここで枠のクラス名付与
 
-    const img = document.createElement('img');
-    img.className = 'zukan-image';
-    img.alt = dog?.name || '犬の画像';
-    img.width = 60;
-    img.height = 60;
+  // レアリティに対応したクラスを追加
+  if(dog.rarity) {
+    // ひらがなカタカナ等の文字列をクラス名にするなら、スペースや記号は削除 or 置換しておく必要があります
+    // 例としてそのまま追加（HTML/CSSも同じ名前で）
+    entry.classList.add(dog.rarity);
+  }
 
-    if (caughtDogs.includes(dog.number)) {
-      entry.classList.add('caught', dog.rarity || '');
-      img.src = dog?.image || 'images/noimage.png';
-      img.style.cursor = 'pointer';
-      img.addEventListener('click', () => showDogProfile(dog));
-    } else {
-      entry.classList.add('not-caught');
-      img.src = 'images/hatena.png';
-    }
+  const img = document.createElement('img');
+  img.src = caughtDogs.includes(dog.number) ? dog.image : 'images/hatena.png';
+  img.alt = dog.name || '犬の画像';
+  img.width = 60;
+  img.height = 60;
 
-    entry.appendChild(img);
-    (i < 9 ? leftPage : rightPage).appendChild(entry);
-  });
+  if (caughtDogs.includes(dog.number)) {
+    img.style.cursor = 'pointer';
+    img.addEventListener('click', () => showDogProfile(dog));
+  }
+
+  entry.appendChild(img);
+
+  // ページ左9個は左、右9個は右に配置
+  (i < 9 ? leftPage : rightPage).appendChild(entry);
+});
 
   const maxPage = Math.ceil(allDogs.length / 18);
   document.getElementById('page-indicator').textContent = `${currentPage + 1} / ${maxPage}`;
