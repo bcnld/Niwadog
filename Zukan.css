@@ -16,6 +16,9 @@
   display: flex;
 }
 
+#zukan-panel {
+  display: none;
+}
 /* 図鑑本体 */
 #zukan-container {
   width: 900px;
