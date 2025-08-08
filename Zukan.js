@@ -116,8 +116,7 @@ if (i < 9) {
 });
 
 const maxPage = Math.ceil(allDogs.length / 18);
-document.getElementById('page-indicator').textContent = ${currentPage + 1} / ${maxPage};
-}
+document.getElementById('page-indicator').textContent = `${currentPage + 1} / ${maxPage}`;
 
 // ▼ プロフィール表示
 function showDogProfile(dog) {
