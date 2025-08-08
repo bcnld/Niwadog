@@ -82,7 +82,7 @@ function renderZukanPage() {
       entry.classList.add('caught');
       entry.classList.add(dog.rarity);
 
-    const img = document.createElement('img');
+      const img = document.createElement('img');
       img.src = dog.image;
       img.alt = dog.name || '犬の画像';
       img.style.cursor = 'pointer';
@@ -97,14 +97,15 @@ function renderZukanPage() {
       entry.appendChild(img);
     } else {
       entry.classList.add('not-caught');
-      entry.textContent = '？';
-      entry.style.fontSize = '3rem';
-      entry.style.textAlign = 'center';
-      entry.style.color = '#666';
-      entry.style.userSelect = 'none';
-      entry.style.display = 'flex';
-      entry.style.justifyContent = 'center';
-      entry.style.alignItems = 'center';
+
+      const img = document.createElement('img');
+      img.src = 'images/hatena.png'; // ← あなたの「？」画像のパスに合わせてください
+      img.alt = '未発見';
+      img.style.width = '60px';
+      img.style.height = '60px';
+      img.style.objectFit = 'contain';
+
+      entry.appendChild(img);
     }
 
     if (i < 9) {
