@@ -144,13 +144,13 @@ function drawRoulette() {
   ctx.clearRect(0, 0, canvas.width, canvas.height);
   const center = canvas.width / 2;
 
-  // ベース円
+  // ベース円描画
   ctx.beginPath();
   ctx.arc(center, center, center - 10, 0, 2 * Math.PI);
   ctx.fillStyle = '#eef';
   ctx.fill();
 
-  // 複数の当たり判定ゾーンを赤で表示
+  // 当たり判定ゾーンを描画
   for (const zone of hitZones) {
     ctx.beginPath();
     ctx.moveTo(center, center);
@@ -162,16 +162,13 @@ function drawRoulette() {
       ctx.fillStyle = '#f00';
       ctx.fill();
     } else {
-      // 逆転している場合、2つに分けて描画
-
-      // 1つめの扇形
+      // 逆転してる場合２つに分けて描画
       ctx.arc(center, center, center - 10, zone.start, 2 * Math.PI, false);
       ctx.lineTo(center, center);
       ctx.closePath();
       ctx.fillStyle = '#f00';
       ctx.fill();
 
-      // 2つめの扇形
       ctx.beginPath();
       ctx.moveTo(center, center);
       ctx.arc(center, center, center - 10, 0, zone.end, false);
@@ -191,9 +188,7 @@ function drawRoulette() {
   ctx.lineWidth = 4;
   ctx.stroke();
 
-  // 釣り中の回転処理は外部で行う想定
-}
-
+  // 釣り中の回転更新・ループ処理
   if (spinning) {
     angle += spinSpeed;
 
@@ -321,4 +316,5 @@ function checkHit() {
 
   return hit;
 }
+
 
