@@ -193,12 +193,12 @@ function showCatchOverlay(dogName, dogImageUrl) {
   overlay.style.display = 'block';
 }
 
-const sfxClose = document.getElementById('sfx-stop-click');
+const sfxStopClick = document.getElementById('sfx-stop-click');
 
 document.getElementById('catch-close').addEventListener('click', () => {
-  if (sfxstopclick) {
-    sfxstopclick.currentTime = 0;
-    sfxstopclick.play();
+  if (sfxStopClick) {
+    sfxStopClick.currentTime = 0;
+    sfxStopClick.play();
   }
   document.getElementById('catch-overlay').style.display = 'none';
 });
@@ -273,4 +273,5 @@ function checkHit() {
     }, 1500);
   }
 }
+
 
