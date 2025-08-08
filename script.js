@@ -142,46 +142,47 @@ reelButton.addEventListener('click', () => {
   sfxStopClick.play();
 });
 
+const segments = 12; // 分割数
+let hitIndices = [3, 7]; // 当たりパネルのインデックス（例）
+
 function drawRoulette() {
   ctx.clearRect(0, 0, canvas.width, canvas.height);
   const center = canvas.width / 2;
+  const radius = center - 10;
+  const segmentAngle = (2 * Math.PI) / segments;
 
-  // ベース円
-  ctx.beginPath();
-  ctx.arc(center, center, center - 10, 0, 2 * Math.PI);
-  ctx.fillStyle = '#eef';
-  ctx.fill();
-
-  // 当たり判定（赤い扇形）
-  ctx.beginPath();
-  ctx.moveTo(center, center);
-  if (hitZoneStart < hitZoneEnd) {
-    ctx.arc(center, center, center - 10, hitZoneStart, hitZoneEnd);
-  } else {
-    // 0度をまたぐ場合は2つの扇形に分けて描画
-    ctx.arc(center, center, center - 10, hitZoneStart, 2 * Math.PI);
-    ctx.lineTo(center, center);
-    ctx.closePath();
-    ctx.fillStyle = '#f00';
-    ctx.fill();
+  for (let i = 0; i < segments; i++) {
+    const startAngle = i * segmentAngle;
+    const endAngle = startAngle + segmentAngle;
 
     ctx.beginPath();
     ctx.moveTo(center, center);
-    ctx.arc(center, center, center - 10, 0, hitZoneEnd);
+    ctx.arc(center, center, radius, startAngle, endAngle);
+    ctx.closePath();
+
+    // 当たりパネルは赤、それ以外は交互に色を変える例
+    if (hitIndices.includes(i)) {
+      ctx.fillStyle = '#f00';
+    } else {
+      ctx.fillStyle = (i % 2 === 0) ? '#eee' : '#ccc';
+    }
+    ctx.fill();
+
+    // パネルの境界線
+    ctx.strokeStyle = '#999';
+    ctx.lineWidth = 1;
+    ctx.stroke();
   }
-  ctx.lineTo(center, center);
-  ctx.closePath();
-  ctx.fillStyle = '#f00';
-  ctx.fill();
 
   // 針の描画
-  const needleLength = center - 20;
+  const needleLength = radius - 20;
   ctx.beginPath();
   ctx.moveTo(center, center);
   ctx.lineTo(center + needleLength * Math.cos(angle), center + needleLength * Math.sin(angle));
   ctx.strokeStyle = '#000';
   ctx.lineWidth = 4;
   ctx.stroke();
+}
 
   if (spinning) {
     angle += spinSpeed;
@@ -302,3 +303,4 @@ function showCatchOverlay(dogImageSrc, dogName) {
     }
   }
 }
+
