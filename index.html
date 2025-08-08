@@ -131,21 +131,23 @@
   <!-- ショップボタン -->
   <img id="shop-btn" src="images/shop_icon.png" alt="ショップ" style="cursor:pointer;" />
 
-  <!-- 図鑑オーバーレイ（display:none削除済み） -->
-  <div id="zukan-overlay" class="overlay">
-    <div id="zukan-container">
-      <h2>図鑑</h2>
-      <div id="zukan-list"></div>  <!-- 図鑑アイテムリスト -->
-      <div id="zukan-nav"></div>   <!-- ページナビ -->
-      <button id="zukan-close">閉じる</button>
+  <!-- 図鑑パネル -->
+  <div id="zukan-panel" class="panel" style="display: none;">
+    <h2>図鑑</h2>
+    <div id="zukan-pages">
+    <!-- ページごとの図鑑内容がここに入る -->
+    </div>
+    <div class="zukan-controls">
+      <button id="prev-page">前のページ</button>
+      <span id="page-indicator">1 / 1</span>
+      <button id="next-page">次のページ</button>
     </div>
   </div>
 
-  <!-- ショップパネル（display:none削除済み） -->
-  <div id="shop-panel" class="panel">
+<!-- ショップパネル -->
+  <div id="shop-panel" class="panel" style="display: none;">
     <h2>ショップ</h2>
-    <p>アイテム購入機能などをここに追加します。</p>
-    <button id="shop-close">閉じる</button>
+    <p>アイテムはまだありません。</p>
   </div>
   
   <!-- ✅ 図鑑の外に出す -->
@@ -183,3 +185,4 @@
   <script src="shop.js"></script>
 </body>
 </html>
+
