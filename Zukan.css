@@ -217,15 +217,33 @@
 /* =============================
    レアリティ別枠色
 ============================= */
-.dog-slot.common {
-  border-color: gray;
+.dog-slot.かす {
+  border-color: #353839; /* 黒曜石 */
 }
-.dog-slot.rare {
-  border-color: blue;
+.dog-slot.ごみ {
+  border-color: #b5a642; /* 砂金（愚者の金） */
 }
-.dog-slot.epic {
-  border-color: purple;
+.dog-slot.いらない {
+  border-color: #b08d57; /* 青銅 */
 }
-.dog-slot.legendary {
-  border-color: gold;
+.dog-slot.まあまあ {
+  border-color: #00a86b; /* 翡翠 */
+}
+.dog-slot.ふつう {
+  border-color: #26619c; /* ラピスラズリ */
+}
+.dog-slot.甘えんなって {
+  border-color: #9966cc; /* 紫水晶 */
+}
+.dog-slot.ちらちら見てたよな？ {
+  border-color: #f0d36d; /* 黄鉄鉱 */
+}
+.dog-slot.ふーん、えっちじゃん {
+  border-color: #8a2d2d; /* 赤鉄鉱 */
+}
+.dog-slot.どしたん話聞こか {
+  border-color: #40e0d0; /* ターコイズ */
+}
+.dog-slot.じゃあ挿れるね {
+  border-color: #b22222; /* ルビー */
 }
