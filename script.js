@@ -183,18 +183,20 @@ function drawRoulette() {
 }
 
 function showCatchOverlay(dogName, dogImageUrl) {
-const overlay = document.getElementById('catch-overlay');
-const img = document.getElementById('caught-dog-img');
-const message = document.getElementById('caught-message');
+  const overlay = document.getElementById('catch-overlay');
+  const img = document.getElementById('caught-dog-img');
+  const message = document.getElementById('caught-message');
+  const sfxCatch = document.getElementById('sfx-catch');
 
-img.src = dogImageUrl;
-message.textContent = `${dogName} をつかまえた！`;
-overlay.style.display = 'block';
+  img.src = dogImageUrl;
+  message.textContent = `${dogName} をつかまえた！`;
+  overlay.style.display = 'block';
+
+  if (sfxCatch) {
+    sfxCatch.currentTime = 0;
+    sfxCatch.play();
+  }
 }
-
-document.getElementById('catch-close').addEventListener('click', () => {
-document.getElementById('catch-overlay').style.display = 'none';
-});
 
 function checkHit() {
   const normalized = angle % (2 * Math.PI);
@@ -266,6 +268,7 @@ function checkHit() {
     }, 1500);
   }
 }
+
 
 
 
