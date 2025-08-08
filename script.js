@@ -97,7 +97,7 @@ function spawnDogs() {
     img._moveAnimationId = moveAnimationId;
 
     img.addEventListener('click', () => {
-      if (isFishing) return;
+      if (isFishing || window.isZukanOpen) return;
       selectedDog = { img, dog };
       startFishing();
     });
@@ -284,6 +284,7 @@ function checkHit() {
     }, 1500);
   }
 }
+
 
 
 
