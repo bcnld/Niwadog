@@ -12,10 +12,9 @@ const profileImage = document.getElementById('profile-image');
 const profileDescription = document.getElementById('profile-description');
 
 let allDogs = [];
-let caughtDogs = [];  // 配列（捕まえた犬IDのリスト）
+let caughtDogs = [];  // 捕まえた犬IDのリスト
 let currentPage = 0;
 
-// ▼ ローカルストレージから caughtDogs を読み込み（オブジェクト→配列に変換）
 function loadCaughtDogs() {
   const saved = localStorage.getItem('caughtDogs');
   if (saved) {
@@ -26,7 +25,6 @@ function loadCaughtDogs() {
   }
 }
 
-// ▼ dog.json読み込み
 fetch('dog.json')
   .then(res => res.json())
   .then(data => {
@@ -35,7 +33,6 @@ fetch('dog.json')
     renderZukanPage();
   });
 
-// ▼ 図鑑ボタンの開閉
 zukanBtn.addEventListener('click', () => {
   if (zukanPanel.style.display === 'block') {
     zukanPanel.style.display = 'none';
@@ -47,7 +44,6 @@ zukanBtn.addEventListener('click', () => {
   }
 });
 
-// ▼ ページ移動
 prevPageBtn.addEventListener('click', () => {
   if (currentPage > 0) {
     currentPage--;
@@ -63,12 +59,10 @@ nextPageBtn.addEventListener('click', () => {
   }
 });
 
-// ▼ プロフィールモーダル閉じる
 profileCloseBtn.addEventListener('click', () => {
   profileModal.style.display = 'none';
 });
 
-// ▼ 図鑑ページ描画
 function renderZukanPage() {
   const leftPage = document.getElementById('zukan-page-left');
   const rightPage = document.getElementById('zukan-page-right');
@@ -82,7 +76,7 @@ function renderZukanPage() {
     const entry = document.createElement('div');
     entry.classList.add('zukan-entry');
 
-    if (caughtDogs.includes(dog.id)) {
+    if (caughtDogs.includes(dog.number)) {
       entry.classList.add('caught');
       entry.classList.add(dog.rarity);
 
@@ -115,7 +109,6 @@ function renderZukanPage() {
   document.getElementById('page-indicator').textContent = `${currentPage + 1} / ${maxPage}`;
 }
 
-// ▼ プロフィール表示
 function showDogProfile(dog) {
   profileName.textContent = dog.name || '名前不明';
   profileImage.src = dog.image;
@@ -125,8 +118,13 @@ function showDogProfile(dog) {
   profileModal.style.display = 'flex';
 }
 
-// ▼ 釣りJSから呼ばれる図鑑更新関数
 function updateZukan() {
   loadCaughtDogs();
   renderZukanPage();
 }
+
+
+書き換えました。図鑑に登録されない原因は、おそらく犬のIDの扱いが dog.id ではなく dog.number になっていたため、それに合わせて修正しています。
+
+もし釣った犬の保存時に number を使っていない場合、そちらも合わせて修正が必要です。必要なら教えてください。
+
