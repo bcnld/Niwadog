@@ -34,13 +34,13 @@ fetch('dog.json')
   });
 
 zukanBtn.addEventListener('click', () => {
-  if (zukanPanel.style.display === 'block') {
-    zukanPanel.style.display = 'none';
-    sfxClose.play();
-  } else {
-    zukanPanel.style.display = 'block';
-    sfxOpen.play();
-    renderZukanPage();
+  const willOpen = zukanPanel.style.display !== 'block';
+  zukanPanel.style.display = willOpen ? 'block' : 'none';
+  window.isZukanOpen = willOpen;
+  (willOpen ? sfxOpen : sfxClose).play();
+  if (willOpen) renderZukanPage();
+  if (typeof window.onZukanToggle === 'function') {
+    window.onZukanToggle(willOpen);
   }
 });
 
