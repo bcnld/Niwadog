@@ -5,25 +5,24 @@ const nextPageBtn = document.getElementById('next-page');
 const sfxOpen = document.getElementById('sfx-open');
 const sfxClose = document.getElementById('sfx-close');
 
+// ▼ プロフィール用の要素追加
 const profileModal = document.getElementById('dog-profile-modal');
 const profileCloseBtn = document.getElementById('profile-close');
 const profileName = document.getElementById('profile-name');
 const profileImage = document.getElementById('profile-image');
 const profileDescription = document.getElementById('profile-description');
-const profileRarity = document.getElementById('profile-rarity');
-const profilePrice = document.getElementById('profile-price');
+const profileRarity = document.getElementById('profile-rarity'); // 追加
+const profilePrice = document.getElementById('profile-price');   // 追加
 
 let allDogs = [];
 let caughtDogs = [];
 let currentPage = 0;
 
-// 捕まえた犬情報をローカルストレージから読み込み
 function loadCaughtDogs() {
   const saved = localStorage.getItem('caughtDogs');
   caughtDogs = saved ? Object.keys(JSON.parse(saved)).map(id => Number(id)) : [];
 }
 
-// dog.jsonから犬データ読み込み＆初期表示
 fetch('dog.json')
   .then(res => res.json())
   .then(data => {
@@ -32,7 +31,6 @@ fetch('dog.json')
     renderZukanPage();
   });
 
-// 図鑑ボタンで開閉
 zukanBtn.addEventListener('click', () => {
   if (window.isFishing) return;
 
@@ -48,13 +46,13 @@ zukanBtn.addEventListener('click', () => {
   }
 });
 
-// ページ移動ボタン
 prevPageBtn.addEventListener('click', () => {
   if (currentPage > 0) {
     currentPage--;
     renderZukanPage();
   }
 });
+
 nextPageBtn.addEventListener('click', () => {
   const maxPage = Math.ceil(allDogs.length / 18) - 1;
   if (currentPage < maxPage) {
@@ -63,12 +61,11 @@ nextPageBtn.addEventListener('click', () => {
   }
 });
 
-// プロフィールモーダルの閉じるボタン
+// ▼ モーダルを閉じる
 profileCloseBtn.addEventListener('click', () => {
   profileModal.style.display = 'none';
 });
 
-// 図鑑ページの描画
 function renderZukanPage() {
   const leftPage = document.getElementById('zukan-page-left');
   const rightPage = document.getElementById('zukan-page-right');
@@ -92,10 +89,11 @@ function renderZukanPage() {
       entry.classList.add('caught', dog.rarity);
       img.src = dog.image;
       img.style.cursor = 'pointer';
+      // ▼ 画像クリックでプロフィール表示
       img.addEventListener('click', () => showDogProfile(dog));
     } else {
       entry.classList.add('not-caught');
-      img.src = 'images/hatena.png'; // 「？」画像パス
+      img.src = 'images/hatena.png'; // 「？」画像
     }
 
     entry.appendChild(img);
@@ -106,7 +104,7 @@ function renderZukanPage() {
   document.getElementById('page-indicator').textContent = `${currentPage + 1} / ${maxPage}`;
 }
 
-// 犬プロフィール表示
+// ▼ 犬プロフィール表示関数（新規追加）
 function showDogProfile(dog) {
   profileName.textContent = dog.name || '名前不明';
   profileImage.src = dog.image;
@@ -117,7 +115,6 @@ function showDogProfile(dog) {
   profileModal.style.display = 'flex';
 }
 
-// 図鑑更新（外部呼び出し用）
 function updateZukan() {
   loadCaughtDogs();
   renderZukanPage();
