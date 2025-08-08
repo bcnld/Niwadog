@@ -124,3 +124,37 @@ function showDogProfile(dog) {
   profilePrice.textContent = `売値: ${dog.price || 0} 円`;
   profileModal.style.display = 'flex';
 }
+
+function renderZukan(data) {
+  const zukanList = document.getElementById('zukan-list');
+  zukanList.innerHTML = '';
+
+  const currentPageDogs = getCurrentPageDogs(data);
+  currentPageDogs.forEach(dog => {
+    const dogDiv = document.createElement('div');
+    dogDiv.className = 'zukan-dog';
+
+    if (dog.caught) {
+      const img = document.createElement('img');
+      img.src = dog.image;
+      img.alt = dog.name;
+      dogDiv.appendChild(img);
+
+      // プロフィール表示イベントを追加
+      dogDiv.addEventListener('click', () => {
+        document.getElementById('profile-image').src = dog.image;
+        document.getElementById('profile-name').textContent = dog.name;
+        document.getElementById('profile-rarity').textContent = `レアリティ: ${dog.rarity}`;
+        document.getElementById('profile-price').textContent = `売値: ${dog.price}円`;
+        document.getElementById('profile-description').textContent = dog.description || '';
+        document.getElementById('zukan-profile').style.display = 'block';
+      });
+
+    } else {
+      dogDiv.textContent = `No.${dog.id}`;
+      dogDiv.classList.add('unknown');
+    }
+
+    zukanList.appendChild(dogDiv);
+  });
+}
