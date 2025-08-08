@@ -12,10 +12,9 @@ const profileImage = document.getElementById('profile-image');
 const profileDescription = document.getElementById('profile-description');
 
 let allDogs = [];
-let caughtDogs = [];  // 捕まえた犬IDのリスト（numberの配列）
+let caughtDogs = [];  // 捕まえた犬IDのリスト
 let currentPage = 0;
 
-// ローカルストレージから caughtDogs を配列として読み込む
 function loadCaughtDogs() {
   const saved = localStorage.getItem('caughtDogs');
   if (saved) {
@@ -26,7 +25,6 @@ function loadCaughtDogs() {
   }
 }
 
-// dog.jsonを読み込んで初期化
 fetch('dog.json')
   .then(res => res.json())
   .then(data => {
@@ -35,7 +33,6 @@ fetch('dog.json')
     renderZukanPage();
   });
 
-// 図鑑パネルの表示切り替え
 zukanBtn.addEventListener('click', () => {
   if (zukanPanel.style.display === 'block') {
     zukanPanel.style.display = 'none';
@@ -47,7 +44,6 @@ zukanBtn.addEventListener('click', () => {
   }
 });
 
-// ページ送り（前）
 prevPageBtn.addEventListener('click', () => {
   if (currentPage > 0) {
     currentPage--;
@@ -55,7 +51,6 @@ prevPageBtn.addEventListener('click', () => {
   }
 });
 
-// ページ送り（次）
 nextPageBtn.addEventListener('click', () => {
   const maxPage = Math.ceil(allDogs.length / 18) - 1;
   if (currentPage < maxPage) {
@@ -64,12 +59,10 @@ nextPageBtn.addEventListener('click', () => {
   }
 });
 
-// プロフィールモーダル閉じる
 profileCloseBtn.addEventListener('click', () => {
   profileModal.style.display = 'none';
 });
 
-// 図鑑ページを描画
 function renderZukanPage() {
   const leftPage = document.getElementById('zukan-page-left');
   const rightPage = document.getElementById('zukan-page-right');
@@ -103,6 +96,10 @@ function renderZukanPage() {
       entry.style.fontSize = '3rem';
       entry.style.textAlign = 'center';
       entry.style.color = '#666';
+      entry.style.userSelect = 'none';
+      entry.style.display = 'flex';
+      entry.style.justifyContent = 'center';
+      entry.style.alignItems = 'center';
     }
 
     if (i < 9) {
@@ -116,7 +113,6 @@ function renderZukanPage() {
   document.getElementById('page-indicator').textContent = `${currentPage + 1} / ${maxPage}`;
 }
 
-// 犬プロフィールを表示
 function showDogProfile(dog) {
   profileName.textContent = dog.name || '名前不明';
   profileImage.src = dog.image;
@@ -126,7 +122,6 @@ function showDogProfile(dog) {
   profileModal.style.display = 'flex';
 }
 
-// 釣りで捕まえたあとに図鑑更新したい時に呼ぶ関数
 function updateZukan() {
   loadCaughtDogs();
   renderZukanPage();
