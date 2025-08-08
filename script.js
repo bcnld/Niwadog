@@ -109,6 +109,7 @@ function spawnDogs() {
 
 function startFishing() {
   isFishing = true;
+  window.isFishing = isFishing;
   fishingResult.textContent = '';
   fishingUI.style.display = 'block';
 
@@ -254,6 +255,7 @@ function checkHit() {
       selectedDog.img.remove();
 
       isFishing = false;
+      window.isFishing = isFishing;
       selectedDog = null;
 
       // 図鑑更新用関数があれば呼ぶ
@@ -280,10 +282,12 @@ function checkHit() {
       }
 
       isFishing = false;
+      window.isFishing = isFishing;
       selectedDog = null;
     }, 1500);
   }
 }
+
 
 
 
