@@ -116,12 +116,9 @@ function spawnDogs() {
 document.addEventListener('click', function (e) {
   if (e.target.classList.contains('dog')) {
     console.log('犬クリック！釣りUI表示');
-    document.getElementById('fishing-ui').style.display = 'block';
-
-    // ルーレット描画開始
-    drawRoulette();
+    startFishing(); // ← ここで直接 startFishing() を呼ぶ
   }
-}); // ← ここでイベントリスナー閉じる
+});
 
 // 釣り開始処理
 function startFishing() {
@@ -358,4 +355,5 @@ window.addEventListener('load', () => {
       console.error('犬データ読み込みエラー:', err);
     });
 });
+
 
