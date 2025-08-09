@@ -243,30 +243,31 @@
   </div>
 </div>
   
-  <!-- 捕獲オーバーレイ -->
-  <div id="catch-overlay" class="overlay">
-    <div style="background: white; padding: 20px; border-radius: 12px; text-align: center; box-shadow: 0 0 15px rgba(0,0,0,0.5);">
-      <img id="caught-dog-img" src="" alt="釣れた犬" style="max-width: 200px; max-height: 200px;" />
-      <div id="caught-message" style="font-size: 1.2rem; margin-top: 10px; font-weight: bold;">をつかまえた！</div>
-      <button id="catch-close" style="margin-top: 15px; padding: 8px 16px; font-size: 1rem; cursor: pointer;">閉じる</button>
-    </div>
-  </div>
-
-<div id="fishing-ui" style="display:none; position: fixed; top: 20%; left: 50%; transform: translateX(-50%);
-    width: 320px; height: 350px; background: #fffde7; border: 2px solid #444; border-radius: 8px; 
-    box-shadow: 0 0 10px rgba(0,0,0,0.4); z-index: 1000; text-align: center; padding: 15px;">
-
-  <canvas id="roulette-canvas" width="300" height="300" style="background:#eee; border-radius:8px;"></canvas>
+<!-- 釣りUI（ルーレット含む） -->
+<div id="fishing-ui" style="display:none; position:fixed; top:50%; left:50%; transform:translate(-50%, -50%);
+  background:#222; padding:20px; border-radius:12px; box-shadow:0 0 10px rgba(0,0,0,0.7); z-index:1000; width:320px; text-align:center; color:#fff;">
   
-  <button id="reel-button" style="margin-top: 10px; padding: 10px 20px; font-size: 1rem; cursor: pointer;">
-    止める
+  <canvas id="roulette-canvas" width="300" height="300" style="background:#333; border-radius:50%; display:block; margin:0 auto 15px;"></canvas>
+  
+  <div id="fishing-result" style="font-size:24px; height:30px; margin-bottom:10px;"></div>
+  
+  <button id="reel-button" style="padding:10px 20px; font-size:18px; cursor:pointer; border:none; border-radius:8px; background:#f1c40f; color:#222; font-weight:bold;">
+    リールを引く
   </button>
-
-  <div id="fishing-result" style="margin-top: 10px; font-weight: bold; font-size: 1.2rem; min-height: 1.5em;">
-    <!-- ヒット！や逃げられた…を表示 -->
-  </div>
 </div>
 
+<!-- 捕まえた犬表示オーバーレイ -->
+<div id="catch-overlay" style="display:none; position:fixed; top:0; left:0; width:100vw; height:100vh; 
+  background:rgba(0,0,0,0.8); z-index:1100; justify-content:center; align-items:center; flex-direction:column; color:#fff; font-size:24px; text-align:center; padding:20px; box-sizing:border-box;">
+  
+  <img id="caught-dog-img" src="" alt="捕まえた犬" style="max-width:200px; max-height:200px; border:5px solid #fff; border-radius:16px; margin-bottom:20px;">
+  
+  <div id="caught-message" style="margin-bottom:30px;"></div>
+  
+  <button id="catch-close" style="padding:12px 30px; font-size:20px; border:none; border-radius:10px; background:#e74c3c; color:#fff; cursor:pointer; font-weight:bold;">
+    閉じる
+  </button>
+</div>
 
   <!-- サウンド -->
   <audio id="bgm" src="Sounds/bata.wav" loop></audio>
@@ -287,6 +288,7 @@
 
 </body>
 </html>
+
 
 
 
