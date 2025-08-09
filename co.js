@@ -1,3 +1,4 @@
+// catchOverlay.js
 document.addEventListener('DOMContentLoaded', () => {
   const catchOverlay = document.getElementById('catch-overlay');
   const closeBtn = document.getElementById('catch-close');
@@ -7,7 +8,6 @@ document.addEventListener('DOMContentLoaded', () => {
   const sfxCatch = document.getElementById('sfx-catch');
   const sfxStopClick = document.getElementById('sfx-stop-click');
 
-  // 閉じるボタン処理
   if (closeBtn && catchOverlay) {
     closeBtn.addEventListener('click', () => {
       catchOverlay.classList.remove('active');
@@ -18,7 +18,6 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   }
 
-  // 犬を捕まえたときの表示
   window.showCatchOverlay = function(dogImageSrc, dogName) {
     if (!catchOverlay || !caughtImg || !caughtMessage) return;
 
