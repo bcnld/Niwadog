@@ -29,15 +29,17 @@ function drawRoulette() {
 }
 
 // 水平方向にいるすべての犬要素にクリックイベントをつける関数
-function attachDogClickEvents() {
+window.attachDogClickEvents = function() {
   const dogs = document.querySelectorAll('.dog');
   dogs.forEach(dog => {
-    dog.style.cursor = 'pointer'; // クリックできる感じに
-    dog.addEventListener('click', () => {
+    dog.onclick = () => {
+      // 釣りUI表示などの処理をここに書く
+      fishingUI.style.display = 'block';
+      // クリックされた犬の情報を取得し、釣り処理を開始
       startFishing(dog);
-    });
+    };
   });
-}
+};
 
 // ページロード後か、犬が生成されたあとに呼んでください
 window.addEventListener('load', () => {
