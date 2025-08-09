@@ -76,9 +76,11 @@ function onStop() {
 // 犬クリック時の処理
 function attachDogClickEvents() {
   const dogs = [...document.querySelectorAll(".dog")];
+  console.log("犬の数:", dogs.length); // ここで犬が取れているか確認
   dogs.forEach((dog) => {
-    dog.onclick = null; // 念のためクリア
+    dog.onclick = null;
     dog.addEventListener("click", () => {
+      console.log("犬クリックされました");
       if (spinning) return;
       fishingResult.textContent = "";
       fishingUI.style.display = "block";
