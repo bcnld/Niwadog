@@ -166,14 +166,13 @@ reelButton.addEventListener('click', () => {
 });
 
 function showCatchOverlay(dogId) {
-  // dogIdを元に犬データを探し表示（別途実装想定）
   const catchOverlay = document.getElementById('catch-overlay');
   const caughtDogImg = document.getElementById('caught-dog-img');
   const caughtMessage = document.getElementById('caught-message');
 
-  // ここでdogIdに対応した犬画像や名前を設定する処理が必要です。
-  // 例：dogData[dogId] = {name:'ポチ', image:'images/pochi.png'}
-  const dogData = window.allDogs ? window.allDogs.find(d => d.id === dogId) : null;
+  // dogIdは文字列なので、idも文字列に変換して比較
+  const dogData = window.allDogs ? window.allDogs.find(d => d.id.toString() === dogId.toString()) : null;
+
   if (!dogData) {
     caughtDogImg.src = '';
     caughtMessage.textContent = '犬データがありません';
@@ -184,7 +183,6 @@ function showCatchOverlay(dogId) {
 
   catchOverlay.style.display = 'flex';
 
-  // 捕獲成功音再生
   if (sfxCatch) {
     sfxCatch.currentTime = 0;
     sfxCatch.play();
