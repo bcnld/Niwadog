@@ -71,9 +71,9 @@ function spawnDogs() {
       if (window.isZukanOpen) return;  // 図鑑表示中は釣り禁止
       if (window.isFishing) return;    // すでに釣り中もスルー
       if (typeof window.startFishing === 'function') {
-        window.startFishing(dog);
-      }
-    });
+    window.startFishing(img);  // ここを修正
+  }
+});
 
     waterArea.appendChild(img);
     spawnedDogs.push(img);
