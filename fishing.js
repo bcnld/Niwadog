@@ -15,10 +15,9 @@ const RED_ZONE_END = 60;    // 赤い当たりゾーンの終了角度
 let isFishing = false;
 let selectedDogId = null;
 
-let currentAngle = 0;      // 針の回転角度（ラジアン）
-let spinSpeed = 0;         // 回転速度
-const spinDeceleration = 0.0005; // 減速量
-let spinning = false;
+let needleAngle = 0;       // 針の角度（ラジアン）
+let needleSpeed = 0.05;    // 針の回転速度（初期は一定）
+let isSpinning = false;    // リールボタン押して減速中フラグ
 
 // 効果音要素
 const sfxRouletteLoop = document.getElementById('sfx-roulette-loop');
@@ -31,7 +30,7 @@ function degToRad(deg) {
   return deg * Math.PI / 180;
 }
 
-// ルーレット（円盤）描画（固定）
+// ルーレット描画
 function drawRoulette() {
   ctx.clearRect(0, 0, CANVAS_SIZE, CANVAS_SIZE);
 
@@ -41,7 +40,10 @@ function drawRoulette() {
     let startAngle = i * segmentAngle;
     let endAngle = startAngle + segmentAngle;
 
-    let segStartDeg = (i * 360 / SEGMENTS) % 360;
+    // 赤ゾーン判定
+    let segStartDeg = (i * 360/SEGMENTS) % 360;
+    if (segStartDeg < 0) segStartDeg += 360;
+
     let inRedZone = (segStartDeg >= RED_ZONE_START && segStartDeg < RED_ZONE_END);
 
     ctx.beginPath();
@@ -56,71 +58,78 @@ function drawRoulette() {
     ctx.stroke();
   }
 
-  // 針を回転させて描く
-  // 0ラジアンは右方向なので、針を上に向けるために - Math.PI/2 をする
-  const needleAngle = currentAngle - Math.PI / 2;
-
+  // 針を描く
   ctx.save();
   ctx.translate(CENTER, CENTER);
   ctx.rotate(needleAngle);
 
   ctx.beginPath();
-  ctx.moveTo(0, -RADIUS - 10);
-  ctx.lineTo(-15, -RADIUS + 20);
-  ctx.lineTo(15, -RADIUS + 20);
+  // とんがった先端を上に（0度方向）向ける三角形
+  ctx.moveTo(0, -RADIUS - 10);      // 尖った先端
+  ctx.lineTo(-10, -RADIUS + 20);    // 左下
+  ctx.lineTo(10, -RADIUS + 20);     // 右下
   ctx.closePath();
-  ctx.fillStyle = 'black';
+
+  ctx.fillStyle = '#ff6600';  // 見やすいオレンジ色
   ctx.fill();
 
   ctx.restore();
 }
 
-// 回転開始
+function update() {
+  if (!isFishing) return; // 釣り中でなければ停止
+
+  if (!isSpinning) {
+    // 普通に針は回り続ける
+    needleAngle += needleSpeed;
+  } else {
+    // 減速中
+    needleSpeed *= 0.98;  // 滑らかに減速
+    needleAngle += needleSpeed;
+
+    if (needleSpeed < 0.002) {
+      needleSpeed = 0;
+      isSpinning = false;
+      reelButton.disabled = false;
+
+      // 効果音停止
+      if (sfxRouletteLoop) sfxRouletteLoop.pause();
+
+      if (sfxStopClick) {
+        sfxStopClick.currentTime = 0;
+        sfxStopClick.play();
+      }
+
+      checkResult();
+    }
+  }
+  needleAngle %= (2 * Math.PI);
+  drawRoulette();
+
+  requestAnimationFrame(update);
+}
+
 function startSpin() {
-  if (spinning) return;
-  spinSpeed = 0.3 + Math.random() * 0.2; // ランダム初速
-  spinning = true;
-  fishingResult.textContent = '';
+  if (isSpinning) return;
+
+  isSpinning = true;
   reelButton.disabled = true;
 
+  // ルーレットループ音再生開始
   if (sfxRouletteLoop) {
     sfxRouletteLoop.currentTime = 0;
     sfxRouletteLoop.play();
   }
-
-  animateSpin();
-}
-
-function animateSpin() {
-  if (!spinning) return;
-
-  currentAngle += spinSpeed;
-  currentAngle %= (2 * Math.PI);
-
-  spinSpeed -= spinDeceleration;
-  if (spinSpeed <= 0) {
-    spinSpeed = 0;
-    spinning = false;
-    reelButton.disabled = false;
-
-    if (sfxRouletteLoop) sfxRouletteLoop.pause();
-
-    if (sfxStopClick) {
-      sfxStopClick.currentTime = 0;
-      sfxStopClick.play();
-    }
-
-    checkResult();
-  } else {
-    requestAnimationFrame(animateSpin);
-  }
-
-  drawRoulette();
 }
 
 function checkResult() {
-  let pointerOnRouletteDeg = (currentAngle * 180 / Math.PI) % 360;
-  if (pointerOnRouletteDeg < 0) pointerOnRouletteDeg += 360;
+  // 針は常に270度（真上）を指しているので、
+  // ルーレットの回転角度（針の角度と反対向き）を計算して判定
+  const needleAngleDeg = 270;
+  let rotationDeg = (needleAngle * 180 / Math.PI) % 360;
+  if(rotationDeg < 0) rotationDeg += 360;
+
+  let pointerOnRouletteDeg = (needleAngleDeg - rotationDeg + 360) % 360;
 
   const isHit = (pointerOnRouletteDeg >= RED_ZONE_START && pointerOnRouletteDeg <= RED_ZONE_END);
 
@@ -152,11 +161,14 @@ function checkResult() {
 function startFishing(dogElement) {
   if (isFishing) return;
   isFishing = true;
-  selectedDogId = dogElement.dataset.dogId;
+  selectedDogId = dogElement.dataset.dogId;  // dogElementにdata-dog-id属性が必要
   fishingUI.style.display = 'block';
   fishingResult.textContent = '';
-  currentAngle = 0;
+  needleAngle = 0;
+  needleSpeed = 0.05;
+  isSpinning = false;
   drawRoulette();
+  update(); // アニメーション開始
 }
 
 reelButton.addEventListener('click', () => {
@@ -169,6 +181,7 @@ function showCatchOverlay(dogId) {
   const caughtDogImg = document.getElementById('caught-dog-img');
   const caughtMessage = document.getElementById('caught-message');
 
+  // dogIdは文字列なので、idも文字列に変換して比較
   const dogData = window.allDogs ? window.allDogs.find(d => d.id.toString() === dogId.toString()) : null;
 
   if (!dogData) {
@@ -187,6 +200,7 @@ function showCatchOverlay(dogId) {
   }
 }
 
+// 閉じるボタンの処理
 document.getElementById('catch-close').addEventListener('click', () => {
   const catchOverlay = document.getElementById('catch-overlay');
   catchOverlay.style.display = 'none';
