@@ -43,4 +43,27 @@ reelButton.addEventListener('click', () => {
   // ルーレット回転や停止の処理（省略可）
 });
 
+// 釣り成功時に呼ばれる関数例
+function showCatchOverlay(dog) {
+  const catchOverlay = document.getElementById('catch-overlay');
+  const caughtDogImg = document.getElementById('caught-dog-img');
+  const caughtMessage = document.getElementById('caught-message');
+
+  // 犬の画像とメッセージをセット
+  caughtDogImg.src = dog.image;
+  caughtMessage.textContent = `${dog.name}をつかまえた！`;
+
+  // オーバーレイ表示
+  catchOverlay.style.display = 'flex';
+
+  // 効果音再生（必要なら）
+  const sfxCatch = document.getElementById('sfx-catch');
+  if(sfxCatch) sfxCatch.play();
+}
+
+// 閉じるボタンの処理
+document.getElementById('catch-close').addEventListener('click', () => {
+  const catchOverlay = document.getElementById('catch-overlay');
+  catchOverlay.style.display = 'none';
+});
 // 釣りUIを閉じる処理も必要ならここに追加してください
