@@ -139,6 +139,12 @@ function checkResult() {
       sfxHit.currentTime = 0;
       sfxHit.play();
     }
+    
+    const dogImg = document.querySelector(`img[data-dog-id="${selectedDogId}"]`);
+    if (dogImg) {
+      dogImg.remove();
+    }
+    
     setTimeout(() => {
       fishingResult.textContent = "";
       showCatchOverlay(selectedDogId);
