@@ -147,18 +147,17 @@ function checkResult() {
       isFishing = false;
     }, 1000);
   } else {
-    // ハズレ時の処理
-    fishingResult.textContent = "ハズレ...";
-    if (sfxMiss) {
-      sfxMiss.currentTime = 0;
-      sfxMiss.play();
-    }
-    setTimeout(() => {
-      fishingResult.textContent = "";
-      fishingUI.style.display = 'none';
-      isFishing = false;
-    }, 1000);
+  fishingResult.textContent = "ハズレ...";
+  if (sfxMiss) {
+    sfxMiss.currentTime = 0;
+    sfxMiss.play();
   }
+  setTimeout(() => {
+    fishingResult.textContent = "";
+    fishingUI.style.display = 'none';
+    removeCaughtDog();  // ←ここ追加！
+    isFishing = false;
+  }, 1000);
 }
 
 function startFishing(dogElement) {
