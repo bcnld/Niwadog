@@ -122,18 +122,19 @@ function startSpin() {
 }
 
 function checkResult() {
-  const needleAngleDeg = 270;
-  let rotationDeg = (needleAngle * 180 / Math.PI) % 360;
-  if(rotationDeg < 0) rotationDeg += 360;
+  // 針の角度を度に変換（0～360度に収める）
+  let needleDeg = (needleAngle * 180 / Math.PI) % 360;
+  if (needleDeg < 0) needleDeg += 360;
 
-  let pointerOnRouletteDeg = (needleAngleDeg - rotationDeg + 360) % 360;
+  // 赤いゾーンの開始と終了角度（0-360度の範囲）
+  const start = RED_ZONE_START;
+  const end = RED_ZONE_END;
 
-  const isHit = (pointerOnRouletteDeg >= RED_ZONE_START && pointerOnRouletteDeg <= RED_ZONE_END);
-
-  // 釣れた・釣れなかったにかかわらず犬を消す
-  removeCaughtDog();
+  // 判定（針の角度が赤ゾーン内にあるか）
+  const isHit = (needleDeg >= start && needleDeg <= end);
 
   if (isHit) {
+    // ヒット時の処理
     fishingResult.textContent = "ヒット！";
     if (sfxHit) {
       sfxHit.currentTime = 0;
@@ -141,10 +142,12 @@ function checkResult() {
     }
     setTimeout(() => {
       fishingResult.textContent = "";
+      removeCaughtDog();
       showCatchOverlay(selectedDogId);
       isFishing = false;
     }, 1000);
   } else {
+    // ハズレ時の処理
     fishingResult.textContent = "ハズレ...";
     if (sfxMiss) {
       sfxMiss.currentTime = 0;
