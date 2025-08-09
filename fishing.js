@@ -109,7 +109,11 @@ function onStop() {
 
   const normalizedAngle = (angle % (2 * Math.PI));
   const segmentSize = 2 * Math.PI / segments;
-  const hitSegmentIndex = Math.floor((normalizedAngle + segmentSize / 2) % (2 * Math.PI) / segmentSize);
+  // 針は「逆方向の角度」を使うほうが自然
+  const correctedAngle = (2 * Math.PI - normalizedAngle + segmentSize / 2) % (2 * Math.PI);
+  const hitSegmentIndex = Math.floor(correctedAngle / segmentSize);
+
+  console.log("angle:", angle, "normalizedAngle:", normalizedAngle, "correctedAngle:", correctedAngle, "hitSegmentIndex:", hitSegmentIndex, "targetDogIndex:", targetDogIndex);
 
   if (hitSegmentIndex === targetDogIndex) {
     fishingResult.textContent = "ヒット！釣れた！";
@@ -121,7 +125,6 @@ function onStop() {
     sfxMiss.play();
   }
 
-  // 当たりはずれ関係なくクリックした犬を消す
   dogs[targetDogIndex]?.remove();
 
   reelBtn.textContent = "リールを引く";
