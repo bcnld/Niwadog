@@ -27,23 +27,21 @@ function attachDogClickEvents() {
   dogs.forEach((dog, index) => {
     dog.onclick = null; // 念のためイベントリセット
     dog.addEventListener("click", () => {
-      if (spinning) return; // 釣り中は無視
+      if (spinning) return;
       targetDogIndex = index;
-
       fishingResult.textContent = "";
       document.getElementById("fishing-ui").style.display = "block";
       reelBtn.disabled = false;
       reelBtn.textContent = "リールを引く";
-
       angle = 0;
       spinSpeed = 0;
       drawRoulette();
     });
   });
 }
+window.attachDogClickEvents = attachDogClickEvents;
 
 // ここから下は元のコード（drawRoulette, animate, onStop, reelBtnイベントなど）
-
 function drawRoulette() {
   ctx.clearRect(0, 0, canvas.width, canvas.height);
   const cx = radius;
