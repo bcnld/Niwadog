@@ -5,7 +5,7 @@ const nextPageBtn = document.getElementById('next-page');
 const sfxOpen = document.getElementById('sfx-open');
 const sfxClose = document.getElementById('sfx-close');
 
-// ▼ プロフィール用の要素追加
+// プロフィール用の要素
 const profileModal = document.getElementById('dog-profile-modal');
 const profileCloseBtn = document.getElementById('profile-close');
 const profileName = document.getElementById('profile-name');
@@ -23,6 +23,7 @@ function loadCaughtDogs() {
   caughtDogs = saved ? Object.keys(JSON.parse(saved)).map(id => Number(id)) : [];
 }
 
+// 犬データ読み込み
 fetch('dog.json')
   .then(res => res.json())
   .then(data => {
@@ -32,7 +33,7 @@ fetch('dog.json')
   });
 
 zukanBtn.addEventListener('click', () => {
-  if (window.isFishing) return;
+  if (window.isFishing) return; // 釣り中は開けない
 
   const willOpen = zukanPanel.style.display !== 'block';
   zukanPanel.style.display = willOpen ? 'block' : 'none';
@@ -61,12 +62,10 @@ nextPageBtn.addEventListener('click', () => {
   }
 });
 
-// ▼ モーダルを閉じる
 profileCloseBtn.addEventListener('click', () => {
   profileModal.style.display = 'none';
 });
 
-// プロフィールモーダルのクリック伝播を止める（安全策）
 profileModal.addEventListener('click', e => {
   e.stopPropagation();
 });
@@ -83,17 +82,14 @@ function renderZukanPage() {
   dogsToDisplay.forEach((dog, i) => {
     const entry = document.createElement('div');
     entry.className = 'dog-slot';
-
-    if (dog.rarity) {
-      entry.classList.add(dog.rarity);
-    }
+    if (dog.rarity) entry.classList.add(dog.rarity);
 
     const img = document.createElement('img');
     img.src = caughtDogs.includes(dog.number) ? dog.image : 'images/hatena.png';
     img.alt = dog.name || '犬の画像';
     img.width = 60;
     img.height = 60;
-    img.classList.add('zukan-dog'); // 図鑑専用クラス（釣り用と区別）
+    img.classList.add('zukan-dog'); // 図鑑専用クラス
 
     if (caughtDogs.includes(dog.number)) {
       img.style.cursor = 'pointer';
@@ -108,10 +104,7 @@ function renderZukanPage() {
   document.getElementById('page-indicator').textContent = `${currentPage + 1} / ${maxPage}`;
 }
 
-// ▼ 犬プロフィール表示関数
 function showDogProfile(dog) {
-  console.log('Dog data for profile:', dog);
-
   profileName.textContent = dog?.name ?? '名前不明';
   profileImage.src = dog?.image || 'images/noimage.png';
   profileImage.alt = dog?.name || '犬の画像';
