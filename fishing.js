@@ -103,6 +103,7 @@ function drawRoulette() {
 
   if (spinning) {
     angle += spinSpeed;
+    angle %= 2 * Math.PI;  // 追加：angleを2π以内に丸める
 
     if (slowingDown) {
       spinSpeed -= 0.005;
