@@ -22,24 +22,17 @@ window.addEventListener('load', () => {
 
   bgm.volume = 0.5;
 
-  bgm.play().then(() => {
-    console.log('BGM自動再生成功');
-  }).catch(e => {
-    console.warn('BGM自動再生ブロック:', e);
-
-    // ブロックされたらクリックで再生トリガーを登録
+  bgm.play().catch(e => {
+    // 自動再生ブロックされた場合、クリックまたはタッチで再生開始
     const playOnUserGesture = () => {
-      bgm.play().then(() => {
-        console.log('ユーザー操作でBGM再生成功');
-      }).catch(err => {
-        console.error('ユーザー操作後のBGM再生失敗:', err);
-      });
+      bgm.play().catch(() => {});
       window.removeEventListener('click', playOnUserGesture);
       window.removeEventListener('touchstart', playOnUserGesture);
     };
     window.addEventListener('click', playOnUserGesture);
     window.addEventListener('touchstart', playOnUserGesture);
   });
+});
 
   // ローカルストレージから捕まえた犬データを読み込み
   const stored = localStorage.getItem('caughtDogs');
@@ -71,3 +64,4 @@ function showCatchOverlay(dogImageSrc, dogName) {
     }
   }
 }
+
