@@ -167,7 +167,7 @@ function startFishing(dogElement) {
   fishingUI.style.display = 'block';
   fishingResult.textContent = '';
   needleAngle = 0;
-  needleSpeed = 0.6;  // 少し速めに設定
+  needleSpeed = 0.4;  // 少し速めに設定
   isSpinning = false;
   drawRoulette();
   update(); // アニメーション開始
