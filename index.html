@@ -252,18 +252,12 @@
   </div>
 
   <!-- 釣りルーレットUI -->
-  <div id="fishing-ui" style="display: none;">
-    <h2>犬を拉致する</h2>
-    <canvas id="roulette-canvas" width="300" height="300"></canvas>
-    <div id="roulette-container">
-      <div id="roulette-wheel">
-        <div id="hit-zone"></div>
-        <div id="pointer"></div>
-      </div>
-      <button id="reel-button">止める</button>
-      <div id="fishing-result"></div>
-    </div>
-  </div>
+  <div id="fishing-ui" style="display:block; position:relative; width:320px; height:350px; border:1px solid #ccc;">
+  <canvas id="roulette-canvas" width="300" height="300" style="background:#eee;"></canvas>
+  <button id="reel-button">止める</button>
+  <div id="fishing-result"></div>
+</div>
+
 
   <!-- サウンド -->
   <audio id="bgm" src="Sounds/bata.wav" loop></audio>
@@ -284,6 +278,7 @@
 
 </body>
 </html>
+
 
 
 
