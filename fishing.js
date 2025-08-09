@@ -1,34 +1,50 @@
 // fishing.js
 
+// 釣りUIの要素を取得
 const fishingUI = document.getElementById('fishing-ui');
 const fishingResult = document.getElementById('fishing-result');
 const reelButton = document.getElementById('reel-button');
+const canvas = document.getElementById('roulette-canvas');
+const ctx = canvas.getContext('2d');
 
 let isFishing = false;
 let selectedDog = null;
 
+function startFishing(dogElement) {
+  if (isFishing) return; // 釣り中は無効
+  isFishing = true;
+  selectedDog = dogElement;
+
+  fishingResult.textContent = '';
+  fishingUI.style.display = 'block';
+
+  // 必要ならルーレット初期化処理
+  drawRoulette();
+}
+
+function drawRoulette() {
+  // ルーレット描画ロジック（省略可）
+}
+
+// 水辺の犬だけにクリックイベントを付ける
 window.attachDogClickEvents = function() {
-  const dogs = document.querySelectorAll('.dog');
+  const dogs = document.querySelectorAll('#water-area .dog'); // 水エリア内限定
   dogs.forEach(dog => {
     dog.onclick = () => {
-      if (isFishing) return;
-      isFishing = true;
-      selectedDog = dog;
-
-      fishingResult.textContent = '';
-      fishingUI.style.display = 'block';
-
-      // ここにルーレット開始処理など追加可
-      console.log('釣り開始！', dog.alt);
+      startFishing(dog);
     };
   });
 };
 
-// 例: リールボタンで釣り終了（閉じる）
+// ページロード後にイベント付け
+window.addEventListener('load', () => {
+  attachDogClickEvents();
+});
+
+// リールボタンクリック
 reelButton.addEventListener('click', () => {
   if (!isFishing) return;
-  isFishing = false;
-  fishingUI.style.display = 'none';
-  selectedDog = null;
-  console.log('釣り終了');
+  // ルーレット回転や停止処理（省略可）
 });
+
+// UIを閉じる処理（必要なら追加）
