@@ -146,6 +146,7 @@ const segments = 16; // 16分割
 const hitIndices = [2, 5, 9, 14]; // 当たりのパネル番号例（好きに変更OK）
 
 function drawRoulette() {
+function drawRoulette() {
   ctx.clearRect(0, 0, canvas.width, canvas.height);
   const center = canvas.width / 2;
   const radius = center - 10;
@@ -216,8 +217,8 @@ function drawRoulette() {
   ctx.shadowColor = 'rgba(0,0,0,0.7)';
   ctx.shadowBlur = 8;
   ctx.stroke();
-}
 
+  // アニメーション制御
   if (spinning) {
     angle += spinSpeed;
 
@@ -242,7 +243,7 @@ function drawRoulette() {
     animationId = requestAnimationFrame(drawRoulette);
   }
 }
-
+  
 function checkHit() {
   const normalized = angle % (2 * Math.PI);
   let hit = false;
@@ -337,4 +338,5 @@ function showCatchOverlay(dogImageSrc, dogName) {
     }
   }
 }
+
 
