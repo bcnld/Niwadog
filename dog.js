@@ -63,13 +63,15 @@ function spawnDogs() {
 
     // 犬クリック時の処理は別ファイルの関数を呼ぶ前提
     img.addEventListener('click', () => {
-      if (isFishing || window.isZukanOpen || window.isShopOpen) return;
-      selectedDog = { img, dog };
-      if (typeof window.startFishing === 'function') {
-        window.startFishing();
-      }
-    });
+  if (window.isFishing || window.isZukanOpen || window.isShopOpen) return;
+  window.selectedDog = { img, dog };  // グローバルに
+  window.isFishing = true;             // グローバルに状態を持たせる
 
+  if (typeof window.startFishing === 'function') {
+    window.startFishing();
+  }
+});
+    
     waterArea.appendChild(img);
     spawnedDogs.push(img);
   }
