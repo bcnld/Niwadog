@@ -68,10 +68,10 @@ function spawnDogs() {
 
     // クリック時に釣りUI起動（図鑑開いてたらスルー）
     img.addEventListener('click', () => {
-      if (window.isZukanOpen) return;  // 図鑑表示中は釣り禁止
-      if (window.isFishing) return;    // すでに釣り中もスルー
-      if (typeof window.startFishing === 'function') {
-    window.startFishing(img);  // ここを修正
+  if (window.isZukanOpen) return;  // 図鑑表示中は釣り禁止
+  if (window.isFishing) return;    // すでに釣り中もスルー
+  if (typeof window.startFishing === 'function') {
+    window.startFishing(img);  // ←ここは dog ではなく img にする
   }
 });
 
