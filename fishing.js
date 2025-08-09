@@ -133,18 +133,21 @@ function checkResult() {
   const isHit = (pointerOnRouletteDeg >= RED_ZONE_START && pointerOnRouletteDeg <= RED_ZONE_END);
 
   if (isHit) {
-    fishingResult.textContent = "ヒット！";
-    if (sfxHit) {
-      sfxHit.currentTime = 0;
-      sfxHit.play();
-    }
-    setTimeout(() => {
-      fishingResult.textContent = "";
-      removeCaughtDog();  // 釣れた犬を消す処理を追加
-      showCatchOverlay(selectedDogId);
-      isFishing = false;
-    }, 1000);
-  } else {
+  fishingResult.textContent = "ヒット！";
+  if (sfxHit) {
+    sfxHit.currentTime = 0;
+    sfxHit.play();
+  }
+  
+  // 釣れた犬をすぐ消す
+  removeCaughtDog();
+
+  setTimeout(() => {
+    fishingResult.textContent = "";
+    showCatchOverlay(selectedDogId);
+    isFishing = false;
+  }, 1000);
+} else {
     fishingResult.textContent = "ハズレ...";
     if (sfxMiss) {
       sfxMiss.currentTime = 0;
