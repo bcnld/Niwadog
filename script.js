@@ -142,46 +142,81 @@ reelButton.addEventListener('click', () => {
   sfxStopClick.play();
 });
 
+const segments = 16; // 16分割
+const hitIndices = [2, 5, 9, 14]; // 当たりのパネル番号例（好きに変更OK）
+
 function drawRoulette() {
   ctx.clearRect(0, 0, canvas.width, canvas.height);
   const center = canvas.width / 2;
+  const radius = center - 10;
+  const segmentAngle = (2 * Math.PI) / segments;
 
-  // ベース円
+  // 円本体（白っぽいベース）
   ctx.beginPath();
-  ctx.arc(center, center, center - 10, 0, 2 * Math.PI);
-  ctx.fillStyle = '#eef';
+  ctx.arc(center, center, radius, 0, 2 * Math.PI);
+  ctx.fillStyle = '#fafafa';
   ctx.fill();
+  ctx.lineWidth = 4;
+  ctx.strokeStyle = '#666';
+  ctx.stroke();
 
-  // 当たり判定（赤い扇形）
-  ctx.beginPath();
-  ctx.moveTo(center, center);
-  if (hitZoneStart < hitZoneEnd) {
-    ctx.arc(center, center, center - 10, hitZoneStart, hitZoneEnd);
-  } else {
-    // 0度をまたぐ場合は2つの扇形に分けて描画
-    ctx.arc(center, center, center - 10, hitZoneStart, 2 * Math.PI);
-    ctx.lineTo(center, center);
+  for (let i = 0; i < segments; i++) {
+    const startAngle = i * segmentAngle;
+    const endAngle = startAngle + segmentAngle;
+
+    // 扇形の側面を塗り分けるためにポリゴンっぽく描く（カジノホイールの区切りのイメージ）
+    ctx.beginPath();
+    // 円周上の2点
+    const x1 = center + radius * Math.cos(startAngle);
+    const y1 = center + radius * Math.sin(startAngle);
+    const x2 = center + radius * Math.cos(endAngle);
+    const y2 = center + radius * Math.sin(endAngle);
+
+    // 内側の少し小さな半径（側面の幅を作る）
+    const innerRadius = radius - 20;
+    const x3 = center + innerRadius * Math.cos(endAngle);
+    const y3 = center + innerRadius * Math.sin(endAngle);
+    const x4 = center + innerRadius * Math.cos(startAngle);
+    const y4 = center + innerRadius * Math.sin(startAngle);
+
+    // 順番に線を引いてポリゴン作成
+    ctx.moveTo(x1, y1);
+    ctx.lineTo(x2, y2);
+    ctx.lineTo(x3, y3);
+    ctx.lineTo(x4, y4);
     ctx.closePath();
-    ctx.fillStyle = '#f00';
+
+    // 当たり区間は赤、それ以外は交互に黒・白
+    if (hitIndices.includes(i)) {
+      ctx.fillStyle = '#e74c3c'; // 赤
+    } else {
+      ctx.fillStyle = (i % 2 === 0) ? '#fff' : '#000';
+    }
     ctx.fill();
 
-    ctx.beginPath();
-    ctx.moveTo(center, center);
-    ctx.arc(center, center, center - 10, 0, hitZoneEnd);
+    // 黒の境界線
+    ctx.strokeStyle = '#222';
+    ctx.lineWidth = 1;
+    ctx.stroke();
   }
-  ctx.lineTo(center, center);
-  ctx.closePath();
-  ctx.fillStyle = '#f00';
+
+  // 中心の円（穴のような部分）
+  ctx.beginPath();
+  ctx.arc(center, center, innerRadius - 10, 0, 2 * Math.PI);
+  ctx.fillStyle = '#444';
   ctx.fill();
 
-  // 針の描画
-  const needleLength = center - 20;
+  // 針の描画（中心から外に伸びる矢印みたいな形）
+  const needleLength = radius - 10;
   ctx.beginPath();
   ctx.moveTo(center, center);
   ctx.lineTo(center + needleLength * Math.cos(angle), center + needleLength * Math.sin(angle));
-  ctx.strokeStyle = '#000';
-  ctx.lineWidth = 4;
+  ctx.strokeStyle = '#f1c40f'; // ゴールドっぽく
+  ctx.lineWidth = 5;
+  ctx.shadowColor = 'rgba(0,0,0,0.7)';
+  ctx.shadowBlur = 8;
   ctx.stroke();
+}
 
   if (spinning) {
     angle += spinSpeed;
@@ -302,3 +337,4 @@ function showCatchOverlay(dogImageSrc, dogName) {
     }
   }
 }
+
