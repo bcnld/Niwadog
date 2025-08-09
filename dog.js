@@ -63,7 +63,7 @@ function spawnDogs() {
     spawnedDogs.push(img);
   }
 
-  // 犬をクリックしたときのイベント登録はfishing.js側の関数に任せる
+  // 犬クリック時のイベントは fishing.js 側に任せる
   if (typeof window.attachDogClickEvents === 'function') {
     window.attachDogClickEvents();
   }
