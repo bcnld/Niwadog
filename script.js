@@ -1,23 +1,13 @@
 const waterArea = document.getElementById('water-area');
 const bgm = document.getElementById('bgm');
-
-const sfxRouletteLoop = document.getElementById('sfx-roulette-loop');
-sfxRouletteLoop.volume = 0.5;
-const sfxStopClick = document.getElementById('sfx-stop-click');
-const sfxWheelStop = document.getElementById('sfx-wheel-stop');
-sfxWheelStop.volume = 0.3;
-const sfxHit = document.getElementById('sfx-hit');
-sfxHit.volume = 1.0;
-const sfxMiss = document.getElementById('sfx-miss');
 const sfxCatch = document.getElementById('sfx-catch');
-
 const catchOverlay = document.getElementById('catch-overlay');
 const closeBtn = document.getElementById('catch-close');
 
 let caughtDogsMap = {};
 
 // --- BGM起動処理（確実に鳴らす版） ---
-bgm.volume = 0.5;
+bgm.volume = 1.0;
 
 document.addEventListener('DOMContentLoaded', () => {
   bgm.play().catch(() => {
@@ -63,3 +53,4 @@ function showCatchOverlay(dogImageSrc, dogName) {
     }
   }
 }
+
