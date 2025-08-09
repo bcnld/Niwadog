@@ -66,6 +66,11 @@ profileCloseBtn.addEventListener('click', () => {
   profileModal.style.display = 'none';
 });
 
+// プロフィールモーダルのクリック伝播を止める（安全策）
+profileModal.addEventListener('click', e => {
+  e.stopPropagation();
+});
+
 function renderZukanPage() {
   const leftPage = document.getElementById('zukan-page-left');
   const rightPage = document.getElementById('zukan-page-right');
@@ -77,7 +82,7 @@ function renderZukanPage() {
 
   dogsToDisplay.forEach((dog, i) => {
     const entry = document.createElement('div');
-    entry.className = 'dog-slot';  // 図鑑用枠クラス
+    entry.className = 'dog-slot';
 
     if (dog.rarity) {
       entry.classList.add(dog.rarity);
