@@ -20,7 +20,7 @@ const catchOverlay = document.getElementById('catch-overlay');
 const closeBtn = document.getElementById('catch-close');
 
 let dogData = [], weightedDogs = [], spawnedDogs = [];
-let caughtDogsMap = {};
+let caughtDogsMap = JSON.parse(localStorage.getItem('caughtDogs') || '{}');
 let isFishing = false, selectedDog = null;
 const maxDogs = 6, bottomLandHeight = 100;
 
@@ -29,7 +29,7 @@ let spinning = false, slowingDown = false;
 let animationId = null;
 
 const segments = 16; // ルーレットの区切り数
-let hitIndices = []; // 当たり区間の区切り番号（ランダム決定）
+let hitIndices = []; // 当たり区切り番号（ランダム決定）
 
 // BGM 初回再生（ユーザークリック時に）
 document.body.addEventListener('click', () => {
@@ -54,7 +54,7 @@ function setRandomHitIndices(count = 4) {
     const rand = Math.floor(Math.random() * indices.length);
     hitIndices.push(indices.splice(rand, 1)[0]);
   }
-  hitIndices.sort((a,b) => a-b); // 見やすいようにソート（任意）
+  hitIndices.sort((a,b) => a-b);
 }
 
 // 犬を水場に出現させる関数
@@ -245,7 +245,6 @@ function checkHit() {
   const segmentAngle = (2 * Math.PI) / segments;
   // 針が刺さった区切り番号を計算
   let hitSegment = Math.floor((normalizedAngle + segmentAngle / 2) % (2 * Math.PI) / segmentAngle);
-  // console.log("Hit segment:", hitSegment);
 
   if (hitIndices.includes(hitSegment)) {
     // 当たり
@@ -331,3 +330,20 @@ function showCatchOverlay(dogImageSrc, dogName) {
     }
   }
 }
+
+// ======= ここから犬データ読み込み・初期化 =======
+window.addEventListener('load', () => {
+  fetch('dog.json')
+    .then(res => {
+      if (!res.ok) throw new Error('dog.jsonの読み込み失敗');
+      return res.json();
+    })
+    .then(data => {
+      dogData = data;
+      weightedDogs = createWeightedDogs(dogData);
+      spawnDogs();
+    })
+    .catch(err => {
+      console.error('犬データ読み込みエラー:', err);
+    });
+});
