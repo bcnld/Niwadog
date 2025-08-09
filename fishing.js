@@ -6,7 +6,7 @@ const ctx = canvas.getContext('2d');
 
 const CANVAS_SIZE = 300;
 const CENTER = CANVAS_SIZE / 2;
-const RADIUS = CANVAS_SIZE / 2 - 20;
+const RADIUS = CANVAS_SIZE / 2 - 40; // 少し小さめに調整
 
 const SEGMENTS = 12; // 12分割
 const RED_ZONE_START = 30;  // 赤い当たりゾーンの開始角度 (度数法)
@@ -15,7 +15,7 @@ const RED_ZONE_END = 60;    // 赤い当たりゾーンの終了角度
 let isFishing = false;
 let selectedDogId = null;
 
-let currentAngle = 0;      // ルーレット回転角度（ラジアン）
+let currentAngle = 0;      // 針の角度（ラジアン）
 let spinSpeed = 0;         // 回転速度
 const spinDeceleration = 0.0005; // 減速量
 let spinning = false;
@@ -31,21 +31,20 @@ function degToRad(deg) {
   return deg * Math.PI / 180;
 }
 
-// ルーレット描画
+// 円盤固定描画
 function drawRoulette() {
   ctx.clearRect(0, 0, CANVAS_SIZE, CANVAS_SIZE);
 
   const segmentAngle = (2 * Math.PI) / SEGMENTS;
 
+  // 円盤（セグメント）描画
   for(let i=0; i<SEGMENTS; i++) {
-    let startAngle = currentAngle + i * segmentAngle;
-    let endAngle = startAngle + segmentAngle;
+    const startAngle = i * segmentAngle;
+    const endAngle = startAngle + segmentAngle;
 
-    // 赤ゾーン判定
-    let segStartDeg = (currentAngle * 180/Math.PI + i * 360/SEGMENTS) % 360;
-    if (segStartDeg < 0) segStartDeg += 360;
-
-    let inRedZone = (segStartDeg >= RED_ZONE_START && segStartDeg < RED_ZONE_END);
+    // セグメント角度を度数に変換
+    let deg = (i * 360 / SEGMENTS) % 360;
+    let inRedZone = (deg >= RED_ZONE_START && deg < RED_ZONE_END);
 
     ctx.beginPath();
     ctx.moveTo(CENTER, CENTER);
@@ -59,14 +58,27 @@ function drawRoulette() {
     ctx.stroke();
   }
 
-  // 針を描く（キャンバス上部中央、固定）
+  // 針の描画（円盤の外周を回る）
+  const needleLength = RADIUS + 20; // 盤より外に出す
+  const needleWidth = 15;
+
+  // 針の先端座標
+  const needleX = CENTER + needleLength * Math.cos(currentAngle);
+  const needleY = CENTER + needleLength * Math.sin(currentAngle);
+
+  ctx.save();
+  ctx.translate(needleX, needleY);
+  ctx.rotate(currentAngle + Math.PI / 2); // 針の向きを回転に合わせる
+
   ctx.beginPath();
-  ctx.moveTo(CENTER, CENTER - RADIUS - 10);
-  ctx.lineTo(CENTER - 15, CENTER - RADIUS + 20);
-  ctx.lineTo(CENTER + 15, CENTER - RADIUS + 20);
+  ctx.moveTo(0, 0);
+  ctx.lineTo(-needleWidth / 2, needleWidth);
+  ctx.lineTo(needleWidth / 2, needleWidth);
   ctx.closePath();
   ctx.fillStyle = 'black';
   ctx.fill();
+
+  ctx.restore();
 }
 
 // 回転開始
@@ -77,7 +89,7 @@ function startSpin() {
   fishingResult.textContent = '';
   reelButton.disabled = true;
 
-  // ルーレットループ音再生開始
+  // 効果音再生
   if (sfxRouletteLoop) {
     sfxRouletteLoop.currentTime = 0;
     sfxRouletteLoop.play();
@@ -98,10 +110,8 @@ function animateSpin() {
     spinning = false;
     reelButton.disabled = false;
 
-    // ルーレットループ音停止
+    // 効果音停止
     if (sfxRouletteLoop) sfxRouletteLoop.pause();
-
-    // 停止クリック音再生
     if (sfxStopClick) {
       sfxStopClick.currentTime = 0;
       sfxStopClick.play();
@@ -116,14 +126,12 @@ function animateSpin() {
 }
 
 function checkResult() {
-  // 針角度270度（上）
-  const needleAngleDeg = 270;
-  let rotationDeg = (currentAngle * 180 / Math.PI) % 360;
-  if(rotationDeg < 0) rotationDeg += 360;
+  // 針の角度を度数に変換(0～360)
+  let needleDeg = (currentAngle * 180 / Math.PI) % 360;
+  if (needleDeg < 0) needleDeg += 360;
 
-  let pointerOnRouletteDeg = (needleAngleDeg - rotationDeg + 360) % 360;
-
-  const isHit = (pointerOnRouletteDeg >= RED_ZONE_START && pointerOnRouletteDeg <= RED_ZONE_END);
+  // 赤ゾーンは [RED_ZONE_START, RED_ZONE_END) なので判定
+  const isHit = (needleDeg >= RED_ZONE_START && needleDeg < RED_ZONE_END);
 
   if (isHit) {
     fishingResult.textContent = "ヒット！";
@@ -170,7 +178,6 @@ function showCatchOverlay(dogId) {
   const caughtDogImg = document.getElementById('caught-dog-img');
   const caughtMessage = document.getElementById('caught-message');
 
-  // dogIdは文字列なので、idも文字列に変換して比較
   const dogData = window.allDogs ? window.allDogs.find(d => d.id.toString() === dogId.toString()) : null;
 
   if (!dogData) {
