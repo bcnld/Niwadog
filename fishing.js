@@ -33,15 +33,22 @@ window.attachDogClickEvents = function() {
   const dogs = document.querySelectorAll('.dog');
   dogs.forEach(dog => {
     dog.onclick = () => {
-      // 釣りUI表示などの処理をここに書く
-      fishingUI.style.display = 'block';
-      // クリックされた犬の情報を取得し、釣り処理を開始
       startFishing(dog);
     };
   });
 };
 
-// ページロード後か、犬が生成されたあとに呼んでください
+function startFishing(dogElement) {
+  if (isFishing) return;
+  isFishing = true;
+  selectedDog = dogElement;
+
+  fishingResult.textContent = '';
+  fishingUI.style.display = 'block';
+
+  drawRoulette();
+}
+
 window.addEventListener('load', () => {
   attachDogClickEvents();
 });
