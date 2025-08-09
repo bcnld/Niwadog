@@ -20,23 +20,20 @@ const catchOverlay = document.getElementById('catch-overlay');
 const closeBtn = document.getElementById('catch-close');
 
 let dogData = [], weightedDogs = [], spawnedDogs = [];
-let caughtDogsMap = JSON.parse(localStorage.getItem('caughtDogs') || '{}');
+let caughtDogsMap = {};
 let isFishing = false, selectedDog = null;
 const maxDogs = 6, bottomLandHeight = 100;
 
 let angle = 0, spinSpeed = 0;
 let spinning = false, slowingDown = false;
+let hitZoneStart = 0, hitZoneEnd = 0;
 let animationId = null;
 
-const segments = 16; // ルーレットの区切り数
-let hitIndices = []; // 当たり区切り番号（ランダム決定）
-
-// BGM 初回再生（ユーザークリック時に）
+// BGM 初回再生
 document.body.addEventListener('click', () => {
   if (bgm.paused) bgm.play().catch(() => {});
 }, { once: true });
 
-// 重み付け配列を作る関数
 function createWeightedDogs(dogs) {
   const weighted = [];
   dogs.forEach(dog => {
@@ -46,18 +43,19 @@ function createWeightedDogs(dogs) {
   return weighted;
 }
 
-// 当たり区切りをランダムに決定する関数
-function setRandomHitIndices(count = 4) {
-  hitIndices = [];
-  const indices = Array.from({ length: segments }, (_, i) => i);
-  for (let i = 0; i < count; i++) {
-    const rand = Math.floor(Math.random() * indices.length);
-    hitIndices.push(indices.splice(rand, 1)[0]);
-  }
-  hitIndices.sort((a,b) => a-b);
-}
+window.addEventListener('load', () => {
+  const stored = localStorage.getItem('caughtDogs');
+  if (stored) caughtDogsMap = JSON.parse(stored);
 
-// 犬を水場に出現させる関数
+  fetch('dog.json')
+    .then(res => res.json())
+    .then(data => {
+      dogData = data;
+      weightedDogs = createWeightedDogs(data);
+      spawnDogs();
+    });
+});
+
 function spawnDogs() {
   waterArea.innerHTML = '';
   spawnedDogs = [];
@@ -112,26 +110,19 @@ function spawnDogs() {
   }
 }
 
-// 犬をクリックしたときの処
-document.addEventListener('click', function (e) {
-  if (e.target.classList.contains('dog')) {
-    console.log('犬クリック！釣りUI表示');
-    startFishing(); // ← ここで直接 startFishing() を呼ぶ
-  }
-});
-
-// 釣り開始処理
 function startFishing() {
   isFishing = true;
   window.isFishing = isFishing;
   fishingResult.textContent = '';
   fishingUI.style.display = 'block';
-  canvas.style.display = 'block';
 
-  // ランダムで赤マス（当たり区切り）を決定
-  setRandomHitIndices(4);
+  // 当たり判定は180度固定。開始角度はランダム
+  hitZoneStart = Math.random() * 2 * Math.PI;
+  hitZoneEnd = hitZoneStart + Math.PI;
+  if (hitZoneEnd > 2 * Math.PI) {
+    hitZoneEnd -= 2 * Math.PI;
+  }
 
-  // 針の角度初期化
   angle = 0;
   spinSpeed = 0.3;
   spinning = true;
@@ -143,7 +134,6 @@ function startFishing() {
   drawRoulette();
 }
 
-// リールボタン押下時の処理
 reelButton.addEventListener('click', () => {
   if (!spinning || slowingDown) return;
   slowingDown = true;
@@ -152,79 +142,49 @@ reelButton.addEventListener('click', () => {
   sfxStopClick.play();
 });
 
-// ルーレット描画関数
 function drawRoulette() {
   ctx.clearRect(0, 0, canvas.width, canvas.height);
   const center = canvas.width / 2;
-  const radius = center - 10;
-  const segmentAngle = (2 * Math.PI) / segments;
 
-  // 円本体（白ベース）
+  // ベース円
   ctx.beginPath();
-  ctx.arc(center, center, radius, 0, 2 * Math.PI);
-  ctx.fillStyle = '#fafafa';
+  ctx.arc(center, center, center - 10, 0, 2 * Math.PI);
+  ctx.fillStyle = '#eef';
   ctx.fill();
-  ctx.lineWidth = 4;
-  ctx.strokeStyle = '#666';
-  ctx.stroke();
 
-  // 各区切りを描く
-  for (let i = 0; i < segments; i++) {
-    const startAngle = i * segmentAngle;
-    const endAngle = startAngle + segmentAngle;
-
-    ctx.beginPath();
-    const x1 = center + radius * Math.cos(startAngle);
-    const y1 = center + radius * Math.sin(startAngle);
-    const x2 = center + radius * Math.cos(endAngle);
-    const y2 = center + radius * Math.sin(endAngle);
-
-    const innerRadius = radius - 20;
-    const x3 = center + innerRadius * Math.cos(endAngle);
-    const y3 = center + innerRadius * Math.sin(endAngle);
-    const x4 = center + innerRadius * Math.cos(startAngle);
-    const y4 = center + innerRadius * Math.sin(startAngle);
-
-    ctx.moveTo(x1, y1);
-    ctx.lineTo(x2, y2);
-    ctx.lineTo(x3, y3);
-    ctx.lineTo(x4, y4);
+  // 当たり判定（赤い扇形）
+  ctx.beginPath();
+  ctx.moveTo(center, center);
+  if (hitZoneStart < hitZoneEnd) {
+    ctx.arc(center, center, center - 10, hitZoneStart, hitZoneEnd);
+  } else {
+    // 0度をまたぐ場合は2つの扇形に分けて描画
+    ctx.arc(center, center, center - 10, hitZoneStart, 2 * Math.PI);
+    ctx.lineTo(center, center);
     ctx.closePath();
-
-    // 赤マスはランダム決定hitIndices、それ以外は白黒交互
-    if (hitIndices.includes(i)) {
-      ctx.fillStyle = '#e74c3c'; // 赤
-    } else {
-      ctx.fillStyle = (i % 2 === 0) ? '#fff' : '#000';
-    }
+    ctx.fillStyle = '#f00';
     ctx.fill();
 
-    ctx.strokeStyle = '#222';
-    ctx.lineWidth = 1;
-    ctx.stroke();
+    ctx.beginPath();
+    ctx.moveTo(center, center);
+    ctx.arc(center, center, center - 10, 0, hitZoneEnd);
   }
-
-  // 中心の円（穴部分）
-  ctx.beginPath();
-  ctx.arc(center, center, radius - 30, 0, 2 * Math.PI);
-  ctx.fillStyle = '#444';
+  ctx.lineTo(center, center);
+  ctx.closePath();
+  ctx.fillStyle = '#f00';
   ctx.fill();
 
   // 針の描画
-  const needleLength = radius - 10;
+  const needleLength = center - 20;
   ctx.beginPath();
   ctx.moveTo(center, center);
   ctx.lineTo(center + needleLength * Math.cos(angle), center + needleLength * Math.sin(angle));
-  ctx.strokeStyle = '#f1c40f';
-  ctx.lineWidth = 5;
-  ctx.shadowColor = 'rgba(0,0,0,0.7)';
-  ctx.shadowBlur = 8;
+  ctx.strokeStyle = '#000';
+  ctx.lineWidth = 4;
   ctx.stroke();
 
-  // アニメーション更新
   if (spinning) {
     angle += spinSpeed;
-    if (angle >= 2 * Math.PI) angle -= 2 * Math.PI;
 
     if (slowingDown) {
       spinSpeed -= 0.005;
@@ -243,20 +203,24 @@ function drawRoulette() {
         return;
       }
     }
+
     animationId = requestAnimationFrame(drawRoulette);
   }
 }
 
-// 針が止まった場所の判定（当たり赤マスかどうか）
 function checkHit() {
-  const normalizedAngle = angle < 0 ? angle + 2 * Math.PI : angle;
-  const segmentAngle = (2 * Math.PI) / segments;
-  // 針が刺さった区切り番号を計算
-  let hitSegment = Math.floor((normalizedAngle + segmentAngle / 2) % (2 * Math.PI) / segmentAngle);
+  const normalized = angle % (2 * Math.PI);
+  let hit = false;
 
-  if (hitIndices.includes(hitSegment)) {
-    // 当たり
+  if (hitZoneStart < hitZoneEnd) {
+    hit = normalized >= hitZoneStart && normalized <= hitZoneEnd;
+  } else {
+    hit = normalized >= hitZoneStart || normalized <= hitZoneEnd;
+  }
+
+  if (hit) {
     fishingResult.textContent = "ヒット！";
+
     sfxHit.currentTime = 0;
     sfxHit.play();
 
@@ -290,8 +254,8 @@ function checkHit() {
       }
     }, 1500);
   } else {
-    // ハズレ
     fishingResult.textContent = "逃げられた…";
+
     sfxMiss.currentTime = 0;
     sfxMiss.play();
 
@@ -338,22 +302,3 @@ function showCatchOverlay(dogImageSrc, dogName) {
     }
   }
 }
-
-// ======= ここから犬データ読み込み・初期化 =======
-window.addEventListener('load', () => {
-  fetch('dog.json')
-    .then(res => {
-      if (!res.ok) throw new Error('dog.jsonの読み込み失敗');
-      return res.json();
-    })
-    .then(data => {
-      dogData = data;
-      weightedDogs = createWeightedDogs(dogData);
-      spawnDogs();
-    })
-    .catch(err => {
-      console.error('犬データ読み込みエラー:', err);
-    });
-});
-
-
