@@ -16,7 +16,7 @@ let isFishing = false;
 let selectedDogId = null;
 
 let needleAngle = 0;       // 針の角度（ラジアン）
-let needleSpeed = 0.05;    // 針の回転速度（初期は一定）
+let needleSpeed = 0.1;    // 針の回転速度（初期は速め）
 let isSpinning = false;    // リールボタン押して減速中フラグ
 
 // 効果音要素
@@ -115,11 +115,7 @@ function startSpin() {
   isSpinning = true;
   reelButton.disabled = true;
 
-  // ルーレットループ音再生開始
-  if (sfxRouletteLoop) {
-    sfxRouletteLoop.currentTime = 0;
-    sfxRouletteLoop.play();
-  }
+  // ルーレットループ音はstartFishingで既に鳴っているのでここでは再生不要
 }
 
 function checkResult() {
@@ -139,14 +135,9 @@ function checkResult() {
       sfxHit.currentTime = 0;
       sfxHit.play();
     }
-    
-    const dogImg = document.querySelector(`img[data-dog-id="${selectedDogId}"]`);
-    if (dogImg) {
-      dogImg.remove();
-    }
-    
     setTimeout(() => {
       fishingResult.textContent = "";
+      removeCaughtDog();  // 釣れた犬を消す処理を追加
       showCatchOverlay(selectedDogId);
       isFishing = false;
     }, 1000);
@@ -167,14 +158,20 @@ function checkResult() {
 function startFishing(dogElement) {
   if (isFishing) return;
   isFishing = true;
-  selectedDogId = dogElement.dataset.dogId;  // dogElementにdata-dog-id属性が必要
+  selectedDogId = dogElement.dataset.dogId;
   fishingUI.style.display = 'block';
   fishingResult.textContent = '';
   needleAngle = 0;
-  needleSpeed = 0.05;
+  needleSpeed = 0.1;
   isSpinning = false;
   drawRoulette();
   update(); // アニメーション開始
+
+  // 釣り開始と同時にルーレットループ音を再生
+  if (sfxRouletteLoop) {
+    sfxRouletteLoop.currentTime = 0;
+    sfxRouletteLoop.play();
+  }
 }
 
 reelButton.addEventListener('click', () => {
@@ -182,12 +179,19 @@ reelButton.addEventListener('click', () => {
   startSpin();
 });
 
+// 釣れた犬を画面から消す関数（犬の要素をDOMから削除）
+function removeCaughtDog() {
+  const dogElements = document.querySelectorAll(`[data-dog-id="${selectedDogId}"]`);
+  dogElements.forEach(dogEl => {
+    dogEl.remove();
+  });
+}
+
 function showCatchOverlay(dogId) {
   const catchOverlay = document.getElementById('catch-overlay');
   const caughtDogImg = document.getElementById('caught-dog-img');
   const caughtMessage = document.getElementById('caught-message');
 
-  // dogIdは文字列なので、idも文字列に変換して比較
   const dogData = window.allDogs ? window.allDogs.find(d => d.id.toString() === dogId.toString()) : null;
 
   if (!dogData) {
