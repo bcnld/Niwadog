@@ -251,11 +251,19 @@
     </div>
   </div>
 
-  <!-- 釣りルーレットUI -->
-  <div id="fishing-ui" style="display:block; position:relative; width:320px; height:350px; border:1px solid #ccc;">
-  <canvas id="roulette-canvas" width="300" height="300" style="background:#eee;"></canvas>
-  <button id="reel-button">止める</button>
-  <div id="fishing-result"></div>
+<div id="fishing-ui" style="display:none; position: fixed; top: 20%; left: 50%; transform: translateX(-50%);
+    width: 320px; height: 350px; background: #fffde7; border: 2px solid #444; border-radius: 8px; 
+    box-shadow: 0 0 10px rgba(0,0,0,0.4); z-index: 1000; text-align: center; padding: 15px;">
+
+  <canvas id="roulette-canvas" width="300" height="300" style="background:#eee; border-radius:8px;"></canvas>
+  
+  <button id="reel-button" style="margin-top: 10px; padding: 10px 20px; font-size: 1rem; cursor: pointer;">
+    止める
+  </button>
+
+  <div id="fishing-result" style="margin-top: 10px; font-weight: bold; font-size: 1.2rem; min-height: 1.5em;">
+    <!-- ヒット！や逃げられた…を表示 -->
+  </div>
 </div>
 
 
@@ -278,6 +286,7 @@
 
 </body>
 </html>
+
 
 
 
