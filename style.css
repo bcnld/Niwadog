@@ -106,54 +106,96 @@ button {
   color: #000;
 }
 
-/* 釣りUI */
-#roulette-canvas {
-  position: absolute;
+/* 釣りUI全体 */
+#fishing-ui {
+  display: none;
+  position: fixed;
   top: 50%;
   left: 50%;
   transform: translate(-50%, -50%);
-  z-index: 5;
-  display: none;
+  background: #222;
+  padding: 20px;
+  border-radius: 12px;
+  box-shadow: 0 0 10px rgba(0,0,0,0.7);
+  z-index: 1000;
+  width: 320px;
+  text-align: center;
+  color: #fff;
 }
 
-/* 結果オーバーレイ */
-.overlay {
-  display: none;
-  position: absolute;
-  z-index: 20;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  background: rgba(255, 255, 255, 0.8);
-  justify-content: center;
-  align-items: center;
-  flex-direction: column;
+/* ルーレットキャンバス */
+#roulette-canvas {
+  background: #333;
+  border-radius: 50%;
+  display: block;
+  margin: 0 auto 15px;
 }
-.overlay.active {
-  display: flex;
+
+/* 釣り結果表示テキスト */
+#fishing-result {
+  font-size: 24px;
+  height: 30px;
+  margin-bottom: 10px;
 }
-.overlay img {
-  max-width: 200px;
-  margin-bottom: 20px;
-}
-.overlay .caption {
-  background: white;
-  border: 2px solid #333;
+
+/* リールボタン */
+#reel-button {
   padding: 10px 20px;
   font-size: 18px;
-  border-radius: 10px;
-  margin-bottom: 20px;
-}
-.overlay .close-btn {
-  position: absolute;
-  bottom: 20px;
-  right: 20px;
-  padding: 10px 20px;
-  background: #fff;
-  border: 2px solid #333;
-  border-radius: 8px;
   cursor: pointer;
+  border: none;
+  border-radius: 8px;
+  background: #f1c40f;
+  color: #222;
+  font-weight: bold;
+}
+
+/* 捕まえた犬オーバーレイ */
+#catch-overlay {
+  display: none;
+  position: fixed;
+  top: 0; left: 0;
+  width: 100vw;
+  height: 100vh;
+  background: rgba(0,0,0,0.7);
+  z-index: 1100;
+  align-items: center;
+  justify-content: center;
+  flex-direction: column;
+  color: white;
+  font-size: 24px;
+}
+
+/* 捕まえた犬画像 */
+#caught-dog-img {
+  max-width: 200px;
+  max-height: 200px;
+  margin-bottom: 20px;
+  border: 4px solid white;
+  border-radius: 12px;
+}
+
+/* 捕まえたメッセージ */
+#caught-message {
+  margin-bottom: 30px;
+  font-weight: bold;
+}
+
+/* 捕まえた犬オーバーレイが表示されている時のスタイル */
+#catch-overlay.active {
+  display: flex;
+}
+
+/* 閉じるボタン */
+#catch-close {
+  cursor: pointer;
+  background: #f1c40f;
+  border: none;
+  padding: 10px 25px;
+  border-radius: 8px;
+  color: #222;
+  font-weight: bold;
+  font-size: 18px;
 }
 
 /* スマホ対応 */
@@ -171,3 +213,4 @@ button {
     height: 80px;
   }
 }
+
