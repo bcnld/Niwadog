@@ -1,25 +1,25 @@
-window.addEventListener('load', () => {
+window.addEventListener('DOMContentLoaded', () => {
   const bgm = document.getElementById('bgm');
   if (!bgm) return;
 
   bgm.volume = 0.5;
   bgm.loop = true;
 
-  const playBgm = () => {
+  const tryPlay = () => {
     bgm.play().catch(() => {
-      // 自動再生が失敗した場合は何もしない。ユーザー操作を待つ
-      console.log('自動再生失敗。ユーザー操作を待ちます。');
+      // 自動再生失敗。ユーザー操作待機。
+      console.log('BGM自動再生失敗。ユーザー操作を待機します。');
     });
   };
 
-  playBgm();
+  tryPlay();
 
-  // ユーザーのクリックやタッチで再生トリガーを設定
-  const startOnUserGesture = () => {
-    bgm.play().catch(e => console.error('ユーザー操作での再生エラー:', e));
-    window.removeEventListener('click', startOnUserGesture);
-    window.removeEventListener('touchstart', startOnUserGesture);
+  const userPlay = () => {
+    bgm.play().catch(e => console.error('ユーザー操作による再生エラー:', e));
+    window.removeEventListener('click', userPlay);
+    window.removeEventListener('touchstart', userPlay);
   };
-  window.addEventListener('click', startOnUserGesture);
-  window.addEventListener('touchstart', startOnUserGesture);
+
+  window.addEventListener('click', userPlay);
+  window.addEventListener('touchstart', userPlay);
 });
