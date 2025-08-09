@@ -30,7 +30,6 @@ window.addEventListener('load', () => {
     window.addEventListener('click', playOnUserGesture);
     window.addEventListener('touchstart', playOnUserGesture);
   });
-});
 
   // ローカルストレージから捕まえた犬データを読み込み
   const stored = localStorage.getItem('caughtDogs');
@@ -62,6 +61,7 @@ function showCatchOverlay(dogImageSrc, dogName) {
     }
   }
 }
+
 
 
 
