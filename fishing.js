@@ -28,9 +28,13 @@ function drawRoulette() {
 
 // 水辺の犬だけにクリックイベントを付ける
 window.attachDogClickEvents = function() {
-  const dogs = document.querySelectorAll('#water-area .dog'); // 水エリア内限定
+  const dogs = document.querySelectorAll('#water-area .dog');
   dogs.forEach(dog => {
-    dog.onclick = () => {
+    dog.onclick = (e) => {
+      if (window.isZukanOpen) {
+        e.stopPropagation();
+        return; // 図鑑開いてるときは釣りUI出さない
+      }
       startFishing(dog);
     };
   });
