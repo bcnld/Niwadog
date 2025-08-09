@@ -122,8 +122,6 @@ function startSpin() {
 }
 
 function checkResult() {
-  // 針は常に270度（真上）を指しているので、
-  // ルーレットの回転角度（針の角度と反対向き）を計算して判定
   const needleAngleDeg = 270;
   let rotationDeg = (needleAngle * 180 / Math.PI) % 360;
   if(rotationDeg < 0) rotationDeg += 360;
@@ -132,22 +130,21 @@ function checkResult() {
 
   const isHit = (pointerOnRouletteDeg >= RED_ZONE_START && pointerOnRouletteDeg <= RED_ZONE_END);
 
-  if (isHit) {
-  fishingResult.textContent = "ヒット！";
-  if (sfxHit) {
-    sfxHit.currentTime = 0;
-    sfxHit.play();
-  }
-  
-  // 釣れた犬をすぐ消す
+  // 釣れた・釣れなかったにかかわらず犬を消す
   removeCaughtDog();
 
-  setTimeout(() => {
-    fishingResult.textContent = "";
-    showCatchOverlay(selectedDogId);
-    isFishing = false;
-  }, 1000);
-} else {
+  if (isHit) {
+    fishingResult.textContent = "ヒット！";
+    if (sfxHit) {
+      sfxHit.currentTime = 0;
+      sfxHit.play();
+    }
+    setTimeout(() => {
+      fishingResult.textContent = "";
+      showCatchOverlay(selectedDogId);
+      isFishing = false;
+    }, 1000);
+  } else {
     fishingResult.textContent = "ハズレ...";
     if (sfxMiss) {
       sfxMiss.currentTime = 0;
