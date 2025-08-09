@@ -17,14 +17,36 @@ const closeBtn = document.getElementById('catch-close');
 let caughtDogsMap = {};
 
 // BGM 初回再生
-document.body.addEventListener('click', () => {
-  if (bgm.paused) {
-    bgm.play().catch(e => {
-      console.error('BGM再生エラー:', e);
-      alert('BGM再生エラー: ' + e.message);
-    });
+window.addEventListener('load', () => {
+  const bgm = document.getElementById('bgm');
+  if (!bgm) {
+    console.error('BGM要素がありません');
+    return;
   }
-}, { once: true });
+  bgm.volume = 0.5;
+
+  // ユーザーの最初のクリックで一度だけBGM再生開始
+  const onFirstClick = () => {
+    if (bgm.paused) {
+      bgm.play()
+        .then(() => console.log('BGM再生開始'))
+        .catch(e => {
+          console.error('BGM再生エラー:', e);
+          alert('BGM再生エラー: ' + e.message);
+        });
+    }
+    // 一度再生したらイベント解除
+    document.body.removeEventListener('click', onFirstClick);
+  };
+
+  document.body.addEventListener('click', onFirstClick);
+
+  // 他の初期化処理（例: localStorageの読み込み）
+  const stored = localStorage.getItem('caughtDogs');
+  if (stored) caughtDogsMap = JSON.parse(stored);
+
+  // ここで他のサウンド要素のボリューム調整なども可能
+});
 
 window.addEventListener('load', () => {
   const stored = localStorage.getItem('caughtDogs');
@@ -56,4 +78,5 @@ function showCatchOverlay(dogImageSrc, dogName) {
     }
   }
 }
+
 
