@@ -130,27 +130,26 @@ function onStop() {
 
 // リールボタン押下処理
 reelBtn.addEventListener("click", () => {
-  if (spinning) return;
+  if (!spinning) {
+    spinning = true;
+    fishingResult.textContent = "";
+    reelBtn.textContent = "止める";
 
-  spinning = true;
-  fishingResult.textContent = "";
-  reelBtn.textContent = "止める";
+    sfxRouletteLoop.currentTime = 0;
+    sfxRouletteLoop.play();
 
-  sfxRouletteLoop.currentTime = 0;
-  sfxRouletteLoop.play();
+    spinSpeed = 0.3 + Math.random() * 0.2;
 
-  spinSpeed = 0.3 + Math.random() * 0.2;
-
-  animate();
-
-  reelBtn.onclick = () => {
-    if (!spinning) return;
-    sfxStopClick.currentTime = 0;
-    sfxStopClick.play();
-
-    spinSpeed = 0.01; // 減速開始
-    reelBtn.disabled = true;
-  };
+    animate();
+  } else {
+    // 2回目クリックで減速開始
+    if (spinSpeed > 0) {
+      sfxStopClick.currentTime = 0;
+      sfxStopClick.play();
+      spinSpeed = 0.01;
+      reelBtn.disabled = true;
+    }
+  }
 });
 
 // 初期描画
