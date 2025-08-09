@@ -298,5 +298,16 @@
     "rarity": "いらない",
     "price": 25,
     "description": "急に話しかけられてうんこをちびってしまった犬"
+  },
+  {
+    "number": 31,
+    "name": "殺意の犬",
+    "image": "images/dogst.png",
+    "probability": 0.0003,
+    "catchRate": 0.009,
+    "rarity": "じゃあ挿れるね",
+    "price": 270,
+    "description": "ホモに両親を殺害されてしまった犬"
   }
 ]
+
