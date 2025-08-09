@@ -1,6 +1,3 @@
-// fishing.js
-
-// 釣りUIの要素を取得
 const fishingUI = document.getElementById('fishing-ui');
 const fishingResult = document.getElementById('fishing-result');
 const reelButton = document.getElementById('reel-button');
@@ -11,44 +8,39 @@ let isFishing = false;
 let selectedDog = null;
 
 function startFishing(dogElement) {
-  if (isFishing) return; // 釣り中は無効
+  if (isFishing) return;
   isFishing = true;
   selectedDog = dogElement;
 
   fishingResult.textContent = '';
   fishingUI.style.display = 'block';
 
-  // 必要ならルーレット初期化処理
   drawRoulette();
 }
 
 function drawRoulette() {
-  // ルーレット描画ロジック（省略可）
+  // ここにルーレット描画ロジックを入れてください（省略可）
 }
 
 // 水辺の犬だけにクリックイベントを付ける
 window.attachDogClickEvents = function() {
-  const dogs = document.querySelectorAll('#water-area .dog');
+  // 図鑑犬を除外して釣り用犬だけにイベント付与
+  const dogs = document.querySelectorAll('#water-area .dog:not(.zukan-dog)');
   dogs.forEach(dog => {
-    dog.onclick = (e) => {
-      if (window.isZukanOpen) {
-        e.stopPropagation();
-        return; // 図鑑開いてるときは釣りUI出さない
-      }
+    dog.onclick = () => {
+      if (window.isZukanOpen) return;  // 図鑑開いてたら釣りしない
       startFishing(dog);
     };
   });
 };
 
-// ページロード後にイベント付け
 window.addEventListener('load', () => {
   attachDogClickEvents();
 });
 
-// リールボタンクリック
 reelButton.addEventListener('click', () => {
   if (!isFishing) return;
-  // ルーレット回転や停止処理（省略可）
+  // ルーレット回転や停止の処理（省略可）
 });
 
-// UIを閉じる処理（必要なら追加）
+// 釣りUIを閉じる処理も必要ならここに追加してください
