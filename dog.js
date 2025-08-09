@@ -61,19 +61,13 @@ function spawnDogs() {
 
     img._moveAnimationId = moveAnimationId;
 
-    // 犬クリック時の処理は別ファイルの関数を呼ぶ前提
-    img.addEventListener('click', () => {
-  if (window.isFishing || window.isZukanOpen || window.isShopOpen) return;
-  window.selectedDog = { img, dog };  // グローバルに
-  window.isFishing = true;             // グローバルに状態を持たせる
-
-  if (typeof window.startFishing === 'function') {
-    window.startFishing();
-  }
-});
-    
     waterArea.appendChild(img);
     spawnedDogs.push(img);
+  }
+
+  // ここでfishing.jsの関数を呼んでイベント付けを更新
+  if (typeof window.attachDogClickEvents === 'function') {
+    window.attachDogClickEvents();
   }
 }
 
