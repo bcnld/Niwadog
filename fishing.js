@@ -1,4 +1,3 @@
-// 釣りUIの要素を取得
 const fishingUI = document.getElementById('fishing-ui');
 const fishingResult = document.getElementById('fishing-result');
 const reelButton = document.getElementById('reel-button');
@@ -8,31 +7,12 @@ const ctx = canvas.getContext('2d');
 let isFishing = false;
 let selectedDog = null;
 
-function startFishing(dogElement) {
-  if (isFishing) return; // 釣り中は無効
-  isFishing = true;
-  selectedDog = dogElement;
-
-  fishingResult.textContent = '';
-  fishingUI.style.display = 'block';
-
-  // ここでルーレット初期化などの処理を行う（省略可能）
-  // 例：angle=0, spinSpeed=0.3など
-
-  // ルーレット描画開始（あれば）
-  drawRoulette();
-}
-
-function drawRoulette() {
-  // ルーレットの描画ロジックをここに書くか別関数で実装
-  // 省略してUIだけ表示するなら空でもOK
-}
-
-// 水平方向にいるすべての犬要素にクリックイベントをつける関数
 window.attachDogClickEvents = function() {
   const dogs = document.querySelectorAll('.dog');
+  console.log('attachDogClickEvents: dogs count =', dogs.length);
   dogs.forEach(dog => {
     dog.onclick = () => {
+      console.log('犬クリック:', dog.alt);
       startFishing(dog);
     };
   });
@@ -43,21 +23,23 @@ function startFishing(dogElement) {
   isFishing = true;
   selectedDog = dogElement;
 
+  console.log('startFishing called for', dogElement.alt);
+
   fishingResult.textContent = '';
   fishingUI.style.display = 'block';
 
   drawRoulette();
 }
 
+function drawRoulette() {
+  // ルーレット描画処理（省略可）
+}
+
 window.addEventListener('load', () => {
   attachDogClickEvents();
 });
 
-// 釣りUIのリールボタンイベントなどもここに書く
 reelButton.addEventListener('click', () => {
   if (!isFishing) return;
-  // ルーレット回転スタートや停止処理
-  // 省略...
+  // ルーレットの動作処理
 });
-
-// UIを閉じる処理もあればここに
