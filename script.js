@@ -18,7 +18,12 @@ let caughtDogsMap = {};
 
 // BGM 初回再生
 document.body.addEventListener('click', () => {
-  if (bgm.paused) bgm.play().catch(() => {});
+  if (bgm.paused) {
+    bgm.play().catch(e => {
+      console.error('BGM再生エラー:', e);
+      alert('BGM再生エラー: ' + e.message);
+    });
+  }
 }, { once: true });
 
 window.addEventListener('load', () => {
@@ -51,3 +56,4 @@ function showCatchOverlay(dogImageSrc, dogName) {
     }
   }
 }
+
