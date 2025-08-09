@@ -19,11 +19,9 @@ let caughtDogsMap = {};
 // ページ読み込み時にBGM自動再生を試みる
 window.addEventListener('load', () => {
   if (!bgm) return;
-
   bgm.volume = 0.5;
 
-  bgm.play().catch(e => {
-    // 自動再生ブロックされた場合、クリックまたはタッチで再生開始
+  bgm.play().catch(() => {
     const playOnUserGesture = () => {
       bgm.play().catch(() => {});
       window.removeEventListener('click', playOnUserGesture);
@@ -32,6 +30,7 @@ window.addEventListener('load', () => {
     window.addEventListener('click', playOnUserGesture);
     window.addEventListener('touchstart', playOnUserGesture);
   });
+});
 
   // ローカルストレージから捕まえた犬データを読み込み
   const stored = localStorage.getItem('caughtDogs');
@@ -63,5 +62,6 @@ function showCatchOverlay(dogImageSrc, dogName) {
     }
   }
 }
+
 
 
