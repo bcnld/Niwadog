@@ -1,4 +1,3 @@
-const waterArea = document.getElementById('water-area');
 const fishingUI = document.getElementById('fishing-ui');
 const canvas = document.getElementById('roulette-canvas');
 const ctx = canvas.getContext('2d');
@@ -73,26 +72,6 @@ function onStop() {
   reelBtn.disabled = false;
 }
 
-// 犬クリック時の処理
-function attachDogClickEvents() {
-  const dogs = [...document.querySelectorAll(".dog")];
-  console.log("犬の数:", dogs.length); // ここで犬が取れているか確認
-  dogs.forEach((dog) => {
-    dog.onclick = null;
-    dog.addEventListener("click", () => {
-      console.log("犬クリックされました");
-      if (spinning) return;
-      fishingResult.textContent = "";
-      fishingUI.style.display = "block";
-      reelBtn.disabled = false;
-      reelBtn.textContent = "リールを引く";
-      angle = 0;
-      spinSpeed = 0;
-      drawRoulette();
-    });
-  });
-}
-
 reelBtn.addEventListener("click", () => {
   if (!spinning) {
     spinning = true;
@@ -108,5 +87,22 @@ reelBtn.addEventListener("click", () => {
   }
 });
 
-// 初期イベント付け（必要に応じてspawnDogsのあとに呼んでください）
+function attachDogClickEvents() {
+  const dogs = [...document.querySelectorAll(".dog")];
+  dogs.forEach((dog) => {
+    dog.onclick = null; // 一旦イベントリセット
+    dog.addEventListener("click", () => {
+      if (spinning) return;
+      fishingResult.textContent = "";
+      fishingUI.style.display = "block";
+      reelBtn.disabled = false;
+      reelBtn.textContent = "リールを引く";
+      angle = 0;
+      spinSpeed = 0;
+      drawRoulette();
+    });
+  });
+}
+
+// 初回呼び出しや犬生成後に必ず呼んでください
 attachDogClickEvents();
