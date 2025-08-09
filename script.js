@@ -25,27 +25,24 @@ window.addEventListener('load', () => {
   }
   bgm.volume = 0.5;
 
-  // ユーザーの最初のクリックで一度だけBGM再生開始
+  console.log('BGM readyState:', bgm.readyState);
+
   const onFirstClick = () => {
     if (bgm.paused) {
       bgm.play()
-        .then(() => console.log('BGM再生開始'))
+        .then(() => {
+          console.log('BGM再生成功');
+          alert('BGM再生成功');
+        })
         .catch(e => {
           console.error('BGM再生エラー:', e);
           alert('BGM再生エラー: ' + e.message);
         });
     }
-    // 一度再生したらイベント解除
     document.body.removeEventListener('click', onFirstClick);
   };
 
   document.body.addEventListener('click', onFirstClick);
-
-  // 他の初期化処理（例: localStorageの読み込み）
-  const stored = localStorage.getItem('caughtDogs');
-  if (stored) caughtDogsMap = JSON.parse(stored);
-
-  // ここで他のサウンド要素のボリューム調整なども可能
 });
 
 window.addEventListener('load', () => {
@@ -78,5 +75,6 @@ function showCatchOverlay(dogImageSrc, dogName) {
     }
   }
 }
+
 
 
