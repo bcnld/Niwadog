@@ -11,12 +11,13 @@ const RADIUS = CANVAS_SIZE / 2 - 20;
 const SEGMENTS = 12; // 12分割
 const RED_ZONE_START = 30;  // 赤い当たりゾーンの開始角度 (度数法)
 const RED_ZONE_END = 60;    // 赤い当たりゾーンの終了角度
+const RED_ZONE_CENTER = (RED_ZONE_START + RED_ZONE_END) / 2; // 赤ゾーン中心（45度）
 
 let isFishing = false;
 let selectedDogId = null;
 
 let needleAngle = 0;       // 針の角度（ラジアン）
-let needleSpeed = 0.1;    // 針の回転速度（初期は速め）
+let needleSpeed = 0.1;     // 針の回転速度（初期は速め）
 let isSpinning = false;    // リールボタン押して減速中フラグ
 
 // 効果音要素
@@ -58,10 +59,12 @@ function drawRoulette() {
     ctx.stroke();
   }
 
-  // 針を描く
+  // 針を描く（針の先端を赤ゾーン中心に向ける）
   ctx.save();
   ctx.translate(CENTER, CENTER);
-  ctx.rotate(needleAngle);
+
+  // 針の角度に赤ゾーン中心角度を足して回転（ラジアン変換）
+  ctx.rotate(needleAngle + degToRad(RED_ZONE_CENTER));
 
   ctx.beginPath();
   // とんがった先端を上に（0度方向）向ける三角形
@@ -162,7 +165,7 @@ function startFishing(dogElement) {
   fishingUI.style.display = 'block';
   fishingResult.textContent = '';
   needleAngle = 0;
-  needleSpeed = 0.6;
+  needleSpeed = 0.6;  // 少し速めに設定
   isSpinning = false;
   drawRoulette();
   update(); // アニメーション開始
