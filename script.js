@@ -115,6 +115,7 @@ function startFishing() {
   window.isFishing = isFishing;
   fishingResult.textContent = '';
   fishingUI.style.display = 'block';
+  canvas.style.display = 'block'; // ←追加
 
   // 当たり判定は180度固定。開始角度はランダム
   hitZoneStart = Math.random() * 2 * Math.PI;
@@ -337,6 +338,7 @@ function showCatchOverlay(dogImageSrc, dogName) {
     }
   }
 }
+
 
 
 
