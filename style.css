@@ -108,7 +108,7 @@ button {
 
 /* 釣りUI全体 */
 #fishing-ui {
-  display: none;
+  display: none; /* 最初は隠す */
   position: fixed;
   top: 50%;
   left: 50%;
@@ -129,6 +129,8 @@ button {
   border-radius: 50%;
   display: block;
   margin: 0 auto 15px;
+  width: 300px;
+  height: 300px;
 }
 
 /* 釣り結果表示テキスト */
@@ -148,6 +150,14 @@ button {
   background: #f1c40f;
   color: #222;
   font-weight: bold;
+  user-select: none;
+}
+
+/* ボタン無効時の見た目 */
+#reel-button:disabled {
+  background: #ccc;
+  color: #666;
+  cursor: default;
 }
 
 /* 捕まえた犬オーバーレイ */
@@ -213,4 +223,5 @@ button {
     height: 80px;
   }
 }
+
 
