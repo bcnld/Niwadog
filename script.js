@@ -146,7 +146,6 @@ const segments = 16; // 16分割
 const hitIndices = [2, 5, 9, 14]; // 当たりのパネル番号例（好きに変更OK）
 
 function drawRoulette() {
-function drawRoulette() {
   ctx.clearRect(0, 0, canvas.width, canvas.height);
   const center = canvas.width / 2;
   const radius = center - 10;
@@ -338,5 +337,6 @@ function showCatchOverlay(dogImageSrc, dogName) {
     }
   }
 }
+
 
 
