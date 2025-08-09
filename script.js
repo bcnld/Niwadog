@@ -19,30 +19,31 @@ let caughtDogsMap = {};
 // BGM 初回再生
 window.addEventListener('load', () => {
   const bgm = document.getElementById('bgm');
-  if (!bgm) {
-    console.error('BGM要素がありません');
-    return;
-  }
+  if (!bgm) return;
+
   bgm.volume = 0.5;
 
-  console.log('BGM readyState:', bgm.readyState);
+  // ページ読み込み時に再生を試みる
+  bgm.play().then(() => {
+    console.log('BGM自動再生成功');
+  }).catch(e => {
+    console.warn('BGM自動再生はブラウザにブロックされました:', e);
 
-  const onFirstClick = () => {
-    if (bgm.paused) {
-      bgm.play()
-        .then(() => {
-          console.log('BGM再生成功');
-          alert('BGM再生成功');
-        })
-        .catch(e => {
-          console.error('BGM再生エラー:', e);
-          alert('BGM再生エラー: ' + e.message);
-        });
-    }
-    document.body.removeEventListener('click', onFirstClick);
-  };
+    // ブロックされたら、ユーザーが画面をクリックしたら再生するように設定
+    const playOnUserGesture = () => {
+      bgm.play().then(() => {
+        console.log('ユーザー操作でBGM再生成功');
+      }).catch(err => {
+        console.error('ユーザー操作後のBGM再生失敗:', err);
+      });
+      // 一度再生処理したらイベント解除
+      window.removeEventListener('click', playOnUserGesture);
+      window.removeEventListener('touchstart', playOnUserGesture);
+    };
 
-  document.body.addEventListener('click', onFirstClick);
+    window.addEventListener('click', playOnUserGesture);
+    window.addEventListener('touchstart', playOnUserGesture);
+  });
 });
 
 window.addEventListener('load', () => {
@@ -75,6 +76,7 @@ function showCatchOverlay(dogImageSrc, dogName) {
     }
   }
 }
+
 
 
 
