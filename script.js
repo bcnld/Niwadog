@@ -5,21 +5,15 @@ window.addEventListener('DOMContentLoaded', () => {
   bgm.volume = 0.5;
   bgm.loop = true;
 
-  const tryPlay = () => {
-    bgm.play().catch(() => {
-      // 自動再生失敗。ユーザー操作待機。
-      console.log('BGM自動再生失敗。ユーザー操作を待機します。');
+  bgm.play().catch(() => {
+    console.log('自動再生失敗。ユーザー操作を待機。');
+  });
+
+  document.body.addEventListener('click', () => {
+    bgm.play().then(() => {
+      console.log('ユーザー操作でBGM再生成功');
+    }).catch(e => {
+      console.error('ユーザー操作でBGM再生失敗:', e);
     });
-  };
-
-  tryPlay();
-
-  const userPlay = () => {
-    bgm.play().catch(e => console.error('ユーザー操作による再生エラー:', e));
-    window.removeEventListener('click', userPlay);
-    window.removeEventListener('touchstart', userPlay);
-  };
-
-  window.addEventListener('click', userPlay);
-  window.addEventListener('touchstart', userPlay);
+  });
 });
