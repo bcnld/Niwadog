@@ -16,38 +16,27 @@ const closeBtn = document.getElementById('catch-close');
 
 let caughtDogsMap = {};
 
-// ページ読み込み時にBGM自動再生を試みる
-window.addEventListener('load', () => {
-  if (!bgm) return;
+// --- BGM起動処理（確実に鳴らす版） ---
+bgm.volume = 0.5;
 
-  bgm.volume = 0.5;
-
-  // まずBGMを自動再生してみる
-  bgm.play().catch((e) => {
-    console.warn('BGM自動再生失敗:', e);
-
-    // 自動再生失敗時は、ユーザー操作で再生開始を試みる
-    const playOnUserGesture = () => {
-      bgm.play().catch(() => {});
-      window.removeEventListener('click', playOnUserGesture);
-      window.removeEventListener('touchstart', playOnUserGesture);
+document.addEventListener('DOMContentLoaded', () => {
+  bgm.play().catch(() => {
+    console.warn('自動再生失敗：クリック/タップで再生待機');
+    const playBgm = () => {
+      bgm.play().catch(e => console.error('BGM再生エラー:', e));
+      document.removeEventListener('click', playBgm);
+      document.removeEventListener('touchstart', playBgm);
     };
-
-    window.addEventListener('click', playOnUserGesture);
-    window.addEventListener('touchstart', playOnUserGesture);
+    document.addEventListener('click', playBgm);
+    document.addEventListener('touchstart', playBgm);
   });
 
   // ローカルストレージから捕まえた犬データを読み込み
   const stored = localStorage.getItem('caughtDogs');
-  if (stored) {
-    try {
-      caughtDogsMap = JSON.parse(stored);
-    } catch {
-      caughtDogsMap = {};
-    }
-  }
+  if (stored) caughtDogsMap = JSON.parse(stored);
 });
 
+// --- キャッチ画面の閉じるボタン ---
 if (closeBtn) {
   closeBtn.addEventListener('click', () => {
     catchOverlay.classList.remove('active');
@@ -58,11 +47,7 @@ if (closeBtn) {
   });
 }
 
-/**
- * 捕まえた犬のオーバーレイを表示し、捕獲音を鳴らす
- * @param {string} dogImageSrc - 犬画像のURL
- * @param {string} dogName - 犬の名前
- */
+// --- 犬を捕まえたときの表示 ---
 function showCatchOverlay(dogImageSrc, dogName) {
   const caughtImg = document.getElementById('caught-dog-img');
   const caughtMessage = document.getElementById('caught-message');
@@ -78,5 +63,3 @@ function showCatchOverlay(dogImageSrc, dogName) {
     }
   }
 }
-
-// ここに他の機能も追加できます
