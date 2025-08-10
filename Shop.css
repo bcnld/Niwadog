@@ -1,11 +1,84 @@
+/* ショップの基本レイアウト */
 #shop-sell-panel, #shop-buy-panel {
-  height: 60vh; /* 必要に応じて変更 */
+  height: 60vh;
   display: flex;
   flex-direction: column;
+  position: relative;
 }
 
 #sell-dogs-list, #shop-items-list {
   flex-grow: 1;
   overflow-y: auto;
   margin-top: 10px;
+}
+
+/* 犬リストの項目 */
+.dog-item {
+  display: flex;
+  align-items: center;
+  padding: 8px;
+  border-bottom: 1px solid #ccc;
+  cursor: pointer;
+}
+.dog-item img {
+  width: 50px;
+  height: 50px;
+  object-fit: cover;
+  margin-right: 10px;
+}
+.dog-item .dog-name {
+  flex-grow: 1;
+  font-weight: bold;
+}
+.dog-item .dog-price {
+  white-space: nowrap;
+}
+
+/* 詳細パネル（スライドイン） */
+#dog-detail-panel {
+  position: fixed;
+  top: -100%;
+  left: 0;
+  width: 100%;
+  height: 80vh;
+  background: #fff;
+  box-shadow: 0 4px 10px rgba(0,0,0,0.3);
+  padding: 20px;
+  overflow-y: auto;
+  transition: top 0.3s ease;
+  z-index: 9999;
+}
+#dog-detail-panel.show {
+  top: 0;
+}
+#dog-detail-close {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  background: #f44336;
+  color: #fff;
+  border: none;
+  border-radius: 6px;
+  padding: 6px 12px;
+  cursor: pointer;
+}
+#dog-detail-content img {
+  max-width: 100%;
+  height: auto;
+  border-radius: 8px;
+  margin-bottom: 10px;
+}
+
+/* スマホ対応 */
+@media (max-width: 768px) {
+  #shop-sell-panel, #shop-buy-panel {
+    height: 80vh;
+  }
+  .dog-item img {
+    width: 40px;
+    height: 40px;
+  }
+  #dog-detail-panel {
+    height: 90vh;
+  }
 }
