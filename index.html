@@ -197,8 +197,9 @@
   <!-- 犬詳細パネル -->
 <div id="dog-detail-panel" class="slide-panel">
   <div id="dog-detail-overlay" class="dog-detail-overlay">
-  <button id="detail-back" class="back-btn">← 戻る</button>
-  <div id="dog-detail-content"></div>
+    <button id="detail-back" class="back-btn">← 戻る</button>
+    <div id="dog-detail-content"></div>
+  </div>
 </div>
  
     <!-- 持ち物パネル -->
@@ -244,24 +245,61 @@
   </div>
 
   <!-- 犬プロフィールモーダル -->
-<div id="dog-profile-modal" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background-color:rgba(0,0,0,0.5); justify-content:center; align-items:center; z-index:1000;">
-  <div style="background:#fff; width:800px; height:600px; padding:20px; position:relative; display:flex; flex-direction:column; box-shadow:0 0 15px rgba(0,0,0,0.3);">
+<div id="dog-profile-modal" style="
+  display:none; 
+  position:fixed; 
+  top:0; left:0; 
+  width:100%; height:100%; 
+  background-color:rgba(0,0,0,0.5); 
+  justify-content:center; 
+  align-items:center; 
+  z-index:1000;
+  display: flex;">
+  
+  <div style="
+    background:#fff; 
+    width:800px; 
+    height:600px; 
+    padding:20px; 
+    position:relative; 
+    display:flex; 
+    flex-direction:column; 
+    box-shadow:0 0 15px rgba(0,0,0,0.3);
+  ">
 
     <!-- 閉じるボタン -->
-    <button id="profile-close" style="position:absolute; top:10px; right:10px; font-size:18px; background:none; border:none; cursor:pointer;">✖</button>
+    <button id="profile-close" style="
+      position:absolute; 
+      top:10px; 
+      right:10px; 
+      font-size:18px; 
+      background:none; 
+      border:none; 
+      cursor:pointer;
+    ">✖</button>
 
     <!-- 上部：画像と名前 -->
-    <div style="display:flex; flex-direction:row; align-items:flex-start;">
+    <div style="
+      display:flex; 
+      flex-direction:row; 
+      align-items:flex-start;
+      gap: 20px;
+    ">
       <!-- 犬画像 -->
-      <img id="profile-image" src="" alt="犬の画像" style="width:250px; height:250px; object-fit:cover; border:1px solid #ccc;">
+      <img id="profile-image-modal" src="" alt="犬の画像" style="
+        width:250px; 
+        height:250px; 
+        object-fit:cover; 
+        border:1px solid #ccc;
+      ">
 
-      <!-- 名前と番号 -->
-     <img id="profile-image" ... />
-<img id="profile-image-modal" src="" alt="犬の画像" style="..." />
-<h2 id="profile-name-modal">名前不明</h2>
-<p id="profile-rarity-modal">レアリティ: 不明</p>
-<p id="profile-price-modal">売値: 0 円</p>
-<p id="profile-description-modal">説明なし</p>
+      <!-- 犬の詳細テキスト -->
+      <div>
+        <h2 id="profile-name-modal">名前不明</h2>
+        <p id="profile-rarity-modal">レアリティ: 不明</p>
+        <p id="profile-price-modal">売値: 0 円</p>
+        <p id="profile-description-modal">説明なし</p>
+      </div>
     </div>
   </div>
 </div>
@@ -320,6 +358,7 @@
 
 </body>
 </html>
+
 
 
 
