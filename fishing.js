@@ -232,11 +232,12 @@ function showCatchOverlay(dogId) {
     "じゃあ挿れるね": "#b22222"
   };
 
+  // 文字列化して厳密一致
   const dogData = window.allDogs ? window.allDogs.find(d => String(d.id) === String(dogId)) : null;
 
   if (!dogData) {
     caughtDogImg.src = '';
-    caughtMessage.textContent = '犬データがありません';
+    caughtMessage.textContent = '犬データが読み込まれませんでした。';
     caughtDogImg.style.boxShadow = '';
   } else {
     caughtDogImg.src = dogData.image || '';
