@@ -3,32 +3,62 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>タイトル画面サンプル</title>
+  <title>犬ゲームタイトル画面</title>
   <style>
     body, html {
-      margin: 0; padding: 0; height: 100%; overflow: hidden;
-      background-color: black;
-      font-family: 'Arial Black', sans-serif;
+      margin: 0; padding: 0; height: 100%;
+      background: black;
       color: white;
+      font-family: 'Arial Black', sans-serif;
       user-select: none;
+      overflow: hidden;
     }
-    #title-screen {
+    .overlay {
       position: fixed;
       top: 0; left: 0;
       width: 100vw; height: 100vh;
-      display: flex;
-      flex-direction: column;
+      background: rgba(0,0,0,0.85);
+      display: none;
       justify-content: center;
       align-items: center;
-      background-color: black;
+      flex-direction: column;
+      z-index: 9999;
     }
-    #company-logo {
-      max-width: 300px;
-      max-height: 150px;
-      margin-bottom: 20px;
-      opacity: 0;
-      transition: opacity 1s;
+    .overlay.active {
+      display: flex;
+    }
+    button {
+      margin-top: 20px;
+      padding: 12px 40px;
+      font-size: 22px;
+      font-weight: bold;
+      border-radius: 8px;
+      border: none;
+      cursor: pointer;
       user-select: none;
+      background-color: #2196F3;
+      color: white;
+      transition: background-color 0.3s ease;
     }
-    #company-text {
-      font-size: 48
+    button:hover {
+      background-color: #1976d2;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- 質問モーダル -->
+  <div id="question-overlay" class="overlay active" role="dialog" aria-modal="true" aria-labelledby="question-text">
+    <div id="question-text" style="font-size: 28px;">あなたは日本人ですか？</div>
+    <button id="question-yes-btn">はい</button>
+  </div>
+
+  <!-- タイトル画面表示用コンテナ -->
+  <div id="title-container"></div>
+
+  <!-- BGM -->
+  <audio id="bgm" src="Sounds/title.mp3" loop preload="auto"></audio>
+
+  <script src="titleScreen.js"></script>
+</body>
+</html>
