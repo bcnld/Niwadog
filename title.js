@@ -1,11 +1,7 @@
-// タイトル画面制御用JS（企業名＆ロゴ表示対応）
-
 class TitleScreen {
   constructor() {
-    // DOM生成
     this.createElements();
 
-    // 企業名＆ロゴリスト
     this.companyList = [
       { name: "Mdm", logo: "images/mdm_logo.png" },
       { name: "Sus Dog", logo: "images/Sus_logo.png" },
@@ -13,130 +9,142 @@ class TitleScreen {
     ];
     this.currentCompanyIndex = 0;
 
-    // 状態管理
     this.state = "showCompany"; // showCompany -> showTitle -> waitKey -> mainMenu
     this.opacity = 0;
     this.fadeIn = true;
+    this.holdTimer = 0;
 
-    // 背景スクロール用
     this.bgPosX = 0;
+    this.bgScrollSpeed = 0;  // 背景スクロール速度（最初は0）
 
-    // メニュー項目
     this.menuItems = ["New Game", "Load Game"];
     this.selectedIndex = 0;
 
-    // イベント登録（PC）
     window.addEventListener("keydown", (e) => this.onAnyKey(e));
-
-    // イベント登録（スマホ）
     window.addEventListener("touchstart", (e) => this.onAnyKey(e));
 
-    // 開始
     this.run();
   }
 
   createElements() {
-    // ルートコンテナ
     this.container = document.createElement("div");
-    this.container.style.position = "fixed";
-    this.container.style.top = "0";
-    this.container.style.left = "0";
-    this.container.style.width = "100vw";
-    this.container.style.height = "100vh";
-    this.container.style.backgroundColor = "black";
-    this.container.style.color = "white";
-    this.container.style.fontFamily = "'Arial Black', sans-serif";
-    this.container.style.overflow = "hidden";
-    this.container.style.display = "flex";
-    this.container.style.flexDirection = "column";
-    this.container.style.justifyContent = "center";
-    this.container.style.alignItems = "center";
-    this.container.style.userSelect = "none";
+    Object.assign(this.container.style, {
+      position: "fixed",
+      top: "0",
+      left: "0",
+      width: "100vw",
+      height: "100vh",
+      backgroundColor: "black",
+      color: "white",
+      fontFamily: "'Arial Black', sans-serif",
+      overflow: "hidden",
+      display: "flex",
+      flexDirection: "column",
+      justifyContent: "center",
+      alignItems: "center",
+      userSelect: "none"
+    });
     document.body.appendChild(this.container);
 
-    // 企業ロゴ
     this.companyLogo = document.createElement("img");
-    this.companyLogo.style.maxWidth = "300px";
-    this.companyLogo.style.maxHeight = "150px";
-    this.companyLogo.style.opacity = "0";
-    this.companyLogo.style.transition = "opacity 1s";
+    Object.assign(this.companyLogo.style, {
+      maxWidth: "300px",
+      maxHeight: "150px",
+      opacity: "0",
+      transition: "opacity 1s",
+      marginBottom: "20px",
+      userSelect: "none"
+    });
     this.container.appendChild(this.companyLogo);
 
-    // 企業名テキスト
     this.companyText = document.createElement("div");
-    this.companyText.style.fontSize = "48px";
-    this.companyText.style.opacity = "0";
-    this.companyText.style.transition = "opacity 1s";
+    Object.assign(this.companyText.style, {
+      fontSize: "48px",
+      opacity: "0",
+      transition: "opacity 1s",
+      userSelect: "none"
+    });
     this.container.appendChild(this.companyText);
 
-    // タイトル画面要素（最初は非表示）
     this.titleScreen = document.createElement("div");
-    this.titleScreen.style.position = "relative";
-    this.titleScreen.style.width = "100%";
-    this.titleScreen.style.height = "100%";
-    this.titleScreen.style.display = "none";
+    Object.assign(this.titleScreen.style, {
+      position: "relative",
+      width: "100%",
+      height: "100%",
+      display: "none",
+      flexDirection: "column",
+      alignItems: "center"
+    });
     this.container.appendChild(this.titleScreen);
 
-    // 背景（横スクロール）
     this.bg = document.createElement("div");
-    this.bg.style.position = "absolute";
-    this.bg.style.top = "0";
-    this.bg.style.left = "0";
-    this.bg.style.width = "200%";
-    this.bg.style.height = "100%";
-    this.bg.style.backgroundImage = "url('images/title_bg.jpg')";
-    this.bg.style.backgroundRepeat = "repeat-x";
-    this.bg.style.backgroundSize = "cover";
+    Object.assign(this.bg.style, {
+      position: "absolute",
+      top: "0",
+      left: "0",
+      width: "200%",
+      height: "100%",
+      backgroundImage: "url('images/title_bg.jpg')",
+      backgroundRepeat: "repeat-x",
+      backgroundSize: "cover",
+      zIndex: "-1"
+    });
     this.titleScreen.appendChild(this.bg);
 
-    // タイトル画像
     this.titleImage = document.createElement("img");
     this.titleImage.src = "images/game_title.png";
-    this.titleImage.style.position = "relative";
-    this.titleImage.style.marginTop = "10vh";
-    this.titleImage.style.maxWidth = "80%";
-    this.titleImage.style.userSelect = "none";
+    Object.assign(this.titleImage.style, {
+      position: "relative",
+      marginTop: "10vh",
+      maxWidth: "80%",
+      userSelect: "none"
+    });
     this.titleScreen.appendChild(this.titleImage);
 
-    // タイトルテキスト
     this.titleText = document.createElement("div");
     this.titleText.textContent = "BIOHAZARD 4";
-    this.titleText.style.fontSize = "48px";
-    this.titleText.style.textAlign = "center";
-    this.titleText.style.marginTop = "10px";
-    this.titleText.style.color = "white";
-    this.titleText.style.textShadow = "0 0 10px rgba(255,255,255,0.7)";
+    Object.assign(this.titleText.style, {
+      fontSize: "48px",
+      textAlign: "center",
+      marginTop: "10px",
+      color: "white",
+      textShadow: "0 0 10px rgba(255,255,255,0.7)",
+      userSelect: "none"
+    });
     this.titleScreen.appendChild(this.titleText);
 
-    // Press Any Key
     this.pressKeyText = document.createElement("div");
     this.pressKeyText.textContent = "Press Any Key";
-    this.pressKeyText.style.position = "absolute";
-    this.pressKeyText.style.bottom = "10vh";
-    this.pressKeyText.style.width = "100%";
-    this.pressKeyText.style.textAlign = "center";
-    this.pressKeyText.style.fontSize = "24px";
-    this.pressKeyText.style.color = "white";
-    this.pressKeyText.style.opacity = "0";
-    this.pressKeyText.style.userSelect = "none";
-    this.pressKeyText.style.transition = "opacity 0.7s ease-in-out";
+    Object.assign(this.pressKeyText.style, {
+      position: "absolute",
+      bottom: "10vh",
+      width: "100%",
+      textAlign: "center",
+      fontSize: "24px",
+      color: "white",
+      opacity: "0",
+      userSelect: "none",
+      transition: "opacity 0.7s ease-in-out"
+    });
     this.titleScreen.appendChild(this.pressKeyText);
 
-    // メインメニュー
     this.menu = document.createElement("div");
-    this.menu.style.position = "absolute";
-    this.menu.style.bottom = "20vh";
-    this.menu.style.width = "100%";
-    this.menu.style.display = "flex";
-    this.menu.style.justifyContent = "center";
-    this.menu.style.gap = "40px";
-    this.menu.style.fontSize = "32px";
-    this.menu.style.color = "white";
-    this.menu.style.textShadow = "0 0 5px black";
-    this.menu.style.userSelect = "none";
-    this.menu.style.opacity = "0";
-    this.menu.style.transition = "opacity 1s ease";
-    this.menu.style.cursor = "default";
+    Object.assign(this.menu.style, {
+      position: "absolute",
+      bottom: "20vh",
+      width: "100%",
+      display: "flex",
+      justifyContent: "center",
+      gap: "40px",
+      fontSize: "32px",
+      color: "white",
+      textShadow: "0 0 5px black",
+      userSelect: "none",
+      opacity: "0",
+      transition: "opacity 1s ease",
+      cursor: "default",
+      pointerEvents: "none"
+    });
     this.titleScreen.appendChild(this.menu);
 
     this.menuItemsElements = [];
@@ -170,7 +178,6 @@ class TitleScreen {
     requestAnimationFrame(() => this.loop());
   }
 
-  // 企業名＆ロゴ表示アニメーション
   showCompanyLoop() {
     const current = this.companyList[this.currentCompanyIndex];
     if (this.fadeIn) {
@@ -194,7 +201,7 @@ class TitleScreen {
             this.companyLogo.style.opacity = "0";
             this.companyText.textContent = "";
             this.companyLogo.src = "";
-            this.titleScreen.style.display = "block";
+            this.titleScreen.style.display = "flex";
             this.opacity = 0;
             this.fadeIn = true;
             return;
@@ -203,14 +210,12 @@ class TitleScreen {
         }
       }
     }
-    // 表示更新
     this.companyText.textContent = current.name;
     this.companyLogo.src = current.logo;
     this.companyText.style.opacity = this.opacity.toFixed(2);
     this.companyLogo.style.opacity = this.opacity.toFixed(2);
   }
 
-  // タイトルフェードイン
   showTitleLoop() {
     if (this.fadeIn) {
       this.opacity += 0.01;
@@ -220,13 +225,13 @@ class TitleScreen {
         this.state = "waitKey";
         this.pressKeyAlpha = 0;
         this.pressKeyFadeIn = true;
+        this.bgScrollSpeed = 0; // 背景は止めておく
         return;
       }
       this.titleScreen.style.opacity = this.opacity.toFixed(2);
     }
   }
 
-  // Press Any Key 点滅
   waitKeyLoop() {
     if (this.pressKeyFadeIn) {
       this.pressKeyAlpha += 0.03;
@@ -244,27 +249,25 @@ class TitleScreen {
     this.pressKeyText.style.opacity = this.pressKeyAlpha.toFixed(2);
   }
 
-  // キーまたはタップでメインメニュー表示
   onAnyKey(e) {
     if (this.state === "waitKey") {
       this.state = "mainMenu";
       this.pressKeyText.style.opacity = "0";
       this.menu.style.opacity = "1";
       this.menu.style.pointerEvents = "auto";
+      this.bgScrollSpeed = 0.5; // スクロール開始
     }
   }
 
-  // メニューの背景スクロール
   mainMenuLoop() {
-    this.bgPosX -= 0.5;
-    if (this.bgPosX < -window.innerWidth) {
+    this.bgPosX += this.bgScrollSpeed;
+    if (this.bgPosX > window.innerWidth) {
       this.bgPosX = 0;
     }
     this.bg.style.backgroundPosition = `${this.bgPosX}px 0`;
   }
 }
 
-// ページロード後に開始
 window.addEventListener("load", () => {
   new TitleScreen();
 });
