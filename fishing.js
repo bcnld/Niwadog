@@ -26,6 +26,7 @@ const sfxStopClick = document.getElementById('sfx-stop-click');
 const sfxHit = document.getElementById('sfx-hit');
 const sfxMiss = document.getElementById('sfx-miss');
 const sfxCatch = document.getElementById('sfx-catch');
+const sfxWheelStop = document.getElementById('sfx-wheel-stop');
 
 function degToRad(deg) {
   return deg * Math.PI / 180;
