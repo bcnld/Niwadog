@@ -8,31 +8,18 @@
 </head>
 <body>
 
-  <!-- 質問モーダル -->
+  <!-- 最初の質問オーバーレイ -->
   <div id="question-overlay" class="overlay active" role="dialog" aria-modal="true" aria-labelledby="question-text">
-  <div id="question-text">あなたは日本人ですか？</div>
-  <button id="question-yes-btn">はい</button>
-</div>
-<div id="title-container"></div>
-
-  <!-- タイトル画面全体 -->
-  <div id="title-screen">
-    <div id="company-name" style="opacity:0;">
-      <img id="company-logo" src="" alt="Company Logo" />
-      <div id="company-text"></div>
-    </div>
-
-    <div id="game-title" style="display:none; opacity:0;">
-      <img src="images/game_title.png" alt="Game Title" />
-      <div>BIOHAZARD 4</div>
-      <div id="press-any-key" style="opacity:0;">Press Any Key</div>
-    </div>
+    <div id="question-text">あなたは日本人ですか？</div>
+    <button id="question-yes-btn">はい</button>
   </div>
+
+  <!-- タイトル画面のメインコンテナ -->
+  <div id="title-container"></div>
 
   <!-- BGM -->
   <audio id="bgm" src="Sounds/title.mp3" loop preload="auto"></audio>
 
-  <script src="titleScreen.js"></script>
+  <script src="title.js"></script>
 </body>
 </html>
-
