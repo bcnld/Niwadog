@@ -290,6 +290,21 @@
 </head>
 <body>
 
+ <div id="title-screen" style="position: fixed; top:0; left:0; width:100vw; height:100vh; background:black; z-index: 2000; display:flex; flex-direction: column; justify-content:center; align-items:center; color:white; user-select:none;">
+  <!-- 企業名表示 -->
+  <div id="company-name" style="font-size: 48px; opacity: 0; display: flex; flex-direction: column; align-items: center;">
+    <img id="company-logo" src="" alt="企業ロゴ" style="max-width: 300px; max-height: 100px; user-select:none; margin-bottom: 20px;"/>
+    <div id="company-text"></div>
+  </div>
+  
+  <!-- タイトル画像・テキスト -->
+  <div id="game-title" style="display:none; flex-direction: column; align-items: center; opacity: 0;">
+    <img src="images/game_title.png" alt="ゲームタイトル" style="max-width: 80vw; user-select:none;" />
+    <div style="font-size:48px; margin-top: 10px; text-shadow: 0 0 10px white;">BIOHAZARD 4</div>
+    <div id="press-any-key" style="margin-top: 60px; font-size: 24px; opacity: 0;">Press Any Key</div>
+  </div>
+</div>
+  
   <!-- 水中エリア -->
   <div id="water-area"></div>
 
@@ -448,5 +463,6 @@
   <script src="script.js"></script>    <!-- メイン制御、共通処理 -->
 </body>
 </html>
+
 
 
