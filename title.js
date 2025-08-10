@@ -4,7 +4,7 @@ class TitleScreen {
     this.createElements();
 
     // 企業名リスト（テキスト）
-    this.companyNames = ["CAPCOM", "KOEI TECMO", "SQUARE ENIX"];
+    this.companyNames = ["MasuruDMasuo", "HOMO ZENMETU", "ANAL SWITCHER"];
     this.currentCompanyIndex = 0;
 
     // 状態管理
@@ -84,7 +84,7 @@ class TitleScreen {
 
     // タイトルテキスト（画像の下にゲーム名表示）
     this.titleText = document.createElement("div");
-    this.titleText.textContent = "BIOHAZARD 4";
+    this.titleText.textContent = "安いもんだ、鶏でしこったぐらい";
     this.titleText.style.fontSize = "48px";
     this.titleText.style.textAlign = "center";
     this.titleText.style.marginTop = "10px";
