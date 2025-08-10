@@ -1,12 +1,47 @@
 class TitleScreen {
   constructor() {
-    this.companyNameDiv = document.getElementById("company-name");
-    this.companyLogoImg = document.getElementById("company-logo");
-    this.companyTextDiv = document.getElementById("company-text");
+    // DOM要素作成
+    this.container = document.getElementById("title-container");
+    this.container.innerHTML = "";
 
-    this.gameTitleDiv = document.getElementById("game-title");
-    this.pressAnyKeyDiv = document.getElementById("press-any-key");
+    // 企業ロゴ・名前用コンテナ
+    this.companyNameDiv = document.createElement("div");
+    this.companyNameDiv.id = "company-name";
+    this.container.appendChild(this.companyNameDiv);
 
+    this.companyLogoImg = document.createElement("img");
+    this.companyLogoImg.id = "company-logo";
+    this.companyNameDiv.appendChild(this.companyLogoImg);
+
+    this.companyTextDiv = document.createElement("div");
+    this.companyTextDiv.id = "company-text";
+    this.companyNameDiv.appendChild(this.companyTextDiv);
+
+    // タイトル画面用コンテナ
+    this.gameTitleDiv = document.createElement("div");
+    this.gameTitleDiv.id = "game-title";
+    this.gameTitleDiv.style.display = "none";
+    this.gameTitleDiv.style.flexDirection = "column";
+    this.gameTitleDiv.style.alignItems = "center";
+    this.container.appendChild(this.gameTitleDiv);
+
+    // タイトル画像
+    this.titleImage = document.createElement("img");
+    this.titleImage.src = "images/game_title.png";
+    this.gameTitleDiv.appendChild(this.titleImage);
+
+    // タイトルテキスト
+    this.titleText = document.createElement("div");
+    this.titleText.textContent = "BIOHAZARD 4";
+    this.gameTitleDiv.appendChild(this.titleText);
+
+    // Press Any Key
+    this.pressAnyKeyDiv = document.createElement("div");
+    this.pressAnyKeyDiv.id = "press-any-key";
+    this.pressAnyKeyDiv.textContent = "Press Any Key";
+    this.gameTitleDiv.appendChild(this.pressAnyKeyDiv);
+
+    // 企業リスト
     this.companyList = [
       { name: "Mdm", logo: "images/mdm_logo.png" },
       { name: "Sus Dog", logo: "images/Sus_logo.png" },
@@ -14,7 +49,7 @@ class TitleScreen {
     ];
     this.currentCompanyIndex = 0;
 
-    this.state = "showCompany"; // showCompany -> showTitle -> waitKey -> mainMenu
+    this.state = "showCompany"; // 状態管理
     this.opacity = 0;
     this.fadeIn = true;
     this.holdTimer = 0;
@@ -24,9 +59,11 @@ class TitleScreen {
 
     this.bgm = document.getElementById("bgm");
 
-    window.addEventListener("keydown", (e) => this.onAnyKey(e));
-    window.addEventListener("touchstart", (e) => this.onAnyKey(e));
+    // イベント登録
+    window.addEventListener("keydown", this.onAnyKey.bind(this));
+    window.addEventListener("touchstart", this.onAnyKey.bind(this));
 
+    // ループ開始
     this.loop();
   }
 
@@ -42,7 +79,7 @@ class TitleScreen {
         this.waitKeyLoop();
         break;
       case "mainMenu":
-        // ここにメインメニューの処理を入れる（必要なら）
+        // ゲーム開始などの処理をここに書く
         break;
     }
     requestAnimationFrame(() => this.loop());
@@ -55,7 +92,7 @@ class TitleScreen {
       if (this.opacity >= 1) {
         this.opacity = 1;
         this.fadeIn = false;
-        this.holdTimer = 60; // 1秒保持
+        this.holdTimer = 60; // 1秒キープ
       }
     } else {
       if (this.holdTimer > 0) {
@@ -66,6 +103,7 @@ class TitleScreen {
           this.opacity = 0;
           this.currentCompanyIndex++;
           if (this.currentCompanyIndex >= this.companyList.length) {
+            // 全ての企業ロゴを表示し終わったらタイトルへ
             this.state = "showTitle";
 
             this.companyNameDiv.style.opacity = 0;
@@ -75,7 +113,7 @@ class TitleScreen {
             this.opacity = 0;
             this.fadeIn = true;
 
-            // BGM再生（ユーザー操作済みならすぐ再生可）
+            // BGM再生（ユーザー操作済みならOK）
             this.bgm.play().catch(() => {});
 
             return;
@@ -120,7 +158,7 @@ class TitleScreen {
     this.pressAnyKeyDiv.style.opacity = this.pressKeyAlpha.toFixed(2);
   }
 
-  onAnyKey() {
+  onAnyKey(e) {
     if (this.state === "waitKey") {
       this.state = "mainMenu";
       this.pressAnyKeyDiv.style.opacity = "0";
@@ -129,6 +167,7 @@ class TitleScreen {
   }
 }
 
+// 起動時
 window.addEventListener("load", () => {
   const questionOverlay = document.getElementById("question-overlay");
   const yesBtn = document.getElementById("question-yes-btn");
