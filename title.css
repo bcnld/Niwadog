@@ -48,7 +48,7 @@ body, html {
   user-select: none;
 }
 
-/* 「はい」ボタンはそのままでOK */
+/* 「はい」ボタン */
 #question-yes-btn {
   margin-top: 20px;
   padding: 12px 40px;
@@ -115,6 +115,12 @@ body, html {
   align-items: center;
   opacity: 0;
   transition: opacity 1s ease;
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  user-select: none;
+  z-index: 1000;
 }
 
 #game-title img {
@@ -130,11 +136,42 @@ body, html {
 
 /* Press Any Key */
 #press-any-key {
-  margin-top: 60px;
+  position: fixed;
+  bottom: 10vh;
+  width: 100%;
+  text-align: center;
   font-size: 24px;
+  color: white;
+  user-select: none;
   opacity: 0;
   transition: opacity 0.7s ease-in-out;
-  user-select: none;
-  text-align: center;
-  width: 100%;
+  pointer-events: none;
+  z-index: 1000;
+}
+
+/* 背景画像用div */
+#background {
+  position: fixed;
+  top: 0; left: 0;
+  width: 100vw;
+  height: 100vh;
+  background-size: cover;
+  background-position: center;
+  z-index: -1;
+
+  /* 初期は大きくしてぼかしをつける */
+  filter: blur(8px);
+  transform-origin: center center;
+  transform: scale(1.2);
+  transition: transform 3s ease-out, filter 3s ease-out;
+}
+
+/* メインメニュー用背景切り替えはJSでbackground-image変更予定 */
+
+/* 画面全体に使うクラス（必要に応じて追加） */
+.flex-center-column {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
 }
