@@ -148,19 +148,23 @@ function startSpin() {
 }
 
 // 結果判定
+// 結果判定
 function checkResult() {
   const needleDeg = radToDeg(needleAngle);
   const hit = isAngleInRange(needleDeg, redZone.start, redZone.end);
-
-  // まず釣り終了時に犬を消す
-  removeCaughtDog();
 
   if (hit) {
     fishingResult.textContent = "ヒット！";
     if (sfxHit) { sfxHit.currentTime = 0; sfxHit.play(); }
 
+    // ここで釣った犬を所持リストに追加
+    if (typeof addCaughtDog === 'function') {
+      addCaughtDog(selectedDogId);
+    }
+
     setTimeout(() => {
       fishingResult.textContent = "";
+      removeCaughtDog();
       showCatchOverlay(selectedDogId);
       isFishing = false;
     }, 1000);
