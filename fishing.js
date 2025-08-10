@@ -9,16 +9,15 @@ const CENTER = CANVAS_SIZE / 2;
 const RADIUS = CANVAS_SIZE / 2 - 20;
 
 const SEGMENTS = 12; // 12分割
-const RED_ZONE_WIDTH_DEG = 60;  // 赤い当たりゾーンの幅（度）
 
 let isFishing = false;
 let selectedDogId = null;
 
-let needleAngle = 0;       // 針の角度（ラジアン）
-let needleSpeed = 0.1;     // 針の回転速度（初期は速め）
-let isSpinning = false;    // リールボタン押して減速中フラグ
+let needleAngle = 0;       
+let needleSpeed = 0.1;     
+let isSpinning = false;    
 
-// 効果音要素
+// 効果音
 const sfxRouletteLoop = document.getElementById('sfx-roulette-loop');
 const sfxWheelStop = document.getElementById('sfx-wheel-stop');
 const sfxStopClick = document.getElementById('sfx-stop-click');
@@ -26,20 +25,39 @@ const sfxHit = document.getElementById('sfx-hit');
 const sfxMiss = document.getElementById('sfx-miss');
 const sfxCatch = document.getElementById('sfx-catch');
 
-let RED_ZONE_START = 0; // 赤いゾーン開始角度（度）
-let RED_ZONE_END = RED_ZONE_WIDTH_DEG; // 赤いゾーン終了角度（度）
+// 赤ゾーン（複数対応）
+let redZones = [];
+
+// キャッチレートの取得（例：dog.jsonから）
+function getCatchRate(dogId) {
+  const dogData = window.allDogs ? window.allDogs.find(d => d.id.toString() === dogId.toString()) : null;
+  return dogData ? (dogData.catchRate || 0.2) : 0.2; // デフォルト0.2
+}
 
 function degToRad(deg) {
   return deg * Math.PI / 180;
 }
 
-// 360度またぎも考慮した角度範囲チェック関数
+// 360度またぎ対応
 function isAngleInRange(angle, start, end) {
   if (start <= end) {
     return angle >= start && angle <= end;
   } else {
-    // 360度をまたぐ場合
     return angle >= start || angle <= end;
+  }
+}
+
+// 赤ゾーン生成
+function generateRedZones(catchRate) {
+  redZones = [];
+  const baseWidth = 60; // 基本幅
+  const width = baseWidth + (baseWidth * catchRate); // キャッチレートで拡大
+
+  const zoneCount = Math.floor(Math.random() * 3) + 1; // 1～3個
+  for (let i = 0; i < zoneCount; i++) {
+    const start = Math.random() * 360;
+    const end = (start + width) % 360;
+    redZones.push({ start, end });
   }
 }
 
@@ -57,10 +75,10 @@ function drawRoulette() {
     let segStartDeg = (i * segmentDeg) % 360;
     let segEndDeg = (segStartDeg + segmentDeg) % 360;
 
-    // セグメントが赤ゾーンと重なっているか判定
-    const inRedZone = isAngleInRange(segStartDeg, RED_ZONE_START, RED_ZONE_END) ||
-                      isAngleInRange(segEndDeg, RED_ZONE_START, RED_ZONE_END) ||
-                      (RED_ZONE_START > RED_ZONE_END && (segStartDeg >= RED_ZONE_START || segEndDeg <= RED_ZONE_END));
+    const inRedZone = redZones.some(zone =>
+      isAngleInRange(segStartDeg, zone.start, zone.end) ||
+      isAngleInRange(segEndDeg, zone.start, zone.end)
+    );
 
     ctx.beginPath();
     ctx.moveTo(CENTER, CENTER);
@@ -74,19 +92,15 @@ function drawRoulette() {
     ctx.stroke();
   }
 
-  // 針を描く
+  // 針
   ctx.save();
   ctx.translate(CENTER, CENTER);
-
-  // 針は常に0度方向を指すので回転はneedleAngleのみ（針の0度を基準にする）
   ctx.rotate(needleAngle);
-
   ctx.beginPath();
   ctx.moveTo(0, -RADIUS - 10);
   ctx.lineTo(-10, -RADIUS + 20);
   ctx.lineTo(10, -RADIUS + 20);
   ctx.closePath();
-
   ctx.fillStyle = '#ff6600';
   ctx.fill();
   ctx.restore();
@@ -96,10 +110,8 @@ function update() {
   if (!isFishing) return;
 
   if (!isSpinning) {
-    // 通常回転
     needleAngle += needleSpeed;
   } else {
-    // 減速処理
     needleSpeed *= 0.98;
     needleAngle += needleSpeed;
 
@@ -108,9 +120,7 @@ function update() {
       isSpinning = false;
       reelButton.disabled = false;
 
-      // 効果音停止
       if (sfxRouletteLoop) sfxRouletteLoop.pause();
-
       if (sfxWheelStop) {
         sfxWheelStop.currentTime = 0;
         sfxWheelStop.play();
@@ -122,31 +132,24 @@ function update() {
 
   needleAngle %= (2 * Math.PI);
   drawRoulette();
-
   requestAnimationFrame(update);
 }
 
 function startSpin() {
   if (isSpinning) return;
-
   isSpinning = true;
   reelButton.disabled = true;
 }
 
 function checkResult() {
-  // 針の角度を度に変換
   let needleDeg = (needleAngle * 180 / Math.PI) % 360;
   if (needleDeg < 0) needleDeg += 360;
 
-  // 当たり判定（針が赤ゾーン内にあるか）
-  const isHit = isAngleInRange(needleDeg, RED_ZONE_START, RED_ZONE_END);
+  const isHit = redZones.some(zone => isAngleInRange(needleDeg, zone.start, zone.end));
 
   if (isHit) {
     fishingResult.textContent = "ヒット！";
-    if (sfxHit) {
-      sfxHit.currentTime = 0;
-      sfxHit.play();
-    }
+    if (sfxHit) { sfxHit.currentTime = 0; sfxHit.play(); }
     setTimeout(() => {
       fishingResult.textContent = "";
       removeCaughtDog();
@@ -155,10 +158,7 @@ function checkResult() {
     }, 1000);
   } else {
     fishingResult.textContent = "ハズレ...";
-    if (sfxMiss) {
-      sfxMiss.currentTime = 0;
-      sfxMiss.play();
-    }
+    if (sfxMiss) { sfxMiss.currentTime = 0; sfxMiss.play(); }
     setTimeout(() => {
       fishingResult.textContent = "";
       fishingUI.style.display = 'none';
@@ -179,9 +179,8 @@ function startFishing(dogElement) {
   needleSpeed = 0.4;
   isSpinning = false;
 
-  // 赤ゾーンの開始位置をランダムに決定
-  RED_ZONE_START = Math.random() * 360;
-  RED_ZONE_END = (RED_ZONE_START + RED_ZONE_WIDTH_DEG) % 360;
+  const catchRate = getCatchRate(selectedDogId);
+  generateRedZones(catchRate);
 
   drawRoulette();
   update();
@@ -195,18 +194,12 @@ function startFishing(dogElement) {
 reelButton.addEventListener('click', () => {
   if (!isFishing) return;
   startSpin();
-
-  if (sfxStopClick) {
-    sfxStopClick.currentTime = 0;
-    sfxStopClick.play();
-  }
+  if (sfxStopClick) { sfxStopClick.currentTime = 0; sfxStopClick.play(); }
 });
 
 function removeCaughtDog() {
   const dogElements = document.querySelectorAll(`[data-dog-id="${selectedDogId}"]`);
-  dogElements.forEach(dogEl => {
-    dogEl.remove();
-  });
+  dogElements.forEach(dogEl => dogEl.remove());
 }
 
 function showCatchOverlay(dogId) {
@@ -215,7 +208,6 @@ function showCatchOverlay(dogId) {
   const caughtMessage = document.getElementById('caught-message');
 
   const dogData = window.allDogs ? window.allDogs.find(d => d.id.toString() === dogId.toString()) : null;
-
   if (!dogData) {
     caughtDogImg.src = '';
     caughtMessage.textContent = '犬データがありません';
@@ -225,14 +217,9 @@ function showCatchOverlay(dogId) {
   }
 
   catchOverlay.style.display = 'flex';
-
-  if (sfxCatch) {
-    sfxCatch.currentTime = 0;
-    sfxCatch.play();
-  }
+  if (sfxCatch) { sfxCatch.currentTime = 0; sfxCatch.play(); }
 }
 
-// 閉じるボタン
 document.getElementById('catch-close').addEventListener('click', () => {
   const catchOverlay = document.getElementById('catch-overlay');
   catchOverlay.style.display = 'none';
