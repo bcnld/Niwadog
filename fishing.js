@@ -219,6 +219,7 @@ function showCatchOverlay(dogId) {
   const caughtDogImg = document.getElementById('caught-dog-img');
   const caughtMessage = document.getElementById('caught-message');
 
+  // レアリティカラー定義（dog.jsonのレアリティ文字列に対応）
   const rarityColors = {
     "かす": "#353839",
     "ごみ": "#b5a642",
@@ -232,18 +233,17 @@ function showCatchOverlay(dogId) {
     "じゃあ挿れるね": "#b22222"
   };
 
-  // 文字列化して厳密一致
-  const dogData = window.allDogs ? window.allDogs.find(d => String(d.id) === String(dogId)) : null;
+  const dogData = window.allDogs ? window.allDogs.find(d => String(d.number) === String(dogId)) : null;
 
   if (!dogData) {
     caughtDogImg.src = '';
-    caughtMessage.textContent = '犬データが読み込まれませんでした。';
+    caughtMessage.textContent = '犬のデータが読み込まれませんでした。';
     caughtDogImg.style.boxShadow = '';
   } else {
     caughtDogImg.src = dogData.image || '';
     caughtMessage.textContent = `${dogData.name || '名無し'}をつかまえた！`;
 
-    const rarity = dogData.rarity || 'common';
+    const rarity = dogData.rarity || 'かす';
     const auraColor = rarityColors[rarity] || '#ffffff';
 
     caughtDogImg.style.boxShadow = `
@@ -256,7 +256,7 @@ function showCatchOverlay(dogId) {
 
   catchOverlay.style.display = 'flex';
 
-  if (sfxCatch) {
+  if (window.sfxCatch) {
     sfxCatch.currentTime = 0;
     sfxCatch.play();
   }
