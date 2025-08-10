@@ -4,7 +4,7 @@ html, body {
   height: 100%;
   overflow: hidden;
   font-family: sans-serif;
-  background: #a0d8f7;
+  background: black;
 }
 
 /* 全体コンテナ */
@@ -229,6 +229,7 @@ button {
     height: 80px;
   }
 }
+
 
 
 
