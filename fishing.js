@@ -30,10 +30,13 @@ const RADIUS = CANVAS_SIZE / 2 - 20;
 const SEGMENTS = 12;
 
 let isFishing = false;
+let selectedDogElement = null; // 変更: 犬のDOM要素を保持
 let selectedDogId = null;
 let needleAngle = 0;
 let needleSpeed = 0;
 let isSpinning = false;
+
+let stopPressed = false; // 追加: 「止める」ボタン押下状態管理
 
 // 効果音
 const sfxRouletteLoop = document.getElementById('sfx-roulette-loop');
@@ -113,7 +116,7 @@ function update() {
     if (needleSpeed < 0.002) {
       needleSpeed = 0;
       isSpinning = false;
-      reelButton.disabled = false;
+      reelButton.disabled = false; // 回転終了後ボタン復活（ただしstopPressed管理で再押下制御）
       if (sfxRouletteLoop) sfxRouletteLoop.pause();
       if (sfxWheelStop) {
         sfxWheelStop.currentTime = 0;
@@ -131,13 +134,18 @@ function update() {
 }
 
 function startSpin() {
-  if (isSpinning) return;
+  if (isSpinning || stopPressed) return; // すでに止め押下済みなら何もしない
   isSpinning = true;
   needleSpeed = 0.4;
-  reelButton.disabled = true;
+  reelButton.disabled = true; // 押せなくする
+  stopPressed = true;         // 押されたフラグを立てる
   if (sfxRouletteLoop) {
     sfxRouletteLoop.currentTime = 0;
     sfxRouletteLoop.play();
+  }
+  if (sfxStopClick) {
+    sfxStopClick.currentTime = 0;
+    sfxStopClick.play();
   }
 }
 
@@ -186,6 +194,7 @@ function startFishing(dogElement) {
     return;
   }
   isFishing = true;
+  selectedDogElement = dogElement;       // クリックした犬DOMを保持
   selectedDogId = dogElement.dataset.dogId;
 
   fishingUI.style.display = 'block';
@@ -194,13 +203,19 @@ function startFishing(dogElement) {
   needleSpeed = 0.1;
   isSpinning = false;
 
+  stopPressed = false;   // 釣り開始時にリセット
+  reelButton.disabled = false;
+
   setRandomRedZone();
   drawRoulette();
   update();
 }
 
 function removeCaughtDog() {
-  document.querySelectorAll(`[data-dog-id="${selectedDogId}"]`).forEach(el => el.remove());
+  // 選択された犬のDOM要素だけ削除する
+  if (selectedDogElement && selectedDogElement.parentElement) {
+    selectedDogElement.parentElement.removeChild(selectedDogElement);
+  }
 }
 
 function showCatchOverlay(dogId) {
@@ -253,10 +268,6 @@ document.getElementById('catch-close').addEventListener('click', () => {
 reelButton.addEventListener('click', () => {
   if (!isFishing) return;
   startSpin();
-  if (sfxStopClick) {
-    sfxStopClick.currentTime = 0;
-    sfxStopClick.play();
-  }
 });
 
 // 犬画像クリックイベントを付与（既存犬に対して）
