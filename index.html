@@ -1,35 +1,42 @@
 <!DOCTYPE html>
 <html lang="ja">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>タイトル画面サンプル</title>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>タイトル画面サンプル</title>
+<link rel="stylesheet" href="style.css" />
 </head>
-<body style="background-color: black; color: white; margin: 0; height: 100vh;">
+<body>
 
-  <!-- 最初の質問モーダル -->
-  <div id="question-overlay" role="dialog" aria-modal="true" aria-labelledby="question-text">
-    <div id="question-text">あなたは日本人ですか？</div>
+<!-- 最初に表示される質問オーバーレイ -->
+<div id="question-overlay" class="active">
+  <div id="question-box">
+    <p>ゲームを開始しますか？</p>
     <button id="question-yes-btn">はい</button>
   </div>
+</div>
 
-  <!-- 企業名＋ロゴ -->
-  <div id="company-name" aria-label="企業ロゴ表示">
-    <img id="company-logo" src="" alt="企業ロゴ" />
-    <div id="company-text"></div>
-  </div>
+<!-- 背景（JSで操作） -->
+<div id="background"></div>
 
-  <!-- ゲームタイトル画面 -->
-  <div id="game-title" aria-label="ゲームタイトル">
-    <img src="images/game_title.png" alt="ゲームタイトルロゴ" />
-    <div>BIOHAZARD 4</div>
-    <div id="press-any-key">Press Any Key</div>
-  </div>
+<!-- 企業表示 -->
+<div id="company-name" style="display:flex; flex-direction: column; align-items:center;">
+  <img id="company-logo" src="" alt="Company Logo" />
+  <div id="company-text"></div>
+</div>
 
-  <!-- BGM -->
-  <audio id="bgm" src="Sounds/title.mp3" loop preload="auto"></audio>
+<!-- タイトル表示 -->
+<div id="game-title" style="display:none; flex-direction: column; align-items: center;">
+  <img src="images/game_title.png" alt="Game Title" />
+  <div>BIOHAZARD 4</div>
+</div>
 
-  <script src="title.js"></script>
+<!-- Press Any Key -->
+<div id="press-any-key">Press Any Key</div>
 
+<!-- BGM -->
+<audio id="bgm" src="sounds/bgm.mp3" loop></audio>
+
+<script src="title.js"></script>
 </body>
 </html>
