@@ -3,19 +3,21 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no" />
-  <title>さか</title>
+  <title>犬ゲーム完全版</title>
   <style>
+    /* --- ベーススタイル --- */
     body, html {
       margin: 0; padding: 0; height: 100%; overflow: hidden;
-      font-family: sans-serif;
+      font-family: 'Noto Sans JP', sans-serif;
       background: #a0d8f7 url('images/water.png') repeat;
       background-size: 64px 64px;
+      user-select: none;
     }
     #water-area {
       position: relative;
-      width: 100vw;
-      height: 100vh;
+      width: 100vw; height: 100vh;
       overflow: hidden;
+      z-index: 1;
     }
     #bottom-land {
       position: fixed; bottom: 0; left: 0; width: 100%; height: 100px;
@@ -23,8 +25,11 @@
       background-size: 64px 64px;
       z-index: 10;
     }
+    /* ボタン共通 */
     #zukan-btn, #shop-btn, #inventory-btn, #achievement-btn {
-      position: fixed; width: 70px; height: 70px; cursor: pointer;
+      position: fixed;
+      width: 70px; height: 70px;
+      cursor: pointer;
       z-index: 20;
     }
     #zukan-btn { right: 30px; bottom: 120px; }
@@ -32,7 +37,7 @@
     #inventory-btn { left: 30px; bottom: 35px; }
     #achievement-btn { right: 30px; bottom: 35px; }
 
-
+    /* パネル共通 */
     .panel {
       display: none;
       position: fixed;
@@ -40,14 +45,16 @@
       left: 50%;
       transform: translateX(-50%);
       width: 90vw; max-width: 400px; height: 60vh;
-      background: white; border: 2px solid #444;
+      background: white;
+      border: 2px solid #444;
       box-shadow: 0 0 15px rgba(0,0,0,0.5);
       overflow-y: auto;
       padding: 10px;
       z-index: 30;
+      border-radius: 12px;
     }
 
-    /* 追加: overlayクラスの表示制御例 */
+    /* オーバーレイ用 */
     .overlay {
       position: fixed;
       top: 0; left: 0;
@@ -62,20 +69,70 @@
       display: flex;
     }
 
-    #zukan-container {
-      width: 900px;
-      height: 600px;
-      background: #f7f1e1;
-      border-radius: 12px;
-      box-shadow: 0 8px 24px rgba(0,0,0,0.4);
-      padding: 24px;
+    /* 図鑑パネルの左右ページ */
+    #zukan-content {
+      display: flex;
+      justify-content: space-between;
+      height: 60%;
+      gap: 12px;
+    }
+    .zukan-page {
+      width: 48%;
+      background: #fff;
+      border: 1px solid #ccc;
+      border-radius: 8px;
+      box-shadow: inset 0 0 6px rgba(0,0,0,0.1);
+      padding: 10px;
       box-sizing: border-box;
-      font-family: 'Noto Serif JP', serif;
+      display: grid;
+      grid-template-columns: repeat(3,1fr);
+      grid-template-rows: repeat(3,1fr);
+      gap: 12px;
+      overflow-y: auto;
+    }
+    /* 図鑑のページ操作部分 */
+    .zukan-controls {
+      margin-top: 10px;
+      text-align: center;
       user-select: none;
-      position: relative;
-      overflow: hidden;
+    }
+    .zukan-controls button {
+      padding: 6px 12px;
+      margin: 0 8px;
+      font-size: 1rem;
+      border-radius: 6px;
+      border: 1.5px solid #666;
+      background-color: white;
+      cursor: pointer;
+      transition: background-color 0.3s ease;
+    }
+    .zukan-controls button:hover {
+      background-color: #eee;
+    }
+    #page-indicator {
+      font-weight: bold;
+      font-size: 1.1rem;
+      vertical-align: middle;
     }
 
+    /* アチーブメントパネル */
+    #achievement-panel {
+      height: 30%;
+      margin-top: 10px;
+      background: #fff;
+      border: 1px solid #ccc;
+      border-radius: 8px;
+      box-shadow: inset 0 0 6px rgba(0,0,0,0.1);
+      padding: 10px;
+      box-sizing: border-box;
+      overflow-y: auto;
+      display: flex;
+      flex-wrap: wrap;
+      gap: 12px;
+      align-content: flex-start;
+    }
+
+    /* 釣りUI */
     #fishing-ui {
       display: none;
       text-align: center;
@@ -91,32 +148,132 @@
       transform: translateX(-50%);
       width: 90vw;
       max-width: 400px;
+      color: #222;
+      user-select: none;
     }
-
     #roulette-canvas {
       display: block;
       margin: 0 auto;
+      background: #eef;
+      border-radius: 50%;
     }
-
     #reel-button {
       margin-top: 15px;
       padding: 10px 20px;
       font-size: 1rem;
       cursor: pointer;
+      border: none;
+      border-radius: 8px;
+      background: #f1c40f;
+      color: #222;
+      font-weight: bold;
     }
-
     #fishing-result {
       margin-top: 10px;
       font-weight: bold;
       font-size: 1.2rem;
+      min-height: 30px;
     }
 
+    /* 捕まえた犬オーバーレイ */
+    #catch-overlay {
+      display: none;
+      position: fixed;
+      top: 0; left: 0;
+      width: 100vw; height: 100vh;
+      background: rgba(0,0,0,0.7);
+      backdrop-filter: blur(4px);
+      z-index: 1100;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      color: white;
+      user-select: none;
+    }
+    #caught-dog-img {
+      max-width: 200px;
+      max-height: 200px;
+      border: 4px solid white;
+      border-radius: 12px;
+      margin-bottom: 20px;
+    }
+    #caught-message {
+      font-size: 28px;
+      font-weight: bold;
+      margin-bottom: 30px;
+      text-shadow: 0 0 5px black;
+    }
+    #catch-close {
+      padding: 10px 30px;
+      font-size: 20px;
+      border: none;
+      border-radius: 10px;
+      background: #f1c40f;
+      color: #222;
+      cursor: pointer;
+      font-weight: bold;
+    }
+
+    /* 犬画像クラス */
     .dog {
       position: absolute;
       width: 70px;
       pointer-events: auto;
       cursor: pointer;
+      user-select: none;
     }
+
+    /* 犬プロフィールモーダル */
+    #dog-profile-modal {
+      display: none;
+      position: fixed;
+      top: 0; left: 0;
+      width: 100%; height: 100%;
+      background-color: rgba(0,0,0,0.5);
+      justify-content: center;
+      align-items: center;
+      z-index: 1000;
+      user-select: none;
+    }
+    #dog-profile-modal > div {
+      background: #fff;
+      width: 800px;
+      max-width: 90vw;
+      height: 600px;
+      padding: 20px;
+      position: relative;
+      display: flex;
+      flex-direction: column;
+      box-shadow: 0 0 15px rgba(0,0,0,0.3);
+      border-radius: 12px;
+    }
+    #profile-close {
+      position: absolute;
+      top: 10px;
+      right: 10px;
+      font-size: 18px;
+      background: none;
+      border: none;
+      cursor: pointer;
+      user-select: none;
+    }
+    #dog-profile-modal img {
+      width: 250px;
+      height: 250px;
+      object-fit: cover;
+      border: 1px solid #ccc;
+      border-radius: 12px;
+    }
+    #dog-profile-modal > div > div {
+      display: flex;
+      flex-direction: row;
+      align-items: flex-start;
+      gap: 20px;
+    }
+    #dog-profile-modal > div > div > div:last-child {
+      flex-grow: 1;
+    }
+
   </style>
 </head>
 <body>
@@ -127,300 +284,142 @@
   <!-- 土地 -->
   <div id="bottom-land"></div>
 
-  <!-- ボタン -->
-  <!-- 図鑑ボタン -->
-  <img id="zukan-btn" src="images/zukan_icon.png" alt="図鑑" style="cursor:pointer;" />
-
-  <!-- ショップボタン -->
-  <img id="shop-btn" src="images/shop_icon.png" alt="ショップ" style="cursor:pointer;" />
-
-  <!-- 持ち物ボタン -->
-  <img id="inventory-btn" src="images/inventory_icon.png" alt="持ち物" style="cursor:pointer;" />
-
-  <img id="achievement-btn" src="images/ach_icon.png" alt="アーチブメント" style="cursor:pointer;" />
-
+  <!-- ボタン群 -->
+  <img id="zukan-btn" src="images/zukan_icon.png" alt="図鑑" />
+  <img id="shop-btn" src="images/shop_icon.png" alt="ショップ" />
+  <img id="inventory-btn" src="images/inventory_icon.png" alt="持ち物" />
+  <img id="achievement-btn" src="images/ach_icon.png" alt="アーチブメント" />
 
   <!-- 図鑑パネル -->
-<div id="zukan-panel" class="panel" style="display: none;">
-  <h2>犬の図鑑</h2>
-  <div id="zukan-content" style="display:flex; justify-content:space-between; height: 60%;">
-    <!-- 左ページ -->
-    <div id="zukan-page-left" class="zukan-page" style="width:48%; background:#fff; border:1px solid #ccc; border-radius:8px; box-shadow: inset 0 0 6px rgba(0,0,0,0.1); padding:10px; box-sizing:border-box; display:grid; grid-template-columns:repeat(3,1fr); grid-template-rows:repeat(3,1fr); gap:12px; overflow-y:auto;"></div>
-
-    <!-- 右ページ -->
-    <div id="zukan-page-right" class="zukan-page" style="width:48%; background:#fff; border:1px solid #ccc; border-radius:8px; box-shadow: inset 0 0 6px rgba(0,0,0,0.1); padding:10px; box-sizing:border-box; display:grid; grid-template-columns:repeat(3,1fr); grid-template-rows:repeat(3,1fr); gap:12px; overflow-y:auto;"></div>
+  <div id="zukan-panel" class="panel" tabindex="0" aria-label="犬の図鑑">
+    <h2>犬の図鑑</h2>
+    <div id="zukan-content">
+      <div id="zukan-page-left" class="zukan-page"></div>
+      <div id="zukan-page-right" class="zukan-page"></div>
+    </div>
+    <div id="achievement-panel" aria-label="アチーブメント一覧"></div>
+    <div class="zukan-controls">
+      <button id="prev-page">前のページ</button>
+      <span id="page-indicator">1 / 1</span>
+      <button id="next-page">次のページ</button>
+    </div>
   </div>
 
-  <!-- アチーブメントパネル -->
-  <div id="achievement-panel" style="height: 30%; margin-top: 10px; background:#fff; border:1px solid #ccc; border-radius:8px; box-shadow: inset 0 0 6px rgba(0,0,0,0.1); padding: 10px; box-sizing: border-box; overflow-y:auto; display: flex; flex-wrap: wrap; gap: 12px; align-content: flex-start;">
-    <!-- アイコンがここに入る -->
+  <!-- ショップパネル -->
+  <div id="shop-menu" class="panel" tabindex="0" aria-label="ショップメニュー">
+    <h2>売買</h2>
+    <button id="btn-sell">犬を売る</button>
+    <button id="btn-buy">買う</button>
+    <button id="shop-menu-close" style="position:absolute; top:10px; right:10px; background:#f44336; color:#fff; border:none; border-radius:6px; padding:6px 12px; cursor:pointer;">閉じる</button>
   </div>
 
-  <div class="zukan-controls" style="margin-top:10px; text-align:center; user-select:none;">
-    <button id="prev-page" style="padding:6px 12px; margin:0 8px; font-size:1rem; border-radius:6px; border:1.5px solid #666; background-color:white; cursor:pointer; transition:background-color 0.3s ease;">前のページ</button>
-    <span id="page-indicator" style="font-weight:bold; font-size:1.1rem; vertical-align:middle;">1 / 1</span>
-    <button id="next-page" style="padding:6px 12px; margin:0 8px; font-size:1rem; border-radius:6px; border:1.5px solid #666; background-color:white; cursor:pointer; transition:background-color 0.3s ease;">次のページ</button>
+  <!-- 犬を売るパネル -->
+  <div id="shop-sell-panel" class="panel" tabindex="0" aria-label="犬を売るパネル">
+    <button id="sell-close" style="position:absolute; top:10px; right:10px; background:#f44336; color:#fff; border:none; border-radius:6px; padding:6px 12px; cursor:pointer;">閉じる</button>
+    <h2>犬を売る</h2>
+    <div id="sell-dogs-list" style="max-height: 280px; overflow-y: auto; border: 1px solid #ccc; border-radius: 6px; background: #fff; padding: 5px;"></div>
+    <div id="sell-dog-detail" style="margin-top: 12px; border: 1px solid #ccc; padding: 12px; border-radius: 8px; background: #fafafa; display:none;">
+      <img id="sell-dog-image" src="" alt="犬画像" style="width: 100px; height: 100px; object-fit: contain; border-radius: 10px; border: 1px solid #aaa; display: block; margin-bottom: 12px;" />
+      <h3 id="sell-dog-name"></h3>
+      <p>売値: <span id="sell-dog-price"></span> ジンバブエドル</p>
+      <p>所持数: <span id="sell-dog-owned-count"></span></p>
+      <div id="sell-count-control" style="display:flex; align-items:center; justify-content:center; margin-top: 10px; gap: 8px;">
+        <button id="count-decrease" style="background-color: #2196F3; border: none; color: white; font-weight: bold; font-size: 20px; width: 32px; height: 32px; border-radius: 6px; cursor: pointer; user-select:none; line-height: 28px; text-align:center; padding: 0;">−</button>
+        <input type="number" id="detail-sell-count" value="1" min="1" max="1" style="width: 60px; text-align: center; font-size: 18px; border: 1px solid #ccc; border-radius: 6px; padding: 2px 8px;" />
+        <button id="count-increase" style="background-color: #2196F3; border: none; color: white; font-weight: bold; font-size: 20px; width: 32px; height: 32px; border-radius: 6px; cursor: pointer; user-select:none; line-height: 28px; text-align:center; padding: 0;">＋</button>
+        <button id="detail-sell-btn" style="margin-left: 12px; background-color: #4caf50; border: none; color: white; padding: 8px 16px; font-size: 16px; border-radius: 6px; cursor: pointer; user-select:none; transition: background-color 0.3s ease;">売る</button>
+      </div>
+    </div>
   </div>
-</div>
 
-<!-- ショップパネル -->
-<div id="shop-menu" class="panel" style="display:none;">
-  <h2>売買</h2>
-  <button id="btn-sell" style="margin: 10px; padding: 10px 20px; font-size: 1.2rem;">犬を売る</button>
-  <button id="btn-buy" style="margin: 10px; padding: 10px 20px; font-size: 1.2rem;">買う</button>
-  <button id="shop-menu-close" style="position:absolute; top:10px; right:10px; background:#f44336; color:#fff; border:none; border-radius:6px; padding:6px 12px; cursor:pointer;">閉じる</button>
-</div>
+  <!-- 犬を買うパネル -->
+  <div id="shop-buy-panel" class="panel" tabindex="0" aria-label="犬を買うパネル">
+    <button id="buy-close" style="position:absolute; top:10px; right:10px; background:#f44336; color:#fff; border:none; border-radius:6px; padding:6px 12px; cursor:pointer;">閉じる</button>
+    <h2>買う</h2>
+    <div id="buy-dogs-list" style="max-height: 300px; overflow-y: auto;"></div>
+    <hr>
+    <div id="buy-dog-detail" style="margin-top: 10px; border: 1px solid #ccc; padding: 10px; display:none;"></div>
+  </div>
 
-<!-- 犬を売るパネル -->
-<div id="shop-sell-panel" class="panel" style="display:none;">
-  <button id="sell-close" style="position:absolute; top:10px; right:10px; background:#f44336; color:#fff; border:none; border-radius:6px; padding:6px 12px; cursor:pointer;">閉じる</button>
-  <h2>犬を売る</h2>
-  <div id="sell-dogs-list" style="max-height: 280px; overflow-y: auto; border: 1px solid #ccc; border-radius: 6px; background: #fff; padding: 5px;"></div>
-
-  <!-- 売るUI -->
-  <div id="sell-ui" style="display:none; position: fixed; bottom: 20px; left: 20px; background: white; border: 1px solid #ccc; padding: 12px; border-radius: 8px; box-shadow: 0 0 8px rgba(0,0,0,0.2); z-index: 1000;">
-  <img id="sell-ui-dog-image" src="" alt="犬画像" style="width: 80px; height: 80px; object-fit: contain; vertical-align: middle; margin-right: 12px;">
-  <span id="sell-ui-dog-name" style="font-weight: bold; font-size: 18px; vertical-align: middle;"></span>
-  <br>
-  <label>
-    数:
-    <input type="number" id="sell-ui-count" value="1" min="1" style="width: 60px; text-align: center;">
-    <span style="margin-left:8px; font-size:14px; color:#555;">（所持数: <span id="sell-ui-owned-count">0</span>）</span>
-  </label>
-  <button id="sell-ui-sell-btn" style="margin-left: 12px; background-color: #4caf50; color: white; padding: 6px 12px; border: none; border-radius: 6px; cursor: pointer;">売る</button>
-  <button id="sell-ui-close-btn" style="margin-left: 8px; background-color: #f44336; color: white; padding: 6px 12px; border: none; border-radius: 6px; cursor: pointer;">閉じる</button>
-</div>
-
-<!-- 犬を買うパネル -->
-<div id="shop-buy-panel" class="panel" style="display:none;">
-  <button id="buy-close" style="position:absolute; top:10px; right:10px; background:#f44336; color:#fff; border:none; border-radius:6px; padding:6px 12px; cursor:pointer;">閉じる</button>
-  <h2>買う</h2>
-  <div id="buy-dogs-list" style="max-height: 300px; overflow-y: auto;"></div>
-  <hr>
-  <div id="buy-dog-detail" style="margin-top: 10px; border: 1px solid #ccc; padding: 10px; display:none;"></div>
-</div>
-  
- <button id="shop-back-button" style="
-  position: fixed;
-  bottom: 20px;
-  left: 20px;
-  padding: 10px 16px;
-  font-size: 1rem;
-  background-color: #2196F3;
-  color: white;
-  border: none;
-  border-radius: 8px;
-  cursor: pointer;
-  display: none; /* 初期は非表示 */
-  z-index: 1000;
-">戻る</button>
+  <button id="shop-back-button" style="
+    position: fixed;
+    bottom: 20px;
+    left: 20px;
+    padding: 10px 16px;
+    font-size: 1rem;
+    background-color: #2196F3;
+    color: white;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    display: none;
+    z-index: 1000;
+  ">戻る</button>
 
   <!-- 犬詳細パネル -->
-<div id="dog-detail-panel" class="slide-panel">
-  <div id="dog-detail-overlay" class="dog-detail-overlay">
-    <button id="detail-back" class="back-btn">← 戻る</button>
-    <div id="dog-detail-content"></div>
+  <div id="dog-detail-panel" class="slide-panel" style="display:none;">
+    <div id="dog-detail-overlay" class="dog-detail-overlay">
+      <button id="detail-back" class="back-btn">← 戻る</button>
+      <div id="dog-detail-content"></div>
+    </div>
   </div>
-</div>
- 
-    <!-- 持ち物パネル -->
-  <div id="inventory-panel" class="panel" style="display: none;">
+
+  <!-- 持ち物パネル -->
+  <div id="inventory-panel" class="panel" tabindex="0" aria-label="持ち物パネル">
     <h2>持ち物</h2>
     <p>ここに持ち物の内容が入ります。</p>
   </div>
 
-  <!-- 図鑑パネル内に付け足す犬プロフィール表示用div -->
-  <div id="zukan-profile" style="display:none; position: absolute; top: 10px; left: 10px; 
-    right: 10px; bottom: 10px; background: #fff; border-radius: 12px; box-shadow: 0 0 15px rgba(0,0,0,0.3); 
-    padding: 20px; box-sizing: border-box; z-index: 100; overflow-y: auto;">
-
-    <button id="profile-close-btn" style="position: absolute; top: 15px; right: 15px; 
-      background: #f44336; border: none; color: white; font-size: 20px; border-radius: 6px; 
-      cursor: pointer; padding: 5px 12px;" onclick="closeProfile()">✕</button>
-
+  <!-- 図鑑プロフィール用 -->
+  <div id="zukan-profile" style="display:none; position: absolute; top: 10px; left: 10px; right: 10px; bottom: 10px;
+    background: #fff; border-radius: 12px; box-shadow: 0 0 15px rgba(0,0,0,0.3); padding: 20px; box-sizing: border-box; z-index: 100; overflow-y: auto;">
+    <button id="profile-close-btn" style="position: absolute; top: 15px; right: 15px; background: #f44336; border: none; color: white; font-size: 20px; border-radius: 6px; cursor: pointer; padding: 5px 12px;">✕</button>
     <div class="profile-header" style="display: flex; align-items: flex-start; margin-bottom: 20px;">
-      <img id="profile-img" src="" alt="犬画像" style="width: 120px; height: 120px; border-radius: 12px; 
-        border: 3px solid gray; object-fit: cover;" />
-      <div class="profile-info" style="margin-left: 20px; flex-grow: 1;">
-        <div class="profile-number-name" style="font-size: 22px; font-weight: bold; color: #333; margin-bottom: 8px;">
-          <span id="profile-number" style="margin-right: 10px; color: #666;">#001</span>
-          <span id="profile-name" style="color: #222;">ポチ</span>
-        </div>
+      <img id="profile-img" src="" alt="犬画像" style="width: 120px; height: 120px; border-radius: 12px; border: 3px solid gray; object-fit: cover;" />
+      <div class="profile-info" style="margin-left: 16px; flex-grow: 1;">
+        <h3 id="profile-name" style="margin: 0 0 8px 0; font-size: 24px; color: #333;"></h3>
+        <p id="profile-rarity" style="margin: 4px 0; font-weight: bold; color: #555;"></p>
+        <p id="profile-description" style="margin: 8px 0; color: #444; line-height: 1.4;"></p>
       </div>
     </div>
+    <!-- 追加のプロフィール情報などここに入る -->
+  </div>
 
-    <div class="profile-details" style="display: flex; flex-direction: column; gap: 12px;">
-      <div class="detail-item" style="display: flex; align-items: center;">
-        <span class="detail-label" style="font-weight: bold; margin-right: 8px; min-width: 60px;">レアリティ:</span>
-        <span id="profile-rarity" class="rarity common" style="font-weight: bold; padding: 4px 12px; border-radius: 12px; color: white; font-size: 14px; display: inline-block; background-color: gray;">Common</span>
-      </div>
-      <div class="detail-item" style="display: flex; align-items: center;">
-        <span class="detail-label" style="font-weight: bold; margin-right: 8px; min-width: 60px;">売値:</span>
-        <span id="profile-price" style="font-size: 16px; color: #444;">1000</span>
-      </div>
-      <div class="detail-item desc-item" style="display: flex; flex-direction: column;">
-        <span class="detail-label" style="font-weight: bold; margin-bottom: 6px;">説明:</span>
-        <p id="profile-desc" style="margin: 0; color: #555; line-height: 1.4;">ここに詳細説明文が入ります。</p>
-      </div>
-    </div>
+  <!-- 釣りUI -->
+  <div id="fishing-ui" role="dialog" aria-modal="true" aria-labelledby="fishing-title">
+    <h2 id="fishing-title">釣りミニゲーム</h2>
+    <canvas id="roulette-canvas" width="300" height="300" aria-label="ルーレット"></canvas>
+    <button id="reel-button">リールを巻く</button>
+    <div id="fishing-result" aria-live="polite"></div>
+  </div>
+
+  <!-- 捕まえた犬オーバーレイ -->
+  <div id="catch-overlay" class="overlay" role="alertdialog" aria-modal="true" aria-labelledby="caught-message">
+    <img id="caught-dog-img" src="" alt="捕まえた犬の画像" />
+    <div id="caught-message">○○をつかまえた！</div>
+    <button id="catch-close">閉じる</button>
   </div>
 
   <!-- 犬プロフィールモーダル -->
-<div id="dog-profile-modal" style="
-  display: none; 
-  position: fixed; 
-  top: 0; left: 0; 
-  width: 100%; height: 100%; 
-  background-color: rgba(0,0,0,0.5); 
-  justify-content: center; 
-  align-items: center; 
-  z-index: 1000;
-">
-
-  <div style="
-    background: #fff; 
-    width: 800px; 
-    height: 600px; 
-    padding: 20px; 
-    position: relative; 
-    display: flex; 
-    flex-direction: column; 
-    box-shadow: 0 0 15px rgba(0,0,0,0.3);
-  ">
-
-    <!-- 閉じるボタン -->
-    <button id="profile-close" style="
-      position: absolute; 
-      top: 10px; 
-      right: 10px; 
-      font-size: 18px; 
-      background: none; 
-      border: none; 
-      cursor: pointer;
-    ">✖</button>
-
-    <!-- 上部：画像と名前 -->
-    <div style="
-      display: flex; 
-      flex-direction: row; 
-      align-items: flex-start;
-      gap: 20px;
-    ">
-      <!-- 犬画像 -->
-      <img id="profile-image-modal" src="" alt="犬の画像" style="
-        width: 250px; 
-        height: 250px; 
-        object-fit: cover; 
-        border: 1px solid #ccc;
-      ">
-
-      <!-- 犬の詳細テキスト -->
-      <div>
-        <h2 id="profile-name-modal">名前不明</h2>
-        <p id="profile-rarity-modal">レアリティ: 不明</p>
-        <p id="profile-price-modal">売値: 0 円</p>
-        <p id="profile-description-modal">説明なし</p>
+  <div id="dog-profile-modal" class="overlay" role="dialog" aria-modal="true" aria-labelledby="dog-profile-name" tabindex="0">
+    <div>
+      <button id="profile-close" aria-label="プロフィールを閉じる">✕</button>
+      <div style="display: flex; gap: 24px; flex-wrap: wrap;">
+        <img id="dog-profile-img" src="" alt="犬の画像" />
+        <div>
+          <h2 id="dog-profile-name"></h2>
+          <p id="dog-profile-description"></p>
+          <!-- 必要に応じて詳細データ表示 -->
+        </div>
       </div>
     </div>
   </div>
-</div>
-  
-<!-- 釣りUI -->
-<div id="fishing-ui" style="display:none; position: fixed; top:50%; left:50%; transform: translate(-50%, -50%);
-  background: #222; padding: 20px; border-radius: 12px; box-shadow: 0 0 10px rgba(0,0,0,0.7);
-  z-index: 1000; width: 340px; text-align: center; color: #fff;">
 
-  <canvas id="roulette-canvas" width="300" height="300"
-    style="background: #eef; border-radius: 50%; display: block; margin: 0 auto 15px;"></canvas>
+  <!-- BGM & 効果音 -->
+  <audio id="bgm" src="music/TC_25.mp3" loop preload="auto"></audio>
+  <audio id="sfx-catch" src="sfx/catch.mp3" preload="auto"></audio>
+  <audio id="sfx-close" src="Sounds/pah.mp3" preload="auto"></audio>
 
-  <div id="fishing-result" style="font-size: 24px; height: 30px; margin-bottom: 15px;"></div>
-
-  <button id="reel-button" style="padding: 10px 20px; font-size: 18px; cursor: pointer; border: none;
-    border-radius: 8px; background: #f1c40f; color: #222; font-weight: bold;">
-    止める
-  </button>
-</div>
-  
-<!-- 釣れた犬キャッチオーバーレイ -->
-<div id="catch-overlay" style="display:none; position: fixed; top:0; left:0; width:100vw; height:100vh;
-  background: rgba(0,0,0,0.7); backdrop-filter: blur(4px); z-index: 1100;
-  flex-direction: column; justify-content: center; align-items: center; color: white;">
-
-  <img id="caught-dog-img" src="" alt="捕まえた犬" style="max-width: 200px; max-height: 200px; border: 4px solid white; border-radius: 12px; margin-bottom: 20px;"/>
-
-  <div id="caught-message" style="font-size: 28px; font-weight: bold; margin-bottom: 30px; text-shadow: 0 0 5px black;"></div>
-
-  <button id="catch-close" style="padding: 10px 30px; font-size: 20px; border: none; border-radius: 10px;
-    background: #f1c40f; color: #222; cursor: pointer; font-weight: bold;">
-    閉じる
-  </button>
-</div>
-
-  <!-- BGM（ループ再生） -->
-<audio id="bgm" src="Sounds/bata.wav" loop></audio>
-<audio id="sfx-open" src="Sounds/open.mp3"></audio>
-<audio id="sfx-close" src="Sounds/close.mp3"></audio> 
-<audio id="sfx-roulette-loop" src="Sounds/guru.mp3" preload="auto" loop></audio>
-<audio id="sfx-stop-click" src="Sounds/pah.mp3" preload="auto"></audio>
-<audio id="sfx-wheel-stop" src="Sounds/whes.mp3" preload="auto"></audio>
-<audio id="sfx-hit" src="Sounds/hit.mp3" preload="auto"></audio>
-<audio id="sfx-miss" src="Sounds/miss.mp3" preload="auto"></audio> 
-<audio id="sfx-catch" src="Sounds/catch.mp3"></audio>
-<!-- JavaScriptファイルは依存関係があるなら順番通りに -->
-
-<script src="co.js"></script>  
-<script src="dog.js"></script>       <!-- 犬の生成・動き関係 -->
-<script src="fishing.js"></script>   <!-- 釣りUI・ルーレット関係 -->
-<script src="Zukan.js"></script>     <!-- 図鑑機能 -->
-<script src="shop.js"></script>  
-<script src="ach.js"></script>    <!-- ショップ機能 -->
-<script src="inv.js"></script>       <!-- 持ち物機能 -->
-<script src="script.js"></script>    <!-- メイン制御、共通処理 -->
-<!-- JavaScriptファイルは依存関係があるなら順番通りに -->
-
+  <script src="script.js"></script>
 </body>
 </html>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
