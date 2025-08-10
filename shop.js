@@ -63,7 +63,7 @@ function renderSellDogsList() {
 
   if (window.caughtDogsInventory.length === 0) {
     listDiv.textContent = '所持している犬はいません。';
-    hideSellDogDetail();
+    hideSellUI();
     return;
   }
 
@@ -109,66 +109,56 @@ function renderSellDogsList() {
     itemDiv.appendChild(nameDiv);
     itemDiv.appendChild(priceDiv);
 
-    // クリックで売る詳細表示を更新して表示
+    // クリックで売るUIを表示
     itemDiv.addEventListener('click', () => {
-      showSellDogDetail(dog, count);
+      showSellUI(dog, count);
     });
 
     listDiv.appendChild(itemDiv);
   });
 }
 
-// 売る詳細表示を非表示にする関数
-function hideSellDogDetail() {
-  const detailDiv = document.getElementById('sell-dog-detail');
-  if (detailDiv) detailDiv.style.display = 'none';
+// 簡易売るUIを非表示にする
+function hideSellUI() {
+  const sellUI = document.getElementById('sell-ui');
+  if (sellUI) sellUI.style.display = 'none';
 }
 
-// 売るパネル内の詳細表示を更新・表示する関数
-function showSellDogDetail(dog, ownedCount) {
-  const detailDiv = document.getElementById('sell-dog-detail');
-  if (!detailDiv) return;
+// 簡易売るUIを表示・初期化する
+function showSellUI(dog, ownedCount) {
+  const sellUI = document.getElementById('sell-ui');
+  if (!sellUI) return;
 
-  // 表示
-  detailDiv.style.display = 'block';
+  sellUI.style.display = 'block';
 
-  // 画像・名前・価格・所持数表示を更新
-  document.getElementById('sell-dog-image').src = dog.image || '';
-  document.getElementById('sell-dog-name').textContent = dog.name;
-  document.getElementById('sell-dog-price').textContent = dog.price || 100;
-  document.getElementById('sell-dog-owned-count').textContent = ownedCount;
+  // 犬画像・名前セット
+  document.getElementById('sell-ui-dog-image').src = dog.image || '';
+  document.getElementById('sell-ui-dog-name').textContent = dog.name;
 
-  // 数値入力の初期化・最大値設定
-  const input = document.getElementById('detail-sell-count');
-  input.value = 1;
-  input.max = ownedCount;
+  // 数入力初期化とmax設定
+  const countInput = document.getElementById('sell-ui-count');
+  countInput.value = 1;
+  countInput.min = 1;
+  countInput.max = ownedCount;
 
-  // ボタンのイベントは重複登録を避けるため、一度イベントを解除してから登録する
-  const decreaseBtn = document.getElementById('count-decrease');
-  const increaseBtn = document.getElementById('count-increase');
-  const sellBtn = document.getElementById('detail-sell-btn');
-
-  // 既存のイベントを解除
-  decreaseBtn.onclick = null;
-  increaseBtn.onclick = null;
+  // 売るボタンイベント登録（重複登録防止のため一旦解除）
+  const sellBtn = document.getElementById('sell-ui-sell-btn');
   sellBtn.onclick = null;
-
-  decreaseBtn.onclick = () => {
-    let val = Number(input.value);
-    if (val > 1) input.value = val - 1;
-  };
-  increaseBtn.onclick = () => {
-    let val = Number(input.value);
-    if (val < ownedCount) input.value = val + 1;
-  };
   sellBtn.onclick = () => {
-    const sellCount = Number(input.value);
+    let sellCount = Number(countInput.value);
     if (isNaN(sellCount) || sellCount < 1 || sellCount > ownedCount) {
       alert(`売る数は1以上${ownedCount}以下で指定してください。`);
       return;
     }
     sellDog(String(dog.number), sellCount);
-    detailDiv.style.display = 'none';  // 売ったら詳細非表示にする
+    hideSellUI();
+  };
+
+  // 閉じるボタンイベント登録
+  const closeBtn = document.getElementById('sell-ui-close-btn');
+  closeBtn.onclick = null;
+  closeBtn.onclick = () => {
+    hideSellUI();
   };
 }
 
@@ -220,6 +210,7 @@ window.addEventListener('load', () => {
     shopBuyPanel.style.display = 'none';
     showBackButton();
     renderSellDogsList();
+    hideSellUI(); // 売るUI非表示で開始
   });
 
   document.getElementById('btn-buy').addEventListener('click', () => {
@@ -232,7 +223,7 @@ window.addEventListener('load', () => {
   sellClose.addEventListener('click', () => {
     shopSellPanel.style.display = 'none';
     shopBackButton.style.display = 'none';
-    hideSellDogDetail();
+    hideSellUI();
     if (sfxClose) { sfxClose.currentTime = 0; sfxClose.play().catch(() => {}); }
   });
 
