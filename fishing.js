@@ -29,6 +29,7 @@ function registerDog(dogId) {
   dogId = String(dogId);
   if (!window.registeredDogs.includes(dogId)) {
     window.registeredDogs.push(dogId);
+    console.log(`図鑑に犬ID ${dogId} を登録しました`);
   }
 }
 
@@ -290,3 +291,9 @@ document.getElementById('catch-close').addEventListener('click', () => {
 // リールボタンクリック
 reelButton.addEventListener('click', () => {
   if (!isFishing) return;
+  startSpin();
+  if (sfxStopClick) {
+    sfxStopClick.currentTime = 0;
+    sfxStopClick.play();
+  }
+});
