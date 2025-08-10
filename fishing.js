@@ -96,14 +96,14 @@ function update() {
       reelButton.disabled = false;
 
       // 効果音停止
-      if (sfxRouletteLoop) sfxRouletteLoop.pause();
+    if (sfxRouletteLoop) sfxRouletteLoop.pause();
 
-      if (sfxStopClick) {
-        sfxStopClick.currentTime = 0;
-        sfxStopClick.play();
-      }
+if (sfxWheelStop) {
+  sfxWheelStop.currentTime = 0;
+  sfxWheelStop.play();
+}
 
-      checkResult();
+checkResult();
     }
   }
   needleAngle %= (2 * Math.PI);
