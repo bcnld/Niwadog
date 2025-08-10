@@ -137,7 +137,8 @@
   <!-- 持ち物ボタン -->
   <img id="inventory-btn" src="images/inventory_icon.png" alt="持ち物" style="cursor:pointer;" />
 
-  <img id="achievement-btn" src="images/ach_icon.png" alt="アーチブメント" />
+  <img id="achievement-btn" src="images/ach_icon.png" alt="アーチブメント" style="cursor:pointer;" />
+
 
   <!-- 図鑑パネル -->
 <div id="zukan-panel" class="panel" style="display: none;">
@@ -174,9 +175,21 @@
 <div id="shop-sell-panel" class="panel" style="display:none;">
   <button id="sell-close" style="position:absolute; top:10px; right:10px; background:#f44336; color:#fff; border:none; border-radius:6px; padding:6px 12px; cursor:pointer;">閉じる</button>
   <h2>犬を売る</h2>
-  <div id="sell-dogs-list" style="max-height: 300px; overflow-y: auto;"></div>
-  <hr>
-  <div id="sell-dog-detail" style="margin-top: 10px; border: 1px solid #ccc; padding: 10px; display:none;"></div>
+  <div id="sell-dogs-list" style="max-height: 280px; overflow-y: auto; border: 1px solid #ccc; border-radius: 6px; background: #fff; padding: 5px;"></div>
+
+  <div id="sell-dog-detail" style="margin-top: 12px; border: 1px solid #ccc; padding: 12px; border-radius: 8px; background: #fafafa; display:none;">
+    <img src="" alt="犬画像" id="sell-dog-image" style="width: 100px; height: 100px; object-fit: contain; border-radius: 10px; border: 1px solid #aaa; display: block; margin-bottom: 12px;" />
+    <h3 id="sell-dog-name"></h3>
+    <p>売値: <span id="sell-dog-price"></span> ジンバブエドル</p>
+    <p>所持数: <span id="sell-dog-owned-count"></span></p>
+
+    <div id="sell-count-control" style="display:flex; align-items:center; justify-content:center; margin-top: 10px; gap: 8px;">
+      <button id="count-decrease" style="background-color: #2196F3; border: none; color: white; font-weight: bold; font-size: 20px; width: 32px; height: 32px; border-radius: 6px; cursor: pointer; user-select:none; line-height: 28px; text-align:center; padding: 0;">−</button>
+      <input type="number" id="detail-sell-count" value="1" min="1" max="1" style="width: 60px; text-align: center; font-size: 18px; border: 1px solid #ccc; border-radius: 6px; padding: 2px 8px;" />
+      <button id="count-increase" style="background-color: #2196F3; border: none; color: white; font-weight: bold; font-size: 20px; width: 32px; height: 32px; border-radius: 6px; cursor: pointer; user-select:none; line-height: 28px; text-align:center; padding: 0;">＋</button>
+      <button id="detail-sell-btn" style="margin-left: 12px; background-color: #4caf50; border: none; color: white; padding: 8px 16px; font-size: 16px; border-radius: 6px; cursor: pointer; user-select:none; transition: background-color 0.3s ease;">売る</button>
+    </div>
+  </div>
 </div>
 
 <!-- 犬を買うパネル -->
@@ -367,6 +380,7 @@
 
 </body>
 </html>
+
 
 
 
