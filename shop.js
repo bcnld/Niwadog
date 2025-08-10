@@ -119,40 +119,40 @@ function renderSellDogsList() {
 
 // 詳細パネルを上からスライドイン表示
 function showDogDetailOverlay(dog, ownedCount) {
-  const overlay = document.getElementById('dog-detail-overlay');
-  overlay.innerHTML = `
-    <div class="dog-detail-content">
-      <button class="detail-close-btn">×</button>
-      <img src="${dog.image || ''}" class="detail-image">
-      <h2>${dog.name}</h2>
-      <p><strong>レアリティ:</strong> ${dog.rarity}</p>
-      <p><strong>売値:</strong> ${dog.price || 100} ジンバブエドル</p>
-      <p><strong>説明:</strong> ${dog.description || ''}</p>
-      <p><strong>所持数:</strong> ${ownedCount}</p>
-      <div style="margin-top:10px;">
-        <input type="number" id="detail-sell-count" min="1" max="${ownedCount}" value="1" style="width:60px;">
-        <button id="detail-sell-btn">売る</button>
-      </div>
+  const panel = document.getElementById('dog-detail-panel');
+  const content = document.getElementById('dog-detail-content');
+
+  content.innerHTML = `
+    <button id="detail-close-btn" style="position:absolute; top:10px; right:10px; background:#f44336; color:#fff; border:none; border-radius:6px; padding:6px 12px; cursor:pointer;">×</button>
+    <img src="${dog.image || ''}" style="max-width:100%; height:auto; border-radius:8px; margin-bottom:10px;">
+    <h2>${dog.name}</h2>
+    <p><strong>レアリティ:</strong> ${dog.rarity}</p>
+    <p><strong>売値:</strong> ${dog.price || 100} ジンバブエドル</p>
+    <p><strong>説明:</strong> ${dog.description || ''}</p>
+    <p><strong>所持数:</strong> ${ownedCount}</p>
+    <div style="margin-top:10px;">
+      <input type="number" id="detail-sell-count" min="1" max="${ownedCount}" value="1" style="width:60px;">
+      <button id="detail-sell-btn">売る</button>
     </div>
   `;
 
-  // 閉じる処理
-  overlay.querySelector('.detail-close-btn').addEventListener('click', () => {
-    overlay.classList.remove('active');
+  panel.classList.add('show');
+
+  // 閉じるボタンイベント
+  document.getElementById('detail-close-btn').addEventListener('click', () => {
+    panel.classList.remove('show');
   });
 
-  // 売る処理
-  overlay.querySelector('#detail-sell-btn').addEventListener('click', () => {
+  // 売るボタンイベント
+  document.getElementById('detail-sell-btn').addEventListener('click', () => {
     const sellCount = Number(document.getElementById('detail-sell-count').value);
     if (isNaN(sellCount) || sellCount < 1 || sellCount > ownedCount) {
       alert(`売る数は1以上${ownedCount}以下で指定してください。`);
       return;
     }
     sellDog(String(dog.number), sellCount);
-    overlay.classList.remove('active');
+    panel.classList.remove('show');
   });
-
-  overlay.classList.add('active');
 }
 
 // ショップUI制御
