@@ -49,7 +49,7 @@ function sellDog(dogId, count) {
     }
   }
 
-  alert(`${dog.name}を${count}個、合計${totalPrice}ジンバブエドルで売却しました。現在の所持金は${window.playerMoney}ジンバブエドルです。`);
+  alert(`${dog.name}を${count}匹、合計${totalPrice}ジンバブエドルで売却しました。現在の所持金は${window.playerMoney}ジンバブエドルです。`);
 
   renderSellDogsList();
 }
