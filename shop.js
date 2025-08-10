@@ -19,6 +19,7 @@ window.playerMoney = 0;
 // 犬を所持リストに追加（釣り成功時にfishing.jsなどから呼ぶ想定）
 function addCaughtDog(dogId) {
   window.caughtDogsInventory.push(dogId);
+  saveGameData();
 }
 
 // 犬を売る処理（個数指定対応）
@@ -49,12 +50,28 @@ function sellDog(dogId, count) {
     }
   }
 
-  alert(`${dog.name}を${count}匹、合計${totalPrice}ジンバブエドルで売却しました。現在の所持金は${window.playerMoney}ジンバブエドルです。`);
+  saveGameData();
+
+  // メッセージはalertではなく、画面上UIで出すならここで処理を追加してください
 
   renderSellDogsList();
 }
 
-// 売るパネルの犬リストを表示（スマホ対応、画像＋名前＋売値）
+// セーブ（localStorage）
+function saveGameData() {
+  localStorage.setItem('caughtDogsInventory', JSON.stringify(window.caughtDogsInventory));
+  localStorage.setItem('playerMoney', String(window.playerMoney));
+}
+
+// ロード（localStorage）
+function loadGameData() {
+  const savedDogs = localStorage.getItem('caughtDogsInventory');
+  const savedMoney = localStorage.getItem('playerMoney');
+  if (savedDogs) window.caughtDogsInventory = JSON.parse(savedDogs);
+  if (savedMoney) window.playerMoney = Number(savedMoney);
+}
+
+// 売るパネルの犬リストを表示（画像＋名前＋売値）
 function renderSellDogsList() {
   const listDiv = document.getElementById('sell-dogs-list');
   if (!listDiv) return;
@@ -118,32 +135,32 @@ function renderSellDogsList() {
   });
 }
 
-// 簡易売るUIを非表示にする
+// 売るUIを非表示にする関数
 function hideSellUI() {
   const sellUI = document.getElementById('sell-ui');
   if (sellUI) sellUI.style.display = 'none';
 }
 
-// 簡易売るUIを表示・初期化する
+// 売るUIを表示・更新する関数
 function showSellUI(dog, ownedCount) {
   const sellUI = document.getElementById('sell-ui');
   if (!sellUI) return;
 
   sellUI.style.display = 'block';
 
-  // 犬画像・名前セット
   document.getElementById('sell-ui-dog-image').src = dog.image || '';
   document.getElementById('sell-ui-dog-name').textContent = dog.name;
 
-  // 数入力初期化とmax設定
   const countInput = document.getElementById('sell-ui-count');
   countInput.value = 1;
   countInput.min = 1;
   countInput.max = ownedCount;
 
-  // 売るボタンイベント登録（重複登録防止のため一旦解除）
+  // 所持数表示更新
+  document.getElementById('sell-ui-owned-count').textContent = ownedCount;
+
+  // 売るボタンイベント
   const sellBtn = document.getElementById('sell-ui-sell-btn');
-  sellBtn.onclick = null;
   sellBtn.onclick = () => {
     let sellCount = Number(countInput.value);
     if (isNaN(sellCount) || sellCount < 1 || sellCount > ownedCount) {
@@ -151,19 +168,20 @@ function showSellUI(dog, ownedCount) {
       return;
     }
     sellDog(String(dog.number), sellCount);
-    hideSellUI();
+    sellUI.style.display = 'none';
   };
 
-  // 閉じるボタンイベント登録
+  // 閉じるボタンイベント
   const closeBtn = document.getElementById('sell-ui-close-btn');
-  closeBtn.onclick = null;
   closeBtn.onclick = () => {
-    hideSellUI();
+    sellUI.style.display = 'none';
   };
 }
 
 // ショップUI制御
 window.addEventListener('load', () => {
+  loadGameData();
+
   const shopBtn = document.getElementById('shop-btn');
   const shopMenu = document.getElementById('shop-menu');
   const shopSellPanel = document.getElementById('shop-sell-panel');
@@ -210,7 +228,7 @@ window.addEventListener('load', () => {
     shopBuyPanel.style.display = 'none';
     showBackButton();
     renderSellDogsList();
-    hideSellUI(); // 売るUI非表示で開始
+    hideSellUI();
   });
 
   document.getElementById('btn-buy').addEventListener('click', () => {
