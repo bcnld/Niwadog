@@ -102,10 +102,10 @@
 <body>
 
   <!-- 最初の質問モーダル -->
-  <div id="question-overlay" class="overlay active" role="dialog" aria-modal="true" aria-labelledby="question-text">
-    <div id="question-text" style="font-size: 28px;">あなたは日本人ですか？</div>
-    <button id="question-yes-btn">はい</button>
-  </div>
+  <div id="question-overlay" class="overlay active" role="dialog" aria-modal="true" aria-labelledby="question-text" style="position:fixed;top:0;left:0;width:100vw;height:100vh;background:rgba(0,0,0,0.85);display:flex;justify-content:center;align-items:center;flex-direction:column;z-index:9999;">
+  <div id="question-text" style="font-size:28px;color:white;">あなたは日本人ですか？</div>
+  <button id="question-yes-btn" style="margin-top:20px;padding:12px 40px;font-size:22px;font-weight:bold;border-radius:8px;border:none;cursor:pointer;background-color:#2196F3;color:white;">はい</button>
+</div>
 
   <!-- 企業名表示 -->
   <div id="company-display" aria-live="polite" aria-atomic="true">
@@ -126,3 +126,4 @@
   <script src="title.js"></script>
 </body>
 </html>
+
