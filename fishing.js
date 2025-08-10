@@ -10,16 +10,25 @@ fetch("dog.json")
     console.error("犬データの読み込みに失敗:", err);
   });
 
-// 所持している釣った犬IDのリスト
+// 所持している釣った犬IDのリスト（重複あり）
 window.caughtDogsInventory = [];
+
+// 図鑑登録済み犬IDリスト（重複なし）
+window.registeredDogs = [];
 
 // プレイヤーの所持金（釣りとは別に管理。必要に応じてshop.js等で操作）
 window.playerMoney = 0;
 
 // 犬を所持リストに追加（釣り成功時に呼ばれる）
 function addCaughtDog(dogId) {
-  if (!window.caughtDogsInventory.includes(dogId)) {
-    window.caughtDogsInventory.push(dogId);
+  window.caughtDogsInventory.push(dogId);
+}
+
+// 犬を図鑑に登録（重複チェックあり）
+function registerDog(dogId) {
+  dogId = String(dogId);
+  if (!window.registeredDogs.includes(dogId)) {
+    window.registeredDogs.push(dogId);
   }
 }
 
@@ -177,15 +186,20 @@ function checkResult() {
     fishingResult.textContent = "ヒット！";
     if (sfxHit) { sfxHit.currentTime = 0; sfxHit.play(); }
 
-    // ここで釣った犬を所持リストに追加
-    if (typeof addCaughtDog === 'function') {
-      addCaughtDog(selectedDogId);
-    }
+    // 釣った犬を所持リストと図鑑に登録
+    addCaughtDog(selectedDogId);
+    registerDog(selectedDogId);
 
     setTimeout(() => {
       fishingResult.textContent = "";
       removeCaughtDog();
       showCatchOverlay(selectedDogId);
+
+      // 図鑑があれば再描画（存在チェック）
+      if (typeof renderZukanList === "function") {
+        renderZukanList();
+      }
+
       isFishing = false;
     }, 1000);
 
@@ -276,9 +290,3 @@ document.getElementById('catch-close').addEventListener('click', () => {
 // リールボタンクリック
 reelButton.addEventListener('click', () => {
   if (!isFishing) return;
-  startSpin();
-  if (sfxStopClick) {
-    sfxStopClick.currentTime = 0;
-    sfxStopClick.play();
-  }
-});
