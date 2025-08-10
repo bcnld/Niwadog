@@ -1,26 +1,35 @@
-// 所持している釣った犬IDと数のマップ
-window.caughtDogsInventory = {}; // 例: { "1": 3, "2": 1 }
+// 犬データ先読み込み
+window.allDogs = [];
+fetch("dog.json")
+  .then(res => res.json())
+  .then(data => {
+    window.allDogs = data;
+    console.log("犬データ読み込み完了:", window.allDogs);
+  })
+  .catch(err => {
+    console.error("犬データの読み込みに失敗:", err);
+  });
 
-// プレイヤーの所持金
+// 所持している釣った犬IDのリスト（重複可で個数管理）
+window.caughtDogsInventory = [];
+
+// プレイヤーの所持金（ジンバブエドル）
 window.playerMoney = 0;
 
-// 犬を所持リストに追加（釣り成功時などに呼ぶ）
+// 犬を所持リストに追加（釣り成功時にfishing.jsなどから呼ぶ想定）
 function addCaughtDog(dogId) {
-  if (!window.caughtDogsInventory[dogId]) {
-    window.caughtDogsInventory[dogId] = 1;
-  } else {
-    window.caughtDogsInventory[dogId]++;
-  }
+  window.caughtDogsInventory.push(dogId);
 }
 
-// 犬を売る処理（数量指定）
-function sellDog(dogId, sellCount) {
-  sellCount = Math.floor(sellCount);
-  if (sellCount <= 0) return;
+// 犬を売る処理（個数指定対応）
+function sellDog(dogId, count) {
+  count = Number(count);
+  if (!count || count <= 0) return;
 
-  const currentCount = window.caughtDogsInventory[dogId] || 0;
-  if (currentCount < sellCount) {
-    alert(`所持数が足りません。現在の所持数: ${currentCount}`);
+  // 所持数チェック
+  const ownedCount = window.caughtDogsInventory.filter(id => id === dogId).length;
+  if (count > ownedCount) {
+    alert(`所持数が足りません。所持数: ${ownedCount}`);
     return;
   }
 
@@ -28,133 +37,114 @@ function sellDog(dogId, sellCount) {
   if (!dog) return;
 
   const price = dog.price || 100;
-  const totalPrice = price * sellCount;
-
+  const totalPrice = price * count;
   window.playerMoney += totalPrice;
-  window.caughtDogsInventory[dogId] -= sellCount;
 
-  if (window.caughtDogsInventory[dogId] <= 0) {
-    delete window.caughtDogsInventory[dogId];
+  // 所持リストから売った分だけ削除
+  let removed = 0;
+  for (let i = window.caughtDogsInventory.length - 1; i >= 0 && removed < count; i--) {
+    if (window.caughtDogsInventory[i] === dogId) {
+      window.caughtDogsInventory.splice(i, 1);
+      removed++;
+    }
   }
 
-  alert(`${dog.name}を${sellCount}匹、合計${totalPrice}円で売却しました。現在の所持金は${window.playerMoney}円です。`);
+  alert(`${dog.name}を${count}個、合計${totalPrice}ジンバブエドルで売却しました。現在の所持金は${window.playerMoney}ジンバブエドルです。`);
 
   renderSellDogsList();
 }
 
-// 売るパネルの犬リストを表示
+// 売るパネルの犬リストを表示（個数選択UI追加）
 function renderSellDogsList() {
   const listDiv = document.getElementById('sell-dogs-list');
   if (!listDiv) return;
 
   listDiv.innerHTML = '';
 
-  const dogIds = Object.keys(window.caughtDogsInventory);
-  if (dogIds.length === 0) {
+  if (window.caughtDogsInventory.length === 0) {
     listDiv.textContent = '所持している犬はいません。';
     return;
   }
 
-  dogIds.forEach(dogId => {
+  // 所持犬IDごとに個数集計
+  const counts = {};
+  window.caughtDogsInventory.forEach(id => {
+    counts[id] = (counts[id] || 0) + 1;
+  });
+
+  Object.entries(counts).forEach(([dogId, count]) => {
     const dog = window.allDogs.find(d => String(d.number) === String(dogId));
     if (!dog) return;
 
-    const count = window.caughtDogsInventory[dogId];
-
-    // アイテム行全体
     const itemDiv = document.createElement('div');
     itemDiv.style.display = 'flex';
     itemDiv.style.alignItems = 'center';
-    itemDiv.style.marginBottom = '12px';
-    itemDiv.style.borderBottom = '1px solid #ddd';
-    itemDiv.style.paddingBottom = '10px';
+    itemDiv.style.marginBottom = '10px';
 
-    // 左: 画像
+    // 画像
     const img = document.createElement('img');
     img.src = dog.image || '';
-    img.style.width = '70px';
-    img.style.height = '70px';
-    img.style.objectFit = 'cover';
-    img.style.borderRadius = '8px';
-    img.style.marginRight = '12px';
+    img.style.width = '50px';
+    img.style.height = '50px';
+    img.style.objectFit = 'contain';
+    img.style.marginRight = '10px';
 
-    // 中央: 名前
+    // 名前
     const nameDiv = document.createElement('div');
-    nameDiv.textContent = dog.name || '名無し';
-    nameDiv.style.flexGrow = '1';
-    nameDiv.style.fontWeight = 'bold';
-    nameDiv.style.fontSize = '1.1rem';
+    nameDiv.textContent = dog.name;
+    nameDiv.style.flexBasis = '120px';
+    nameDiv.style.marginRight = '10px';
 
-    // 右側情報エリア
-    const rightDiv = document.createElement('div');
-    rightDiv.style.display = 'flex';
-    rightDiv.style.flexDirection = 'column';
-    rightDiv.style.alignItems = 'flex-end';
-    rightDiv.style.minWidth = '220px';
+    // レアリティと売値
+    const detailDiv = document.createElement('div');
+    detailDiv.style.flexBasis = '180px';
+    detailDiv.style.marginRight = '10px';
+    detailDiv.style.fontSize = '14px';
+    detailDiv.innerHTML = `
+      レアリティ: <strong>${dog.rarity}</strong><br>
+      売値: <strong>${dog.price || 100}</strong> ジンバブエドル
+    `;
 
-    // レアリティ表示
-    const rarityDiv = document.createElement('div');
-    rarityDiv.textContent = `レアリティ: ${dog.rarity || '不明'}`;
-    rarityDiv.style.marginBottom = '4px';
-
-    // 売値表示
-    const priceDiv = document.createElement('div');
-    priceDiv.textContent = `売値: ${dog.price || 100} 円`;
-    priceDiv.style.marginBottom = '4px';
+    // 個数入力
+    const countInput = document.createElement('input');
+    countInput.type = 'number';
+    countInput.min = '1';
+    countInput.max = String(count);
+    countInput.value = '1';
+    countInput.style.width = '60px';
+    countInput.style.marginRight = '10px';
 
     // 所持数表示
-    const countDiv = document.createElement('div');
-    countDiv.textContent = `所持数: ${count}`;
-    countDiv.style.marginBottom = '6px';
-
-    // 売る数入力フォーム
-    const input = document.createElement('input');
-    input.type = 'number';
-    input.min = 1;
-    input.max = count;
-    input.value = 1;
-    input.style.width = '60px';
-    input.style.marginBottom = '6px';
+    const ownedSpan = document.createElement('span');
+    ownedSpan.textContent = `所持数: ${count}`;
+    ownedSpan.style.marginRight = '10px';
 
     // 売るボタン
     const sellBtn = document.createElement('button');
     sellBtn.textContent = '売る';
     sellBtn.style.cursor = 'pointer';
-    sellBtn.style.padding = '6px 12px';
-    sellBtn.style.borderRadius = '6px';
-    sellBtn.style.border = 'none';
-    sellBtn.style.backgroundColor = '#f39c12';
-    sellBtn.style.color = 'white';
-    sellBtn.style.fontWeight = 'bold';
 
     sellBtn.addEventListener('click', () => {
-      const sellNum = Number(input.value);
-      if (!sellNum || sellNum < 1) {
-        alert('売る数を1以上で入力してください。');
+      const sellCount = Number(countInput.value);
+      if (isNaN(sellCount) || sellCount < 1 || sellCount > count) {
+        alert(`売る数は1以上${count}以下で指定してください。`);
         return;
       }
-      if (sellNum > count) {
-        alert(`所持数を超えています。現在の所持数: ${count}`);
-        return;
-      }
-      sellDog(dogId, sellNum);
+      sellDog(dogId, sellCount);
     });
-
-    rightDiv.appendChild(rarityDiv);
-    rightDiv.appendChild(priceDiv);
-    rightDiv.appendChild(countDiv);
-    rightDiv.appendChild(input);
-    rightDiv.appendChild(sellBtn);
 
     itemDiv.appendChild(img);
     itemDiv.appendChild(nameDiv);
-    itemDiv.appendChild(rightDiv);
+    itemDiv.appendChild(detailDiv);
+    itemDiv.appendChild(countInput);
+    itemDiv.appendChild(ownedSpan);
+    itemDiv.appendChild(sellBtn);
 
     listDiv.appendChild(itemDiv);
   });
 }
 
-// 以下は既存のwindow.loadイベント内に入れるコード例（再掲）
+// 初期化処理：イベントリスナー登録など
 window.addEventListener('load', () => {
   const shopBtn = document.getElementById('shop-btn');
   const shopMenu = document.getElementById('shop-menu');
@@ -192,7 +182,6 @@ window.addEventListener('load', () => {
     shopMenu.style.display = 'none';
     shopSellPanel.style.display = 'block';
     shopBuyPanel.style.display = 'none';
-
     renderSellDogsList();
   });
 
