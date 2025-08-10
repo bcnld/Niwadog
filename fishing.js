@@ -9,9 +9,14 @@ const CENTER = CANVAS_SIZE / 2;
 const RADIUS = CANVAS_SIZE / 2 - 20;
 
 const SEGMENTS = 12; // 12分割
-const RED_ZONE_START = 30;  // 赤い当たりゾーンの開始角度 (度数法)
-const RED_ZONE_END = 60;    // 赤い当たりゾーンの終了角度
-const RED_ZONE_CENTER = (RED_ZONE_START + RED_ZONE_END) / 2; // 赤ゾーン中心（45度）
+
+// 赤ゾーン幅（度数法）
+const RED_ZONE_WIDTH = 30;
+
+// 赤ゾーン開始・終了・中心角度は釣り開始時にランダム設定
+let RED_ZONE_START = 0;
+let RED_ZONE_END = 0;
+let RED_ZONE_CENTER = 0;
 
 let isFishing = false;
 let selectedDogId = null;
@@ -32,6 +37,16 @@ function degToRad(deg) {
   return deg * Math.PI / 180;
 }
 
+// 360度をまたぐかもしれない範囲内か判定する関数
+function isAngleInRange(angle, start, end) {
+  if (start <= end) {
+    return angle >= start && angle <= end;
+  } else {
+    // 360度をまたぐ場合
+    return angle >= start || angle <= end;
+  }
+}
+
 // ルーレット描画
 function drawRoulette() {
   ctx.clearRect(0, 0, CANVAS_SIZE, CANVAS_SIZE);
@@ -42,11 +57,12 @@ function drawRoulette() {
     let startAngle = i * segmentAngle;
     let endAngle = startAngle + segmentAngle;
 
-    // 赤ゾーン判定
+    // セグメントの開始角度を度数に変換(0～360)
     let segStartDeg = (i * 360/SEGMENTS) % 360;
     if (segStartDeg < 0) segStartDeg += 360;
 
-    let inRedZone = (segStartDeg >= RED_ZONE_START && segStartDeg < RED_ZONE_END);
+    // 赤ゾーン判定（セグメントの開始角度が赤ゾーンに含まれるか）
+    let inRedZone = isAngleInRange(segStartDeg, RED_ZONE_START, RED_ZONE_END);
 
     ctx.beginPath();
     ctx.moveTo(CENTER, CENTER);
@@ -68,7 +84,6 @@ function drawRoulette() {
   ctx.rotate(needleAngle + degToRad(RED_ZONE_CENTER));
 
   ctx.beginPath();
-  // とんがった先端を上に（0度方向）向ける三角形
   ctx.moveTo(0, -RADIUS - 10);      // 尖った先端
   ctx.lineTo(-10, -RADIUS + 20);    // 左下
   ctx.lineTo(10, -RADIUS + 20);     // 右下
@@ -96,15 +111,15 @@ function update() {
       isSpinning = false;
       reelButton.disabled = false;
 
-      // 効果音停止
-    if (sfxRouletteLoop) sfxRouletteLoop.pause();
+      // 効果音停止とホイールストップ音
+      if (sfxRouletteLoop) sfxRouletteLoop.pause();
 
-if (sfxWheelStop) {
-  sfxWheelStop.currentTime = 0;
-  sfxWheelStop.play();
-}
+      if (sfxWheelStop) {
+        sfxWheelStop.currentTime = 0;
+        sfxWheelStop.play();
+      }
 
-checkResult();
+      checkResult();
     }
   }
   needleAngle %= (2 * Math.PI);
@@ -118,8 +133,6 @@ function startSpin() {
 
   isSpinning = true;
   reelButton.disabled = true;
-
-  // ルーレットループ音はstartFishingで既に鳴っているのでここでは再生不要
 }
 
 function checkResult() {
@@ -127,15 +140,9 @@ function checkResult() {
   let needleDeg = (needleAngle * 180 / Math.PI) % 360;
   if (needleDeg < 0) needleDeg += 360;
 
-  // 赤いゾーンの開始と終了角度（0-360度の範囲）
-  const start = RED_ZONE_START;
-  const end = RED_ZONE_END;
-
-  // 判定（針の角度が赤ゾーン内にあるか）
-  const isHit = (needleDeg >= start && needleDeg <= end);
+  const isHit = isAngleInRange(needleDeg, RED_ZONE_START, RED_ZONE_END);
 
   if (isHit) {
-    // ヒット時の処理
     fishingResult.textContent = "ヒット！";
     if (sfxHit) {
       sfxHit.currentTime = 0;
@@ -148,7 +155,6 @@ function checkResult() {
       isFishing = false;
     }, 1000);
   } else {
-    // ハズレ時の処理
     fishingResult.textContent = "ハズレ...";
     if (sfxMiss) {
       sfxMiss.currentTime = 0;
@@ -157,7 +163,7 @@ function checkResult() {
     setTimeout(() => {
       fishingResult.textContent = "";
       fishingUI.style.display = 'none';
-      removeCaughtDog();  // ←追加: 釣れなくても犬を消す
+      removeCaughtDog(); // 釣れなくても消す場合はこのままでOK
       isFishing = false;
     }, 1000);
   }
@@ -166,6 +172,12 @@ function checkResult() {
 function startFishing(dogElement) {
   if (isFishing) return;
   isFishing = true;
+
+  // 赤ゾーンランダム設定
+  RED_ZONE_START = Math.random() * 360;
+  RED_ZONE_END = (RED_ZONE_START + RED_ZONE_WIDTH) % 360;
+  RED_ZONE_CENTER = (RED_ZONE_START + RED_ZONE_WIDTH / 2) % 360;
+
   selectedDogId = dogElement.dataset.dogId;
   fishingUI.style.display = 'block';
   fishingResult.textContent = '';
@@ -175,7 +187,6 @@ function startFishing(dogElement) {
   drawRoulette();
   update(); // アニメーション開始
 
-  // 釣り開始と同時にルーレットループ音を再生
   if (sfxRouletteLoop) {
     sfxRouletteLoop.currentTime = 0;
     sfxRouletteLoop.play();
@@ -192,7 +203,6 @@ reelButton.addEventListener('click', () => {
   }
 });
 
-// 釣れた犬を画面から消す関数（犬の要素をDOMから削除）
 function removeCaughtDog() {
   const dogElements = document.querySelectorAll(`[data-dog-id="${selectedDogId}"]`);
   dogElements.forEach(dogEl => {
@@ -223,7 +233,6 @@ function showCatchOverlay(dogId) {
   }
 }
 
-// 閉じるボタンの処理
 document.getElementById('catch-close').addEventListener('click', () => {
   const catchOverlay = document.getElementById('catch-overlay');
   catchOverlay.style.display = 'none';
