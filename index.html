@@ -3,23 +3,33 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>犬ゲームタイトル画面</title>
-  <link rel="stylesheet" href="style.css" />
+  <title>タイトル画面サンプル</title>
 </head>
 <body>
 
-  <!-- 最初の質問オーバーレイ -->
-  <div id="question-overlay" class="overlay active" role="dialog" aria-modal="true" aria-labelledby="question-text">
+  <!-- 最初の質問モーダル -->
+  <div id="question-overlay" role="dialog" aria-modal="true" aria-labelledby="question-text">
     <div id="question-text">あなたは日本人ですか？</div>
     <button id="question-yes-btn">はい</button>
   </div>
 
-  <!-- タイトル画面のメインコンテナ -->
-  <div id="title-container"></div>
+  <!-- 企業名＋ロゴ -->
+  <div id="company-name" aria-label="企業ロゴ表示">
+    <img id="company-logo" src="" alt="企業ロゴ" />
+    <div id="company-text"></div>
+  </div>
+
+  <!-- ゲームタイトル画面 -->
+  <div id="game-title" aria-label="ゲームタイトル">
+    <img src="images/game_title.png" alt="ゲームタイトルロゴ" />
+    <div>BIOHAZARD 4</div>
+    <div id="press-any-key">Press Any Key</div>
+  </div>
 
   <!-- BGM -->
   <audio id="bgm" src="Sounds/title.mp3" loop preload="auto"></audio>
 
   <script src="title.js"></script>
+
 </body>
 </html>
