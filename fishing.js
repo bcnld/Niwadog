@@ -8,7 +8,7 @@ const CANVAS_SIZE = 300;
 const CENTER = CANVAS_SIZE / 2;
 const RADIUS = CANVAS_SIZE / 2 - 20;
 
-const SEGMENTS = 48; // 分割数を増やす（48等分）
+const SEGMENTS = 12; // 分割数を増やす（48等分）
 
 let isFishing = false;
 let selectedDogId = null;
