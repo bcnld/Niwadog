@@ -1,3 +1,47 @@
+/* --- 共通リセット・ベース --- */
+body, html {
+  margin: 0; padding: 0; height: 100%;
+  background-color: black;
+  color: white;
+  font-family: 'Arial Black', sans-serif;
+  user-select: none;
+  overflow: hidden;
+}
+
+/* 質問モーダル */
+.overlay {
+  position: fixed;
+  top: 0; left: 0;
+  width: 100vw; height: 100vh;
+  background: rgba(0,0,0,0.85);
+  display: none;
+  justify-content: center;
+  align-items: center;
+  flex-direction: column;
+  z-index: 9999;
+  color: white;
+  font-size: 28px;
+}
+.overlay.active {
+  display: flex;
+}
+#question-yes-btn {
+  margin-top: 20px;
+  padding: 12px 40px;
+  font-size: 22px;
+  font-weight: bold;
+  border-radius: 8px;
+  border: none;
+  cursor: pointer;
+  user-select: none;
+  background-color: #2196F3;
+  color: white;
+  transition: background-color 0.3s ease;
+}
+#question-yes-btn:hover {
+  background-color: #1976d2;
+}
+
 /* --- タイトル画面全体 --- */
 #title-screen {
   position: fixed;
@@ -61,16 +105,4 @@
   user-select: none;
   text-align: center;
   width: 100%;
-}
-
-#title-container {
-  position: fixed;
-  top: 0; left: 0;
-  width: 100vw;
-  height: 100vh;
-  background-color: black;
-  display: flex !important;
-  justify-content: center;
-  align-items: center;
-  color: white;
 }
