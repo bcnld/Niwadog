@@ -1,10 +1,16 @@
+// タイトル画面制御用JS（企業名＆ロゴ表示対応）
+
 class TitleScreen {
   constructor() {
     // DOM生成
     this.createElements();
 
-    // 企業名リスト（テキスト）
-    this.companyNames = ["MasuruDMasuo", "HOMO ZENMETU", "ANAL SWITCHER"];
+    // 企業名＆ロゴリスト
+    this.companyList = [
+      { name: "Mdm", logo: "images/mdm_logo.png" },
+      { name: "Sus Dog", logo: "images/Sus_logo.png" },
+      { name: "Homo iranai", logo: "images/homo_logo.png" }
+    ];
     this.currentCompanyIndex = 0;
 
     // 状態管理
@@ -19,8 +25,10 @@ class TitleScreen {
     this.menuItems = ["New Game", "Load Game"];
     this.selectedIndex = 0;
 
-    // イベント登録（キーボード・スマホタップ対応）
+    // イベント登録（PC）
     window.addEventListener("keydown", (e) => this.onAnyKey(e));
+
+    // イベント登録（スマホ）
     window.addEventListener("touchstart", (e) => this.onAnyKey(e));
 
     // 開始
@@ -46,6 +54,14 @@ class TitleScreen {
     this.container.style.userSelect = "none";
     document.body.appendChild(this.container);
 
+    // 企業ロゴ
+    this.companyLogo = document.createElement("img");
+    this.companyLogo.style.maxWidth = "300px";
+    this.companyLogo.style.maxHeight = "150px";
+    this.companyLogo.style.opacity = "0";
+    this.companyLogo.style.transition = "opacity 1s";
+    this.container.appendChild(this.companyLogo);
+
     // 企業名テキスト
     this.companyText = document.createElement("div");
     this.companyText.style.fontSize = "48px";
@@ -68,23 +84,23 @@ class TitleScreen {
     this.bg.style.left = "0";
     this.bg.style.width = "200%";
     this.bg.style.height = "100%";
-    this.bg.style.backgroundImage = "url('images/title_bg.jpg')"; // 実際の背景画像パスに変えてください
+    this.bg.style.backgroundImage = "url('images/title_bg.jpg')";
     this.bg.style.backgroundRepeat = "repeat-x";
     this.bg.style.backgroundSize = "cover";
     this.titleScreen.appendChild(this.bg);
 
-    // タイトル画像（中央上）
+    // タイトル画像
     this.titleImage = document.createElement("img");
-    this.titleImage.src = "images/game_title.png"; // 実際のタイトル画像パスに変えてください
+    this.titleImage.src = "images/game_title.png";
     this.titleImage.style.position = "relative";
     this.titleImage.style.marginTop = "10vh";
     this.titleImage.style.maxWidth = "80%";
     this.titleImage.style.userSelect = "none";
     this.titleScreen.appendChild(this.titleImage);
 
-    // タイトルテキスト（画像の下にゲーム名表示）
+    // タイトルテキスト
     this.titleText = document.createElement("div");
-    this.titleText.textContent = "安いもんだ、鶏でしこったぐらい";
+    this.titleText.textContent = "BIOHAZARD 4";
     this.titleText.style.fontSize = "48px";
     this.titleText.style.textAlign = "center";
     this.titleText.style.marginTop = "10px";
@@ -92,7 +108,7 @@ class TitleScreen {
     this.titleText.style.textShadow = "0 0 10px rgba(255,255,255,0.7)";
     this.titleScreen.appendChild(this.titleText);
 
-    // Press Any Key テキスト（下中央）
+    // Press Any Key
     this.pressKeyText = document.createElement("div");
     this.pressKeyText.textContent = "Press Any Key";
     this.pressKeyText.style.position = "absolute";
@@ -106,7 +122,7 @@ class TitleScreen {
     this.pressKeyText.style.transition = "opacity 0.7s ease-in-out";
     this.titleScreen.appendChild(this.pressKeyText);
 
-    // メインメニュー（最初は非表示）
+    // メインメニュー
     this.menu = document.createElement("div");
     this.menu.style.position = "absolute";
     this.menu.style.bottom = "20vh";
@@ -121,7 +137,6 @@ class TitleScreen {
     this.menu.style.opacity = "0";
     this.menu.style.transition = "opacity 1s ease";
     this.menu.style.cursor = "default";
-    this.menu.style.pointerEvents = "none";
     this.titleScreen.appendChild(this.menu);
 
     this.menuItemsElements = [];
@@ -155,14 +170,15 @@ class TitleScreen {
     requestAnimationFrame(() => this.loop());
   }
 
-  // 企業名表示アニメーション
+  // 企業名＆ロゴ表示アニメーション
   showCompanyLoop() {
+    const current = this.companyList[this.currentCompanyIndex];
     if (this.fadeIn) {
       this.opacity += 0.02;
       if (this.opacity >= 1) {
         this.opacity = 1;
         this.fadeIn = false;
-        this.holdTimer = 60; // 約1秒キープ
+        this.holdTimer = 60;
       }
     } else {
       if (this.holdTimer > 0) {
@@ -172,23 +188,26 @@ class TitleScreen {
         if (this.opacity <= 0) {
           this.opacity = 0;
           this.currentCompanyIndex++;
-          if (this.currentCompanyIndex >= this.companyNames.length) {
-            // 企業名表示終了
+          if (this.currentCompanyIndex >= this.companyList.length) {
             this.state = "showTitle";
             this.companyText.style.opacity = "0";
+            this.companyLogo.style.opacity = "0";
             this.companyText.textContent = "";
+            this.companyLogo.src = "";
             this.titleScreen.style.display = "block";
             this.opacity = 0;
             this.fadeIn = true;
             return;
           }
-          this.companyText.textContent = this.companyNames[this.currentCompanyIndex];
           this.fadeIn = true;
         }
       }
     }
+    // 表示更新
+    this.companyText.textContent = current.name;
+    this.companyLogo.src = current.logo;
     this.companyText.style.opacity = this.opacity.toFixed(2);
-    this.companyText.textContent = this.companyNames[this.currentCompanyIndex];
+    this.companyLogo.style.opacity = this.opacity.toFixed(2);
   }
 
   // タイトルフェードイン
@@ -209,7 +228,6 @@ class TitleScreen {
 
   // Press Any Key 点滅
   waitKeyLoop() {
-    if (!this.pressKeyText) return;
     if (this.pressKeyFadeIn) {
       this.pressKeyAlpha += 0.03;
       if (this.pressKeyAlpha >= 1) {
@@ -226,32 +244,27 @@ class TitleScreen {
     this.pressKeyText.style.opacity = this.pressKeyAlpha.toFixed(2);
   }
 
-  // キー押したらメインメニュー表示へ
+  // キーまたはタップでメインメニュー表示
   onAnyKey(e) {
     if (this.state === "waitKey") {
       this.state = "mainMenu";
       this.pressKeyText.style.opacity = "0";
       this.menu.style.opacity = "1";
       this.menu.style.pointerEvents = "auto";
-
-      if (e.cancelable) e.preventDefault();
     }
   }
 
-  // メインメニューの背景スクロール＆選択表示（選択は簡易的に未実装）
+  // メニューの背景スクロール
   mainMenuLoop() {
-    // 背景スクロール
     this.bgPosX -= 0.5;
     if (this.bgPosX < -window.innerWidth) {
       this.bgPosX = 0;
     }
     this.bg.style.backgroundPosition = `${this.bgPosX}px 0`;
-
-    // TODO: メニュー項目の選択処理・操作は必要に応じて実装
   }
 }
 
-// ページロード後にタイトル画面開始
+// ページロード後に開始
 window.addEventListener("load", () => {
   new TitleScreen();
 });
