@@ -14,9 +14,6 @@ fetch("dog.json")
 // 所持している釣った犬IDのリスト（重複あり）
 window.caughtDogsInventory = [];
 
-// 図鑑登録済み犬IDリスト（重複なし）
-window.registeredDogs = [];
-
 // プレイヤーの所持金（釣りとは別に管理）
 window.playerMoney = 0;
 
@@ -152,17 +149,18 @@ function checkResult() {
     fishingResult.textContent = "ヒット！";
     if (sfxHit) { sfxHit.currentTime = 0; sfxHit.play(); }
     addCaughtDog(selectedDogId);
-    registerDog(selectedDogId);
+    if (typeof registerDog === "function") {
+      registerDog(selectedDogId); // 図鑑登録も行う
+    }
 
     setTimeout(() => {
       fishingResult.textContent = "";
       removeCaughtDog();
       showCatchOverlay(selectedDogId);
 
-      if (typeof renderZukanList === "function") {
-        renderZukanList();
+      if (typeof renderZukanPage === "function") {
+        renderZukanPage();
       }
-
       if (typeof renderShopInventory === "function") {
         renderShopInventory();
       }
@@ -211,10 +209,16 @@ function showCatchOverlay(dogId) {
   const msg = document.getElementById('caught-message');
 
   const rarityColors = {
-    "かす": "#353839", "ごみ": "#b5a642", "いらない": "#b08d57",
-    "まあまあ": "#00a86b", "ふつう": "#26619c", "甘えんなって": "#9966cc",
-    "ちらちら見てたよな？": "#f0d36d", "ふーん、えっちじゃん": "#8a2d2d",
-    "どしたん話聞こか": "#40e0d0", "じゃあ挿れるね": "#b22222"
+    "かす": "#353839",
+    "ごみ": "#b5a642",
+    "いらない": "#b08d57",
+    "まあまあ": "#00a86b",
+    "ふつう": "#26619c",
+    "甘えんなって": "#9966cc",
+    "ちらちら見てたよな？": "#f0d36d",
+    "ふーん、えっちじゃん": "#8a2d2d",
+    "どしたん話聞こか": "#40e0d0",
+    "じゃあ挿れるね": "#b22222"
   };
 
   const dogData = window.allDogs.find(d => String(d.number) === String(dogId));
@@ -272,15 +276,7 @@ function dogClickHandler(event) {
 // 釣った犬を所持リストに追加
 function addCaughtDog(dogId) {
   window.caughtDogsInventory.push(dogId);
-}
-
-// 図鑑登録（重複なし）
-function registerDog(dogId) {
-  dogId = String(dogId);
-  if (!window.registeredDogs.includes(dogId)) {
-    window.registeredDogs.push(dogId);
-    console.log(`図鑑に犬ID ${dogId} を登録しました`);
-  }
+  console.log(`犬ID ${dogId} を所持リストに追加しました。`);
 }
 
 // ショップ所持犬リストを再描画（簡易版）
