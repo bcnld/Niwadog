@@ -207,31 +207,29 @@ function showCatchOverlay(dogId) {
   const caughtDogImg = document.getElementById('caught-dog-img');
   const caughtMessage = document.getElementById('caught-message');
 
-  let dogData = null;
+  const rarityColors = {
+    common: '#aaaaaa',
+    rare: '#33ccff',
+    epic: '#9933ff',
+    legendary: '#ffcc00',
+  };
 
-  // まず window.allDogs から探す
-  if (window.allDogs && Array.isArray(window.allDogs)) {
-    dogData = window.allDogs.find(d => String(d.id) === String(dogId));
-  }
+  // dog.jsonデータから該当犬を探す
+  const dogData = window.allDogs ? window.allDogs.find(d => String(d.id) === String(dogId)) : null;
 
-  // 見つからなかった場合はHTML側から直接取得
-  if (!dogData) {
-    const dogElement = document.querySelector(`[data-dog-id="${dogId}"]`);
-    if (dogElement) {
-      dogData = {
-        name: dogElement.dataset.dogName || "なぞの犬",
-        image: dogElement.dataset.dogImage || "",
-      };
-    }
-  }
-
-  // 表示処理
   if (!dogData) {
     caughtDogImg.src = '';
     caughtMessage.textContent = '犬データがありません';
+    caughtDogImg.style.boxShadow = '';
   } else {
-    caughtDogImg.src = dogData.image;
-    caughtMessage.textContent = `${dogData.name}をつかまえた！`;
+    caughtDogImg.src = dogData.image || '';
+    caughtMessage.textContent = `${dogData.name || '名無し'}をつかまえた！`;
+
+    const rarity = dogData.rarity || 'common';
+    const auraColor = rarityColors[rarity] || '#ffffff';
+
+    caughtDogImg.style.boxShadow = `0 0 15px ${auraColor}, 0 0 30px ${auraColor}, 0 0 50px ${auraColor}`;
+    caughtDogImg.style.borderRadius = '12px';
   }
 
   catchOverlay.style.display = 'flex';
