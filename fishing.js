@@ -184,6 +184,11 @@ function startFishing(dogElement) {
 reelButton.addEventListener('click', () => {
   if (!isFishing) return;
   startSpin();
+
+  if (sfxStopClick) {
+    sfxStopClick.currentTime = 0;
+    sfxStopClick.play();
+  }
 });
 
 // 釣れた犬を画面から消す関数（犬の要素をDOMから削除）
