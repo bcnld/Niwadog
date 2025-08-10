@@ -109,6 +109,7 @@
     .zukan-controls button:hover {
       background-color: #eee;
     }
+    
     #page-indicator {
       font-weight: bold;
       font-size: 1.1rem;
@@ -151,12 +152,14 @@
       color: #222;
       user-select: none;
     }
+    
     #roulette-canvas {
       display: block;
       margin: 0 auto;
       background: #eef;
       border-radius: 50%;
     }
+    
     #reel-button {
       margin-top: 15px;
       padding: 10px 20px;
@@ -168,6 +171,7 @@
       color: #222;
       font-weight: bold;
     }
+    
     #fishing-result {
       margin-top: 10px;
       font-weight: bold;
@@ -190,6 +194,7 @@
       color: white;
       user-select: none;
     }
+    
     #caught-dog-img {
       max-width: 200px;
       max-height: 200px;
@@ -197,12 +202,14 @@
       border-radius: 12px;
       margin-bottom: 20px;
     }
+    
     #caught-message {
       font-size: 28px;
       font-weight: bold;
       margin-bottom: 30px;
       text-shadow: 0 0 5px black;
     }
+    
     #catch-close {
       padding: 10px 30px;
       font-size: 20px;
@@ -235,6 +242,7 @@
       z-index: 1000;
       user-select: none;
     }
+    
     #dog-profile-modal > div {
       background: #fff;
       width: 800px;
@@ -247,6 +255,7 @@
       box-shadow: 0 0 15px rgba(0,0,0,0.3);
       border-radius: 12px;
     }
+    
     #profile-close {
       position: absolute;
       top: 10px;
@@ -257,6 +266,7 @@
       cursor: pointer;
       user-select: none;
     }
+    
     #dog-profile-modal img {
       width: 250px;
       height: 250px;
@@ -264,12 +274,14 @@
       border: 1px solid #ccc;
       border-radius: 12px;
     }
+    
     #dog-profile-modal > div > div {
       display: flex;
       flex-direction: row;
       align-items: flex-start;
       gap: 20px;
     }
+    
     #dog-profile-modal > div > div > div:last-child {
       flex-grow: 1;
     }
@@ -416,10 +428,24 @@
   </div>
 
   <!-- BGM & 効果音 -->
-  <audio id="bgm" src="music/TC_25.mp3" loop preload="auto"></audio>
-  <audio id="sfx-catch" src="sfx/catch.mp3" preload="auto"></audio>
-  <audio id="sfx-close" src="Sounds/pah.mp3" preload="auto"></audio>
-
-  <script src="script.js"></script>
+<audio id="bgm" src="Sounds/bata.wav" loop></audio>
+<audio id="sfx-open" src="Sounds/open.mp3"></audio>
+<audio id="sfx-close" src="Sounds/close.mp3"></audio> 
+<audio id="sfx-roulette-loop" src="Sounds/guru.mp3" preload="auto" loop></audio>
+<audio id="sfx-stop-click" src="Sounds/pah.mp3" preload="auto"></audio>
+<audio id="sfx-wheel-stop" src="Sounds/whes.mp3" preload="auto"></audio>
+<audio id="sfx-hit" src="Sounds/hit.mp3" preload="auto"></audio>
+<audio id="sfx-miss" src="Sounds/miss.mp3" preload="auto"></audio> 
+<audio id="sfx-catch" src="Sounds/catch.mp3"></audio>
+  
+  <script src="co.js"></script>  
+  <script src="dog.js"></script>       <!-- 犬の生成・動き関係 -->
+  <script src="fishing.js"></script>   <!-- 釣りUI・ルーレット関係 -->
+  <script src="Zukan.js"></script>     <!-- 図鑑機能 -->
+  <script src="shop.js"></script>  
+  <script src="ach.js"></script>    <!-- ショップ機能 -->
+  <script src="inv.js"></script>       <!-- 持ち物機能 -->
+  <script src="script.js"></script>    <!-- メイン制御、共通処理 -->
 </body>
 </html>
+
