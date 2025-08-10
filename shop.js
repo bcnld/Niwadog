@@ -130,9 +130,11 @@ function showDogDetailOverlay(dog, ownedCount) {
     <p><strong>売値:</strong> ${dog.price || 100} ジンバブエドル</p>
     <p><strong>説明:</strong> ${dog.description || ''}</p>
     <p><strong>所持数:</strong> ${ownedCount}</p>
-    <div style="margin-top:10px;">
-      <input type="number" id="detail-sell-count" min="1" max="${ownedCount}" value="1" style="width:60px;">
-      <button id="detail-sell-btn">売る</button>
+    <div style="margin-top:10px; display:flex; align-items:center; gap:8px;">
+      <button id="count-decrease" style="width:30px; height:30px; font-size:20px; cursor:pointer;">−</button>
+      <input type="number" id="detail-sell-count" min="1" max="${ownedCount}" value="1" style="width:60px; text-align:center; height:30px; font-size:16px;">
+      <button id="count-increase" style="width:30px; height:30px; font-size:20px; cursor:pointer;">＋</button>
+      <button id="detail-sell-btn" style="padding:6px 12px; cursor:pointer;">売る</button>
     </div>
   `;
 
@@ -143,11 +145,26 @@ function showDogDetailOverlay(dog, ownedCount) {
     panel.classList.remove('show');
   });
 
-  // 売るボタンイベント
+  const input = document.getElementById('detail-sell-count');
+  const maxCount = ownedCount;
+
+  // 「−」ボタン
+  document.getElementById('count-decrease').addEventListener('click', () => {
+    let val = Number(input.value);
+    if (val > 1) input.value = val - 1;
+  });
+
+  // 「＋」ボタン
+  document.getElementById('count-increase').addEventListener('click', () => {
+    let val = Number(input.value);
+    if (val < maxCount) input.value = val + 1;
+  });
+
+  // 売るボタン
   document.getElementById('detail-sell-btn').addEventListener('click', () => {
-    const sellCount = Number(document.getElementById('detail-sell-count').value);
-    if (isNaN(sellCount) || sellCount < 1 || sellCount > ownedCount) {
-      alert(`売る数は1以上${ownedCount}以下で指定してください。`);
+    const sellCount = Number(input.value);
+    if (isNaN(sellCount) || sellCount < 1 || sellCount > maxCount) {
+      alert(`売る数は1以上${maxCount}以下で指定してください。`);
       return;
     }
     sellDog(String(dog.number), sellCount);
