@@ -1,1 +1,64 @@
+/* --- タイトル画面全体 --- */
+#title-screen {
+  position: fixed;
+  top: 0; left: 0;
+  width: 100vw;
+  height: 100vh;
+  background-color: black;
+  color: white;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  user-select: none;
+  z-index: 2000;
+}
 
+/* 企業名とロゴ */
+#company-name {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  opacity: 0;
+  transition: opacity 1s ease;
+  font-size: 48px;
+  margin-bottom: 40px;
+}
+
+#company-logo {
+  max-width: 300px;
+  max-height: 100px;
+  margin-bottom: 20px;
+  user-select: none;
+}
+
+/* ゲームタイトル */
+#game-title {
+  display: none; /* 最初は非表示 */
+  flex-direction: column;
+  align-items: center;
+  opacity: 0;
+  transition: opacity 1s ease;
+}
+
+#game-title img {
+  max-width: 80vw;
+  user-select: none;
+}
+
+#game-title > div {
+  font-size: 48px;
+  margin-top: 10px;
+  text-shadow: 0 0 10px white;
+}
+
+/* Press Any Key */
+#press-any-key {
+  margin-top: 60px;
+  font-size: 24px;
+  opacity: 0;
+  transition: opacity 0.7s ease-in-out;
+  user-select: none;
+  text-align: center;
+  width: 100%;
+}
