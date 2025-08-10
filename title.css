@@ -30,23 +30,36 @@ body, html {
   display: none;
 }
 
-/* 質問テキスト */
-#question-text {
-  margin-bottom: 20px;
-  text-align: center;
+/* 質問オーバーレイ */
+.overlay {
+  position: fixed;
+  top: 0; left: 0;
+  width: 100vw; height: 100vh;
+  background: rgba(0,0,0,0.85);
+
+  display: flex;           /* ここをflexに */
+  justify-content: center; /* 横中央揃え */
+  align-items: center;     /* 縦中央揃え */
+
+  flex-direction: column;  /* 縦に並べる */
+  z-index: 9999;
+  color: white;
+  font-size: 28px;
+  user-select: none;
 }
 
-/* ボタン */
+/* 「はい」ボタンはそのままでOK */
 #question-yes-btn {
+  margin-top: 20px;
   padding: 12px 40px;
   font-size: 22px;
   font-weight: bold;
   border-radius: 8px;
   border: none;
   cursor: pointer;
-  user-select: none;
   background-color: #2196F3;
   color: white;
+  user-select: none;
   transition: background-color 0.3s ease;
 }
 #question-yes-btn:hover {
