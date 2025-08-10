@@ -5,6 +5,8 @@ fetch("dog.json")
   .then(data => {
     window.allDogs = data;
     console.log("犬データ読み込み完了:", window.allDogs);
+    // ここで犬画像クリックイベントを付与（すでに存在する犬画像があれば）
+    attachFishingEvents();
   })
   .catch(err => {
     console.error("犬データの読み込みに失敗:", err);
@@ -39,6 +41,23 @@ function removeCaughtDogById(dogId) {
   if (idx !== -1) {
     window.caughtDogsInventory.splice(idx, 1);
   }
+}
+
+// 犬画像にクリックイベントを付与する関数
+function attachFishingEvents() {
+  // data-dog-id属性がついた犬画像すべてに対してクリックイベント付与
+  const dogElements = document.querySelectorAll('[data-dog-id]');
+  dogElements.forEach(el => {
+    // 重複付与防止のため、一旦既存のイベントを外す
+    el.removeEventListener('click', dogClickHandler);
+    el.addEventListener('click', dogClickHandler);
+  });
+}
+
+// 犬画像クリック時のハンドラー
+function dogClickHandler(event) {
+  if (window.isFishing) return;
+  startFishing(event.currentTarget);
 }
 
 // UI要素取得
