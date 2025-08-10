@@ -1,3 +1,87 @@
+/* 共通パネルの基本スタイル */
+.panel {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  background: #fff;
+  border-radius: 12px;
+  box-shadow: 0 8px 20px rgba(0,0,0,0.3);
+  padding: 20px;
+  max-width: 90vw;
+  max-height: 80vh;
+  overflow-y: auto;
+  z-index: 1000;
+}
+
+/* パネル非表示時 */
+.panel[style*="display:none"] {
+  display: none !important;
+}
+
+/* 戻るボタン */
+#shop-back-button {
+  position: fixed;
+  top: 10px;
+  left: 10px;
+  padding: 6px 12px;
+  background: #2196f3;
+  color: white;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  z-index: 1100;
+  user-select: none;
+}
+
+/* 犬詳細パネル（スライドイン） */
+#dog-detail-panel {
+  position: fixed;
+  top: -100%;
+  left: 0;
+  width: 100%;
+  height: 80vh;
+  background: #fff;
+  box-shadow: 0 4px 10px rgba(0,0,0,0.3);
+  padding: 20px;
+  overflow-y: auto;
+  transition: top 0.3s ease;
+  z-index: 9999;
+}
+
+#dog-detail-panel.show {
+  top: 0;
+}
+
+/* 閉じるボタン */
+#dog-detail-close, #dog-detail-content button#detail-close-btn {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  background: #f44336;
+  color: #fff;
+  border: none;
+  border-radius: 6px;
+  padding: 6px 12px;
+  cursor: pointer;
+  user-select: none;
+}
+
+/* 犬詳細コンテンツ */
+#dog-detail-content {
+  position: relative;
+  max-width: 400px;
+  margin: 0 auto;
+  user-select: text;
+}
+
+#dog-detail-content img {
+  max-width: 100%;
+  height: auto;
+  border-radius: 8px;
+  margin-bottom: 10px;
+}
+
 /* ショップの基本レイアウト */
 #shop-sell-panel, #shop-buy-panel {
   height: 60vh;
@@ -13,60 +97,62 @@
 }
 
 /* 犬リストの項目 */
-.dog-item {
+.dog-item, .dog-list-item {
   display: flex;
   align-items: center;
   padding: 8px;
   border-bottom: 1px solid #ccc;
   cursor: pointer;
+  transition: background-color 0.2s ease;
 }
-.dog-item img {
+
+.dog-item:hover, .dog-list-item:hover {
+  background-color: #f0f0f0;
+}
+
+.dog-item img, .dog-list-item img {
   width: 50px;
   height: 50px;
   object-fit: cover;
   margin-right: 10px;
+  border-radius: 6px;
+  border: 1px solid #ddd;
 }
-.dog-item .dog-name {
+
+.dog-item .dog-name, .dog-list-item > div:nth-child(2) {
   flex-grow: 1;
   font-weight: bold;
 }
-.dog-item .dog-price {
+
+.dog-item .dog-price, .dog-list-item > div:nth-child(3) {
   white-space: nowrap;
+  font-size: 14px;
 }
 
-/* 詳細パネル（スライドイン） */
-#dog-detail-panel {
-  position: fixed;
-  top: -100%;
-  left: 0;
-  width: 100%;
-  height: 80vh;
-  background: #fff;
-  box-shadow: 0 4px 10px rgba(0,0,0,0.3);
-  padding: 20px;
-  overflow-y: auto;
-  transition: top 0.3s ease;
-  z-index: 9999;
+/* 入力やボタンのスタイル調整 */
+#dog-detail-content input[type="number"] {
+  border: 1px solid #ccc;
+  border-radius: 6px;
+  height: 30px;
+  font-size: 16px;
+  width: 60px;
+  text-align: center;
 }
-#dog-detail-panel.show {
-  top: 0;
-}
-#dog-detail-close {
-  position: absolute;
-  top: 10px;
-  right: 10px;
-  background: #f44336;
-  color: #fff;
+
+#dog-detail-content button {
+  background-color: #2196f3;
+  color: white;
   border: none;
   border-radius: 6px;
   padding: 6px 12px;
   cursor: pointer;
+  user-select: none;
+  font-weight: 600;
+  transition: background-color 0.2s ease;
 }
-#dog-detail-content img {
-  max-width: 100%;
-  height: auto;
-  border-radius: 8px;
-  margin-bottom: 10px;
+
+#dog-detail-content button:hover {
+  background-color: #1976d2;
 }
 
 /* スマホ対応 */
@@ -74,7 +160,7 @@
   #shop-sell-panel, #shop-buy-panel {
     height: 80vh;
   }
-  .dog-item img {
+  .dog-item img, .dog-list-item img {
     width: 40px;
     height: 40px;
   }
