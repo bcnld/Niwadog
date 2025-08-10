@@ -1,4 +1,4 @@
-// 犬データ先読み込み
+// dog.jsonから犬データを先読み込み
 window.allDogs = [];
 fetch("dog.json")
   .then(res => res.json())
@@ -9,6 +9,27 @@ fetch("dog.json")
   .catch(err => {
     console.error("犬データの読み込みに失敗:", err);
   });
+
+// 所持している釣った犬IDのリスト
+window.caughtDogsInventory = [];
+
+// プレイヤーの所持金（釣りとは別に管理。必要に応じてshop.js等で操作）
+window.playerMoney = 0;
+
+// 犬を所持リストに追加（釣り成功時に呼ばれる）
+function addCaughtDog(dogId) {
+  if (!window.caughtDogsInventory.includes(dogId)) {
+    window.caughtDogsInventory.push(dogId);
+  }
+}
+
+// 犬を所持リストから削除（売却などで呼ばれる想定）
+function removeCaughtDogById(dogId) {
+  const idx = window.caughtDogsInventory.indexOf(dogId);
+  if (idx !== -1) {
+    window.caughtDogsInventory.splice(idx, 1);
+  }
+}
 
 // UI要素取得
 const fishingUI = document.getElementById('fishing-ui');
@@ -148,7 +169,6 @@ function startSpin() {
 }
 
 // 結果判定
-// 結果判定
 function checkResult() {
   const needleDeg = radToDeg(needleAngle);
   const hit = isAngleInRange(needleDeg, redZone.start, redZone.end);
@@ -204,7 +224,7 @@ function startFishing(dogElement) {
   update();
 }
 
-// 釣れた犬を消す
+// 釣れた犬を消す（画面上の犬要素を削除）
 function removeCaughtDog() {
   document.querySelectorAll(`[data-dog-id="${selectedDogId}"]`).forEach(el => el.remove());
 }
@@ -247,7 +267,7 @@ function showCatchOverlay(dogId) {
   }
 }
 
-// 閉じるボタン処理
+// 捕獲オーバーレイ閉じるボタン処理
 document.getElementById('catch-close').addEventListener('click', () => {
   document.getElementById('catch-overlay').style.display = 'none';
   fishingUI.style.display = 'none';
