@@ -15,10 +15,12 @@ class TitleScreen {
     this.holdTimer = 0;
 
     this.bgPosX = 0;
-    this.bgScrollSpeed = 0;  // 背景スクロール速度（最初は0）
+    this.bgScrollSpeed = 0;
 
     this.menuItems = ["New Game", "Load Game"];
     this.selectedIndex = 0;
+
+    this.bgm = document.getElementById("bgm");
 
     window.addEventListener("keydown", (e) => this.onAnyKey(e));
     window.addEventListener("touchstart", (e) => this.onAnyKey(e));
@@ -27,25 +29,24 @@ class TitleScreen {
   }
 
   createElements() {
-    this.container = document.createElement("div");
-    Object.assign(this.container.style, {
-      position: "fixed",
-      top: "0",
-      left: "0",
-      width: "100vw",
-      height: "100vh",
-      backgroundColor: "black",
-      color: "white",
-      fontFamily: "'Arial Black', sans-serif",
-      overflow: "hidden",
-      display: "flex",
-      flexDirection: "column",
-      justifyContent: "center",
-      alignItems: "center",
-      userSelect: "none"
-    });
-    document.body.appendChild(this.container);
+    this.container = document.getElementById("title-container");
+    this.container.style.position = "fixed";
+    this.container.style.top = "0";
+    this.container.style.left = "0";
+    this.container.style.width = "100vw";
+    this.container.style.height = "100vh";
+    this.container.style.backgroundColor = "black";
+    this.container.style.color = "white";
+    this.container.style.fontFamily = "'Arial Black', sans-serif";
+    this.container.style.overflow = "hidden";
+    this.container.style.display = "flex";
+    this.container.style.flexDirection = "column";
+    this.container.style.justifyContent = "center";
+    this.container.style.alignItems = "center";
+    this.container.style.userSelect = "none";
+    this.container.innerHTML = ""; // 初期化
 
+    // 企業ロゴとテキスト
     this.companyLogo = document.createElement("img");
     Object.assign(this.companyLogo.style, {
       maxWidth: "300px",
@@ -66,6 +67,7 @@ class TitleScreen {
     });
     this.container.appendChild(this.companyText);
 
+    // タイトル画面
     this.titleScreen = document.createElement("div");
     Object.assign(this.titleScreen.style, {
       position: "relative",
@@ -77,6 +79,7 @@ class TitleScreen {
     });
     this.container.appendChild(this.titleScreen);
 
+    // 背景
     this.bg = document.createElement("div");
     Object.assign(this.bg.style, {
       position: "absolute",
@@ -91,6 +94,7 @@ class TitleScreen {
     });
     this.titleScreen.appendChild(this.bg);
 
+    // タイトルロゴ画像
     this.titleImage = document.createElement("img");
     this.titleImage.src = "images/game_title.png";
     Object.assign(this.titleImage.style, {
@@ -101,6 +105,7 @@ class TitleScreen {
     });
     this.titleScreen.appendChild(this.titleImage);
 
+    // タイトルテキスト
     this.titleText = document.createElement("div");
     this.titleText.textContent = "BIOHAZARD 4";
     Object.assign(this.titleText.style, {
@@ -113,6 +118,7 @@ class TitleScreen {
     });
     this.titleScreen.appendChild(this.titleText);
 
+    // 「Press Any Key」テキスト
     this.pressKeyText = document.createElement("div");
     this.pressKeyText.textContent = "Press Any Key";
     Object.assign(this.pressKeyText.style, {
@@ -128,6 +134,7 @@ class TitleScreen {
     });
     this.titleScreen.appendChild(this.pressKeyText);
 
+    // メニュー
     this.menu = document.createElement("div");
     Object.assign(this.menu.style, {
       position: "absolute",
@@ -204,6 +211,10 @@ class TitleScreen {
             this.titleScreen.style.display = "flex";
             this.opacity = 0;
             this.fadeIn = true;
+
+            // タイトル表示開始と同時にBGM再生（ユーザー操作済みなので再生OK）
+            this.bgm.play().catch(() => {});
+
             return;
           }
           this.fadeIn = true;
@@ -219,24 +230,17 @@ class TitleScreen {
   showTitleLoop() {
     if (this.fadeIn) {
       this.opacity += 0.01;
-      this.titleScreen.style.opacity = this.opacity.toFixed(2);
       if (this.opacity >= 1) {
         this.opacity = 1;
         this.fadeIn = false;
         this.state = "waitKey";
         this.pressKeyAlpha = 0;
         this.pressKeyFadeIn = true;
-        this.bgScrollSpeed = 0; // 背景は止めておく
-
-        // BGM再生処理
-        const bgmAudio = document.getElementById("bgm");
-        if (bgmAudio) {
-          bgmAudio.volume = 0.5;
-          bgmAudio.play().catch(e => {
-            console.log("BGM再生失敗:", e);
-          });
-        }
+        this.bgScrollSpeed = 0;
+        this.titleScreen.style.opacity = this.opacity.toFixed(2);
+        return;
       }
+      this.titleScreen.style.opacity = this.opacity.toFixed(2);
     }
   }
 
@@ -263,7 +267,7 @@ class TitleScreen {
       this.pressKeyText.style.opacity = "0";
       this.menu.style.opacity = "1";
       this.menu.style.pointerEvents = "auto";
-      this.bgScrollSpeed = 0.5; // スクロール開始
+      this.bgScrollSpeed = 0.5;
     }
   }
 
@@ -277,5 +281,11 @@ class TitleScreen {
 }
 
 window.addEventListener("load", () => {
-  new TitleScreen();
+  const questionOverlay = document.getElementById("question-overlay");
+  const yesBtn = document.getElementById("question-yes-btn");
+
+  yesBtn.addEventListener("click", () => {
+    questionOverlay.classList.remove("active");
+    new TitleScreen();
+  });
 });
