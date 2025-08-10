@@ -5,8 +5,7 @@ fetch("dog.json")
   .then(data => {
     window.allDogs = data;
     console.log("犬データ読み込み完了:", window.allDogs);
-    // ここで犬画像クリックイベントを付与（すでに存在する犬画像があれば）
-    attachFishingEvents();
+    attachFishingEvents(); // 犬画像クリックイベント付与
   })
   .catch(err => {
     console.error("犬データの読み込みに失敗:", err);
@@ -18,47 +17,8 @@ window.caughtDogsInventory = [];
 // 図鑑登録済み犬IDリスト（重複なし）
 window.registeredDogs = [];
 
-// プレイヤーの所持金（釣りとは別に管理。必要に応じてshop.js等で操作）
+// プレイヤーの所持金（釣りとは別に管理）
 window.playerMoney = 0;
-
-// 犬を所持リストに追加（釣り成功時に呼ばれる）
-function addCaughtDog(dogId) {
-  window.caughtDogsInventory.push(dogId);
-}
-
-// 犬を図鑑に登録（重複チェックあり）
-function registerDog(dogId) {
-  dogId = String(dogId);
-  if (!window.registeredDogs.includes(dogId)) {
-    window.registeredDogs.push(dogId);
-    console.log(`図鑑に犬ID ${dogId} を登録しました`);
-  }
-}
-
-// 犬を所持リストから削除（売却などで呼ばれる想定）
-function removeCaughtDogById(dogId) {
-  const idx = window.caughtDogsInventory.indexOf(dogId);
-  if (idx !== -1) {
-    window.caughtDogsInventory.splice(idx, 1);
-  }
-}
-
-// 犬画像にクリックイベントを付与する関数
-function attachFishingEvents() {
-  // data-dog-id属性がついた犬画像すべてに対してクリックイベント付与
-  const dogElements = document.querySelectorAll('[data-dog-id]');
-  dogElements.forEach(el => {
-    // 重複付与防止のため、一旦既存のイベントを外す
-    el.removeEventListener('click', dogClickHandler);
-    el.addEventListener('click', dogClickHandler);
-  });
-}
-
-// 犬画像クリック時のハンドラー
-function dogClickHandler(event) {
-  if (window.isFishing) return;
-  startFishing(event.currentTarget);
-}
 
 // UI要素取得
 const fishingUI = document.getElementById('fishing-ui');
@@ -70,13 +30,11 @@ const ctx = canvas.getContext('2d');
 const CANVAS_SIZE = 300;
 const CENTER = CANVAS_SIZE / 2;
 const RADIUS = CANVAS_SIZE / 2 - 20;
-
-const SEGMENTS = 12; // 12分割(30度ずつ)
+const SEGMENTS = 12;
 
 let isFishing = false;
 let selectedDogId = null;
-
-let needleAngle = 0; // 針角度（ラジアン）
+let needleAngle = 0;
 let needleSpeed = 0;
 let isSpinning = false;
 
@@ -88,15 +46,13 @@ const sfxHit = document.getElementById('sfx-hit');
 const sfxMiss = document.getElementById('sfx-miss');
 const sfxCatch = document.getElementById('sfx-catch');
 
-// 赤ゾーン（固定180度幅、開始角度はランダム）
-let redZone = { start: 0, end: 180 }; // degで管理
+// 赤ゾーン（180度幅、開始角度ランダム）
+let redZone = { start: 0, end: 180 };
 
-// 角度を度数に変換（0～360）
 function radToDeg(rad) {
   return (rad * 180 / Math.PI + 360) % 360;
 }
 
-// 角度範囲内か判定（360度またぎ対応）
 function isAngleInRange(angle, start, end) {
   if (start <= end) {
     return angle >= start && angle <= end;
@@ -105,10 +61,8 @@ function isAngleInRange(angle, start, end) {
   }
 }
 
-// 赤ゾーン描画（180度幅の赤いセグメント）
 function drawRoulette() {
   ctx.clearRect(0, 0, CANVAS_SIZE, CANVAS_SIZE);
-
   const segmentAngle = (2 * Math.PI) / SEGMENTS;
   const segmentDeg = 360 / SEGMENTS;
 
@@ -118,7 +72,6 @@ function drawRoulette() {
     const segStartDeg = (i * segmentDeg) % 360;
     const segEndDeg = (segStartDeg + segmentDeg) % 360;
 
-    // 赤ゾーンと重なる部分は赤で塗る
     const inRed = isAngleInRange(segStartDeg + 1, redZone.start, redZone.end) ||
                   isAngleInRange(segEndDeg - 1, redZone.start, redZone.end) ||
                   (redZone.start > redZone.end && (segStartDeg >= redZone.start || segEndDeg <= redZone.end));
@@ -135,7 +88,7 @@ function drawRoulette() {
     ctx.stroke();
   }
 
-  // 針を描画
+  // 針描画
   ctx.save();
   ctx.translate(CENTER, CENTER);
   ctx.rotate(needleAngle);
@@ -149,34 +102,30 @@ function drawRoulette() {
   ctx.restore();
 }
 
-// 赤ゾーンの開始角度をランダムにセット（0～360-180）
 function setRandomRedZone() {
   redZone.start = Math.floor(Math.random() * 180);
   redZone.end = (redZone.start + 180) % 360;
 }
 
-// ルーレット更新ループ
 function update() {
   if (!isFishing) return;
 
   if (isSpinning) {
-    needleSpeed *= 0.98; // 徐々に減速
+    needleSpeed *= 0.98;
     needleAngle += needleSpeed;
     if (needleSpeed < 0.002) {
       needleSpeed = 0;
       isSpinning = false;
       reelButton.disabled = false;
-
       if (sfxRouletteLoop) sfxRouletteLoop.pause();
       if (sfxWheelStop) {
         sfxWheelStop.currentTime = 0;
         sfxWheelStop.play();
       }
-
       checkResult();
     }
   } else {
-    needleAngle += needleSpeed; // 微速回転（任意）
+    needleAngle += needleSpeed;
   }
 
   needleAngle %= (2 * Math.PI);
@@ -184,51 +133,46 @@ function update() {
   requestAnimationFrame(update);
 }
 
-// スピン開始
 function startSpin() {
   if (isSpinning) return;
   isSpinning = true;
-  needleSpeed = 0.4; // 初速
+  needleSpeed = 0.4;
   reelButton.disabled = true;
-
   if (sfxRouletteLoop) {
     sfxRouletteLoop.currentTime = 0;
     sfxRouletteLoop.play();
   }
 }
 
-// 結果判定
-if (hit) {
-  fishingResult.textContent = "ヒット！";
-  if (sfxHit) { sfxHit.currentTime = 0; sfxHit.play(); }
+function checkResult() {
+  const needleDeg = radToDeg(needleAngle);
+  const hit = isAngleInRange(needleDeg, redZone.start, redZone.end);
 
-  // 釣った犬を所持リストと図鑑に登録
-  addCaughtDog(selectedDogId);
-  registerDog(selectedDogId);
+  if (hit) {
+    fishingResult.textContent = "ヒット！";
+    if (sfxHit) { sfxHit.currentTime = 0; sfxHit.play(); }
+    addCaughtDog(selectedDogId);
+    registerDog(selectedDogId);
 
-  setTimeout(() => {
-    fishingResult.textContent = "";
-    removeCaughtDog();
-    showCatchOverlay(selectedDogId);
+    setTimeout(() => {
+      fishingResult.textContent = "";
+      removeCaughtDog();
+      showCatchOverlay(selectedDogId);
 
-    // 図鑑再描画
-    if (typeof renderZukanList === "function") {
-      renderZukanList();
-    }
+      if (typeof renderZukanList === "function") {
+        renderZukanList();
+      }
 
-    // ここでショップ所持リスト再描画を呼ぶ（関数名は仮）
-    if (typeof renderShopInventory === "function") {
-      renderShopInventory();
-    }
+      if (typeof renderShopInventory === "function") {
+        renderShopInventory();
+      }
 
-    isFishing = false;
-  }, 1000);
-}
+      isFishing = false;
+    }, 1000);
 
   } else {
     fishingResult.textContent = "逃げられた...";
     if (sfxMiss) { sfxMiss.currentTime = 0; sfxMiss.play(); }
-
     setTimeout(() => {
       fishingResult.textContent = "";
       fishingUI.style.display = 'none';
@@ -237,14 +181,12 @@ if (hit) {
   }
 }
 
-// 釣り開始（犬画像のクリックで呼ばれる）
 function startFishing(dogElement) {
   if (isFishing) return;
   if (!window.allDogs.length) {
     alert("犬データがまだ読み込まれていません！");
     return;
   }
-
   isFishing = true;
   selectedDogId = dogElement.dataset.dogId;
 
@@ -255,17 +197,14 @@ function startFishing(dogElement) {
   isSpinning = false;
 
   setRandomRedZone();
-
   drawRoulette();
   update();
 }
 
-// 釣れた犬を消す（画面上の犬要素を削除）
 function removeCaughtDog() {
   document.querySelectorAll(`[data-dog-id="${selectedDogId}"]`).forEach(el => el.remove());
 }
 
-// 捕獲オーバーレイ表示
 function showCatchOverlay(dogId) {
   const overlay = document.getElementById('catch-overlay');
   const img = document.getElementById('caught-dog-img');
@@ -279,7 +218,6 @@ function showCatchOverlay(dogId) {
   };
 
   const dogData = window.allDogs.find(d => String(d.number) === String(dogId));
-
   if (!dogData) {
     img.src = '';
     msg.textContent = '犬のデータが読み込まれませんでした。';
@@ -303,13 +241,11 @@ function showCatchOverlay(dogId) {
   }
 }
 
-// 捕獲オーバーレイ閉じるボタン処理
 document.getElementById('catch-close').addEventListener('click', () => {
   document.getElementById('catch-overlay').style.display = 'none';
   fishingUI.style.display = 'none';
 });
 
-// リールボタンクリック
 reelButton.addEventListener('click', () => {
   if (!isFishing) return;
   startSpin();
@@ -318,3 +254,58 @@ reelButton.addEventListener('click', () => {
     sfxStopClick.play();
   }
 });
+
+// 犬画像クリックイベントを付与（既存犬に対して）
+function attachFishingEvents() {
+  const dogElements = document.querySelectorAll('[data-dog-id]');
+  dogElements.forEach(el => {
+    el.removeEventListener('click', dogClickHandler);
+    el.addEventListener('click', dogClickHandler);
+  });
+}
+
+function dogClickHandler(event) {
+  if (isFishing) return;
+  startFishing(event.currentTarget);
+}
+
+// 釣った犬を所持リストに追加
+function addCaughtDog(dogId) {
+  window.caughtDogsInventory.push(dogId);
+}
+
+// 図鑑登録（重複なし）
+function registerDog(dogId) {
+  dogId = String(dogId);
+  if (!window.registeredDogs.includes(dogId)) {
+    window.registeredDogs.push(dogId);
+    console.log(`図鑑に犬ID ${dogId} を登録しました`);
+  }
+}
+
+// ショップ所持犬リストを再描画（簡易版）
+function renderShopInventory() {
+  const listDiv = document.getElementById('sell-dogs-list');
+  if (!listDiv) return;
+
+  listDiv.innerHTML = '';
+
+  if (window.caughtDogsInventory.length === 0) {
+    listDiv.textContent = '所持している犬はいません。';
+    return;
+  }
+
+  const counts = {};
+  window.caughtDogsInventory.forEach(id => {
+    counts[id] = (counts[id] || 0) + 1;
+  });
+
+  Object.entries(counts).forEach(([dogId, count]) => {
+    const dog = window.allDogs.find(d => String(d.number) === String(dogId));
+    if (!dog) return;
+
+    const itemDiv = document.createElement('div');
+    itemDiv.textContent = `${dog.name} × ${count}`;
+    listDiv.appendChild(itemDiv);
+  });
+}
