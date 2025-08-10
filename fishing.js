@@ -1,3 +1,15 @@
+// 犬データを先に読み込む
+window.allDogs = [];
+fetch("dog.json")
+  .then(res => res.json())
+  .then(data => {
+    window.allDogs = data;
+    console.log("犬データ読み込み完了:", window.allDogs);
+  })
+  .catch(err => {
+    console.error("犬データの読み込みに失敗:", err);
+  });
+
 const fishingUI = document.getElementById('fishing-ui');
 const fishingResult = document.getElementById('fishing-result');
 const reelButton = document.getElementById('reel-button');
@@ -8,16 +20,15 @@ const CANVAS_SIZE = 300;
 const CENTER = CANVAS_SIZE / 2;
 const RADIUS = CANVAS_SIZE / 2 - 20;
 
-const SEGMENTS = 12; // 12分割、30度ずつ
+const SEGMENTS = 12; // 12分割（30度ずつ）
 
 let isFishing = false;
 let selectedDogId = null;
 
-let needleAngle = 0;
+let needleAngle = 0; // ラジアンで右を0°
 let needleSpeed = 0.1;
 let isSpinning = false;
 
-// 効果音
 const sfxRouletteLoop = document.getElementById('sfx-roulette-loop');
 const sfxWheelStop = document.getElementById('sfx-wheel-stop');
 const sfxStopClick = document.getElementById('sfx-stop-click');
@@ -25,12 +36,10 @@ const sfxHit = document.getElementById('sfx-hit');
 const sfxMiss = document.getElementById('sfx-miss');
 const sfxCatch = document.getElementById('sfx-catch');
 
-// 赤ゾーン配列 [{start: 度, end: 度}, ...]
 let redZones = [];
 
-// キャッチレート取得
 function getCatchRate(dogId) {
-  const dogData = window.allDogs ? window.allDogs.find(d => d.number.toString() === dogId.toString()) : null;
+  const dogData = window.allDogs.find(d => String(d.number) === String(dogId));
   return dogData ? (dogData.catchRate || 0.2) : 0.2;
 }
 
@@ -38,70 +47,50 @@ function degToRad(deg) {
   return deg * Math.PI / 180;
 }
 
-// 角度範囲判定（360度またぎ対応）
 function isAngleInRange(angle, start, end) {
-  if (start <= end) {
-    return angle >= start && angle <= end;
-  } else {
-    return angle >= start || angle <= end;
-  }
+  if (start <= end) return angle >= start && angle <= end;
+  return angle >= start || angle <= end;
 }
 
-// 赤ゾーン生成（catchRateで幅調整、12分割の30度に合わせる）
 function generateRedZones(catchRate) {
   redZones = [];
-  const segmentDeg = 360 / SEGMENTS; // 30度
-  const baseWidth = segmentDeg * (0.6 + catchRate * 0.4); // 赤ゾーン幅は30度の60%～100%
-
-  const zoneCount = Math.floor(Math.random() * 2) + 1; // 1～2個の赤ゾーン
+  const segmentDeg = 360 / SEGMENTS;
+  const baseWidth = segmentDeg * (0.6 + catchRate * 0.4); 
+  const zoneCount = Math.floor(Math.random() * 2) + 1;
 
   for (let i = 0; i < zoneCount; i++) {
-    const baseStart = (360 / zoneCount) * i;
-    // 赤ゾーン開始は30度刻みに近い角度にランダムスナップ
-    let start = (baseStart + Math.floor(Math.random() * 10) * (segmentDeg / 10)) % 360;
+    let start = (i * (360 / zoneCount) + Math.random() * segmentDeg) % 360;
     let end = (start + baseWidth) % 360;
     redZones.push({ start, end });
   }
-
-  if (redZones.length === 0) {
-    redZones.push({ start: 0, end: baseWidth });
-  }
 }
 
-// ルーレット描画
 function drawRoulette() {
   ctx.clearRect(0, 0, CANVAS_SIZE, CANVAS_SIZE);
-
   const segmentAngle = (2 * Math.PI) / SEGMENTS;
   const segmentDeg = 360 / SEGMENTS;
 
   for (let i = 0; i < SEGMENTS; i++) {
     const startAngle = i * segmentAngle;
     const endAngle = startAngle + segmentAngle;
-
     const segStartDeg = (i * segmentDeg) % 360;
     const segEndDeg = (segStartDeg + segmentDeg) % 360;
 
-    // セグメントが赤ゾーンと少しでも重なっているか判定
-    const inRedZone = redZones.some(zone => {
-      return isAngleInRange(segStartDeg + 1, zone.start, zone.end) || // 境界付近を少しずらして判定
-             isAngleInRange(segEndDeg - 1, zone.start, zone.end) ||
-             (zone.start > zone.end && (segStartDeg >= zone.start || segEndDeg <= zone.end));
-    });
+    const inRedZone = redZones.some(zone =>
+      isAngleInRange(segStartDeg, zone.start, zone.end) ||
+      isAngleInRange(segEndDeg, zone.start, zone.end)
+    );
 
     ctx.beginPath();
     ctx.moveTo(CENTER, CENTER);
     ctx.arc(CENTER, CENTER, RADIUS, startAngle, endAngle, false);
     ctx.closePath();
-
     ctx.fillStyle = inRedZone ? '#ff4444' : '#eeeeee';
-    ctx.strokeStyle = '#666666';
-    ctx.lineWidth = 2;
+    ctx.strokeStyle = '#666';
     ctx.fill();
     ctx.stroke();
   }
 
-  // 針描画
   ctx.save();
   ctx.translate(CENTER, CENTER);
   ctx.rotate(needleAngle);
@@ -118,25 +107,19 @@ function drawRoulette() {
 function update() {
   if (!isFishing) return;
 
-  if (!isSpinning) {
-    needleAngle += needleSpeed;
-  } else {
+  if (isSpinning) {
     needleSpeed *= 0.98;
     needleAngle += needleSpeed;
-
     if (needleSpeed < 0.002) {
-      needleSpeed = 0;
       isSpinning = false;
+      needleSpeed = 0;
       reelButton.disabled = false;
-
       if (sfxRouletteLoop) sfxRouletteLoop.pause();
-      if (sfxWheelStop) {
-        sfxWheelStop.currentTime = 0;
-        sfxWheelStop.play();
-      }
-
+      if (sfxWheelStop) { sfxWheelStop.currentTime = 0; sfxWheelStop.play(); }
       checkResult();
     }
+  } else {
+    needleAngle += needleSpeed;
   }
 
   needleAngle %= (2 * Math.PI);
@@ -145,15 +128,14 @@ function update() {
 }
 
 function startSpin() {
-  if (isSpinning) return;
-  isSpinning = true;
-  reelButton.disabled = true;
+  if (!isSpinning) {
+    isSpinning = true;
+    reelButton.disabled = true;
+  }
 }
 
 function checkResult() {
-  let needleDeg = (needleAngle * 180 / Math.PI);
-  needleDeg = (needleDeg + 360) % 360; // 負の角度補正
-
+  let needleDeg = (needleAngle * 180 / Math.PI + 360) % 360;
   const isHit = redZones.some(zone => isAngleInRange(needleDeg, zone.start, zone.end));
 
   if (isHit) {
@@ -171,7 +153,6 @@ function checkResult() {
     setTimeout(() => {
       fishingResult.textContent = "";
       fishingUI.style.display = 'none';
-      removeCaughtDog();
       isFishing = false;
     }, 1000);
   }
@@ -179,88 +160,73 @@ function checkResult() {
 
 function startFishing(dogElement) {
   if (isFishing) return;
+  if (!window.allDogs.length) {
+    alert("犬データがまだ読み込まれていません！");
+    return;
+  }
+
   isFishing = true;
   selectedDogId = dogElement.dataset.dogId;
-
   fishingUI.style.display = 'block';
   fishingResult.textContent = '';
   needleAngle = 0;
   needleSpeed = 0.4;
   isSpinning = false;
 
-  const catchRate = getCatchRate(selectedDogId);
-  generateRedZones(catchRate);
-
+  generateRedZones(getCatchRate(selectedDogId));
   drawRoulette();
   update();
 
-  if (sfxRouletteLoop) {
-    sfxRouletteLoop.currentTime = 0;
-    sfxRouletteLoop.play();
-  }
+  if (sfxRouletteLoop) { sfxRouletteLoop.currentTime = 0; sfxRouletteLoop.play(); }
 }
 
 reelButton.addEventListener('click', () => {
-  if (!isFishing) return;
-  startSpin();
-  if (sfxStopClick) { sfxStopClick.currentTime = 0; sfxStopClick.play(); }
+  if (isFishing) {
+    startSpin();
+    if (sfxStopClick) { sfxStopClick.currentTime = 0; sfxStopClick.play(); }
+  }
 });
 
 function removeCaughtDog() {
-  const dogElements = document.querySelectorAll(`[data-dog-id="${selectedDogId}"]`);
-  dogElements.forEach(dogEl => dogEl.remove());
+  document.querySelectorAll(`[data-dog-id="${selectedDogId}"]`).forEach(el => el.remove());
 }
 
 function showCatchOverlay(dogId) {
-  const catchOverlay = document.getElementById('catch-overlay');
-  const caughtDogImg = document.getElementById('caught-dog-img');
-  const caughtMessage = document.getElementById('caught-message');
+  const overlay = document.getElementById('catch-overlay');
+  const img = document.getElementById('caught-dog-img');
+  const msg = document.getElementById('caught-message');
 
-  // レアリティカラー定義
   const rarityColors = {
-    "かす": "#353839",
-    "ごみ": "#b5a642",
-    "いらない": "#b08d57",
-    "まあまあ": "#00a86b",
-    "ふつう": "#26619c",
-    "甘えんなって": "#9966cc",
-    "ちらちら見てたよな？": "#f0d36d",
-    "ふーん、えっちじゃん": "#8a2d2d",
-    "どしたん話聞こか": "#40e0d0",
-    "じゃあ挿れるね": "#b22222"
+    "かす": "#353839", "ごみ": "#b5a642", "いらない": "#b08d57",
+    "まあまあ": "#00a86b", "ふつう": "#26619c", "甘えんなって": "#9966cc",
+    "ちらちら見てたよな？": "#f0d36d", "ふーん、えっちじゃん": "#8a2d2d",
+    "どしたん話聞こか": "#40e0d0", "じゃあ挿れるね": "#b22222"
   };
 
-  const dogData = window.allDogs ? window.allDogs.find(d => String(d.number) === String(dogId)) : null;
+  const dogData = window.allDogs.find(d => String(d.number) === String(dogId));
 
   if (!dogData) {
-    caughtDogImg.src = '';
-    caughtMessage.textContent = '犬のデータが読み込まれませんでした。';
-    caughtDogImg.style.boxShadow = '';
+    img.src = '';
+    msg.textContent = '犬のデータが読み込まれませんでした。';
+    img.style.boxShadow = '';
   } else {
-    caughtDogImg.src = dogData.image || '';
-    caughtMessage.textContent = `${dogData.name || '名無し'}をつかまえた！`;
-
-    const rarity = dogData.rarity || 'かす';
-    const auraColor = rarityColors[rarity] || '#ffffff';
-
-    caughtDogImg.style.boxShadow = `
+    console.log("捕まえた犬データ:", dogData);
+    img.src = dogData.image || '';
+    msg.textContent = `${dogData.name || '名無し'}をつかまえた！`;
+    const auraColor = rarityColors[dogData.rarity] || '#fff';
+    img.style.boxShadow = `
       0 0 15px 4px ${auraColor},
       0 0 30px 8px ${auraColor},
       0 0 50px 12px ${auraColor}
     `;
-    caughtDogImg.style.borderRadius = '12px';
+    img.style.borderRadius = '12px';
   }
 
-  catchOverlay.style.display = 'flex';
-
-  if (window.sfxCatch) {
-    sfxCatch.currentTime = 0;
-    sfxCatch.play();
-  }
+  overlay.style.display = 'flex';
+  if (sfxCatch) { sfxCatch.currentTime = 0; sfxCatch.play(); }
 }
 
 document.getElementById('catch-close').addEventListener('click', () => {
-  const catchOverlay = document.getElementById('catch-overlay');
-  catchOverlay.style.display = 'none';
+  document.getElementById('catch-overlay').style.display = 'none';
   fishingUI.style.display = 'none';
 });
