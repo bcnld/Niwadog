@@ -4,126 +4,33 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>犬ゲームタイトル画面</title>
-  <style>
-    body, html {
-      margin: 0; padding: 0; height: 100%;
-      background: black;
-      color: white;
-      font-family: 'Arial Black', sans-serif;
-      user-select: none;
-      overflow: hidden;
-    }
-    .overlay {
-      position: fixed;
-      top: 0; left: 0;
-      width: 100vw; height: 100vh;
-      background: rgba(0,0,0,0.85);
-      display: none;
-      justify-content: center;
-      align-items: center;
-      flex-direction: column;
-      z-index: 9999;
-    }
-    .overlay.active {
-      display: flex;
-    }
-    button {
-      margin-top: 20px;
-      padding: 12px 40px;
-      font-size: 22px;
-      font-weight: bold;
-      border-radius: 8px;
-      border: none;
-      cursor: pointer;
-      user-select: none;
-      background-color: #2196F3;
-      color: white;
-      transition: background-color 0.3s ease;
-    }
-    button:hover {
-      background-color: #1976d2;
-    }
-    #company-display {
-      position: fixed;
-      top: 0; left: 0; width: 100vw; height: 100vh;
-      background: black;
-      color: white;
-      display: flex;
-      flex-direction: column;
-      justify-content: center;
-      align-items: center;
-      user-select: none;
-      opacity: 0;
-      transition: opacity 1s ease;
-      z-index: 9998;
-    }
-    #company-display.visible {
-      opacity: 1;
-    }
-    #company-logo {
-      max-width: 300px;
-      max-height: 150px;
-      margin-bottom: 20px;
-      user-select: none;
-    }
-    #company-name {
-      font-size: 48px;
-      user-select: none;
-    }
-    #title-container {
-      color: white;
-      font-size: 48px;
-      text-align: center;
-      margin-top: 30vh;
-      user-select: none;
-      opacity: 0;
-      transition: opacity 1s ease;
-      pointer-events: none;
-      position: relative;
-      z-index: 1;
-    }
-    #title-container.visible {
-      opacity: 1;
-      pointer-events: auto;
-    }
-    #title-image {
-      max-width: 80vw;
-      user-select: none;
-      margin-bottom: 10px;
-    }
-    #press-any-key {
-      font-size: 24px;
-      margin-top: 50px;
-      opacity: 0.7;
-      user-select: none;
-    }
-  </style>
+  <link rel="stylesheet" href="style.css" />
 </head>
 <body>
 
-  <!-- 最初の質問モーダル -->
-  <div id="question-overlay" class="overlay active" role="dialog" aria-modal="true" aria-labelledby="question-text" style="position:fixed;top:0;left:0;width:100vw;height:100vh;background:rgba(0,0,0,0.85);display:flex;justify-content:center;align-items:center;flex-direction:column;z-index:9999;">
-  <div id="question-text" style="font-size:28px;color:white;">あなたは日本人ですか？</div>
-  <button id="question-yes-btn" style="margin-top:20px;padding:12px 40px;font-size:22px;font-weight:bold;border-radius:8px;border:none;cursor:pointer;background-color:#2196F3;color:white;">はい</button>
-</div>
-
-  <!-- 企業名表示 -->
-  <div id="company-display" aria-live="polite" aria-atomic="true">
-    <img id="company-logo" src="" alt="企業ロゴ" />
-    <div id="company-name"></div>
+  <!-- 質問モーダル -->
+  <div id="question-overlay" class="overlay active" role="dialog" aria-modal="true" aria-labelledby="question-text">
+    <div id="question-text" style="font-size: 28px;">あなたは日本人ですか？</div>
+    <button id="question-yes-btn">はい</button>
   </div>
 
-  <!-- タイトル画面 -->
-  <div id="title-container" role="main" aria-label="ゲームタイトル画面">
-    <img id="title-image" src="images/game_title.png" alt="ゲームタイトル" />
-    <div>BIOHAZARD 4</div>
-    <div id="press-any-key">Press Any Key</div>
+  <!-- タイトル画面全体 -->
+  <div id="title-screen">
+    <div id="company-name" style="opacity:0;">
+      <img id="company-logo" src="" alt="Company Logo" />
+      <div id="company-text"></div>
+    </div>
+
+    <div id="game-title" style="display:none; opacity:0;">
+      <img src="images/game_title.png" alt="Game Title" />
+      <div>BIOHAZARD 4</div>
+      <div id="press-any-key" style="opacity:0;">Press Any Key</div>
+    </div>
   </div>
 
   <!-- BGM -->
   <audio id="bgm" src="Sounds/title.mp3" loop preload="auto"></audio>
 
-  <script src="title.js"></script>
+  <script src="titleScreen.js"></script>
 </body>
 </html>
-
