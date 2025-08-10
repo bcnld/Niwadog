@@ -8,25 +8,36 @@ body, html {
   overflow: hidden;
 }
 
-/* 質問モーダル */
+/* 質問モーダル全体 */
 .overlay {
   position: fixed;
   top: 0; left: 0;
-  width: 100vw; height: 100vh;
-  background: rgba(0,0,0,0.85);
-  display: none;
+  width: 100vw;
+  height: 100vh;
+  background-color: black;   /* 黒背景 */
+  display: flex;
   justify-content: center;
   align-items: center;
   flex-direction: column;
   z-index: 9999;
   color: white;
   font-size: 28px;
+  user-select: none;
 }
-.overlay.active {
-  display: flex;
+
+/* モーダル非表示時は display:none */
+.overlay:not(.active) {
+  display: none;
 }
+
+/* 質問テキスト */
+#question-text {
+  margin-bottom: 20px;
+  text-align: center;
+}
+
+/* ボタン */
 #question-yes-btn {
-  margin-top: 20px;
   padding: 12px 40px;
   font-size: 22px;
   font-weight: bold;
