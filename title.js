@@ -53,8 +53,8 @@ class TitleScreen {
     this.pressKeyFadeIn = true;
 
     // 背景画像
-    this.pressBgImage = "images/press_bg.jpg";  // Press Any Key背景
-    this.menuBgImage = "images/title_bg.jpg";    // メインメニュー背景
+    this.pressBgImage = "images/press_bg.png";  // Press Any Key背景
+    this.menuBgImage = "images/title_bg.png";    // メインメニュー背景
 
     // 背景初期セット（Press Any Key用）
     this.bgDiv.style.backgroundImage = `url('${this.pressBgImage}')`;
