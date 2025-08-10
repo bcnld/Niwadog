@@ -54,7 +54,7 @@ function sellDog(dogId, count) {
   renderSellDogsList();
 }
 
-// 売るパネルの犬リストを表示（個数選択UI追加）
+// 売るパネルの犬リストを表示（スマホ対応、画像＋名前＋売値）
 function renderSellDogsList() {
   const listDiv = document.getElementById('sell-dogs-list');
   if (!listDiv) return;
@@ -77,9 +77,12 @@ function renderSellDogsList() {
     if (!dog) return;
 
     const itemDiv = document.createElement('div');
+    itemDiv.className = 'dog-list-item';
     itemDiv.style.display = 'flex';
     itemDiv.style.alignItems = 'center';
-    itemDiv.style.marginBottom = '10px';
+    itemDiv.style.padding = '8px';
+    itemDiv.style.borderBottom = '1px solid #ccc';
+    itemDiv.style.cursor = 'pointer';
 
     // 画像
     const img = document.createElement('img');
@@ -92,60 +95,67 @@ function renderSellDogsList() {
     // 名前
     const nameDiv = document.createElement('div');
     nameDiv.textContent = dog.name;
-    nameDiv.style.flexBasis = '120px';
-    nameDiv.style.marginRight = '10px';
+    nameDiv.style.flex = '1';
+    nameDiv.style.fontWeight = 'bold';
 
-    // レアリティと売値
-    const detailDiv = document.createElement('div');
-    detailDiv.style.flexBasis = '180px';
-    detailDiv.style.marginRight = '10px';
-    detailDiv.style.fontSize = '14px';
-    detailDiv.innerHTML = `
-      レアリティ: <strong>${dog.rarity}</strong><br>
-      売値: <strong>${dog.price || 100}</strong> ジンバブエドル
-    `;
-
-    // 個数入力
-    const countInput = document.createElement('input');
-    countInput.type = 'number';
-    countInput.min = '1';
-    countInput.max = String(count);
-    countInput.value = '1';
-    countInput.style.width = '60px';
-    countInput.style.marginRight = '10px';
-
-    // 所持数表示
-    const ownedSpan = document.createElement('span');
-    ownedSpan.textContent = `所持数: ${count}`;
-    ownedSpan.style.marginRight = '10px';
-
-    // 売るボタン
-    const sellBtn = document.createElement('button');
-    sellBtn.textContent = '売る';
-    sellBtn.style.cursor = 'pointer';
-
-    sellBtn.addEventListener('click', () => {
-      const sellCount = Number(countInput.value);
-      if (isNaN(sellCount) || sellCount < 1 || sellCount > count) {
-        alert(`売る数は1以上${count}以下で指定してください。`);
-        return;
-      }
-      sellDog(dogId, sellCount);
-    });
+    // 売値
+    const priceDiv = document.createElement('div');
+    priceDiv.textContent = `${dog.price || 100} ジンバブエドル`;
+    priceDiv.style.whiteSpace = 'nowrap';
+    priceDiv.style.fontSize = '14px';
 
     itemDiv.appendChild(img);
     itemDiv.appendChild(nameDiv);
-    itemDiv.appendChild(detailDiv);
-    itemDiv.appendChild(countInput);
-    itemDiv.appendChild(ownedSpan);
-    itemDiv.appendChild(sellBtn);
+    itemDiv.appendChild(priceDiv);
+
+    // クリックで詳細表示
+    itemDiv.addEventListener('click', () => {
+      showDogDetailOverlay(dog, count);
+    });
 
     listDiv.appendChild(itemDiv);
   });
 }
 
-// ここから追加部分：戻るボタンの制御
+// 詳細パネルを上からスライドイン表示
+function showDogDetailOverlay(dog, ownedCount) {
+  const overlay = document.getElementById('dog-detail-overlay');
+  overlay.innerHTML = `
+    <div class="dog-detail-content">
+      <button class="detail-close-btn">×</button>
+      <img src="${dog.image || ''}" class="detail-image">
+      <h2>${dog.name}</h2>
+      <p><strong>レアリティ:</strong> ${dog.rarity}</p>
+      <p><strong>売値:</strong> ${dog.price || 100} ジンバブエドル</p>
+      <p><strong>説明:</strong> ${dog.description || ''}</p>
+      <p><strong>所持数:</strong> ${ownedCount}</p>
+      <div style="margin-top:10px;">
+        <input type="number" id="detail-sell-count" min="1" max="${ownedCount}" value="1" style="width:60px;">
+        <button id="detail-sell-btn">売る</button>
+      </div>
+    </div>
+  `;
 
+  // 閉じる処理
+  overlay.querySelector('.detail-close-btn').addEventListener('click', () => {
+    overlay.classList.remove('active');
+  });
+
+  // 売る処理
+  overlay.querySelector('#detail-sell-btn').addEventListener('click', () => {
+    const sellCount = Number(document.getElementById('detail-sell-count').value);
+    if (isNaN(sellCount) || sellCount < 1 || sellCount > ownedCount) {
+      alert(`売る数は1以上${ownedCount}以下で指定してください。`);
+      return;
+    }
+    sellDog(String(dog.number), sellCount);
+    overlay.classList.remove('active');
+  });
+
+  overlay.classList.add('active');
+}
+
+// ショップUI制御
 window.addEventListener('load', () => {
   const shopBtn = document.getElementById('shop-btn');
   const shopMenu = document.getElementById('shop-menu');
@@ -166,96 +176,64 @@ window.addEventListener('load', () => {
     }
   }
 
-  // ショップを開く（メニュー画面）
   shopBtn.addEventListener('click', () => {
     const fishingUI = document.getElementById('fishing-ui');
     const resultOverlay = document.getElementById('result-overlay');
-
     if (window.isFishing ||
         (fishingUI && fishingUI.style.display === 'block') ||
         (resultOverlay && resultOverlay.style.display === 'flex')) {
       return;
     }
-
     shopMenu.style.display = 'block';
     shopSellPanel.style.display = 'none';
     shopBuyPanel.style.display = 'none';
-
     showBackButton();
-
-    if (sfxOpen) {
-      sfxOpen.currentTime = 0;
-      sfxOpen.play().catch(() => {});
-    }
+    if (sfxOpen) { sfxOpen.currentTime = 0; sfxOpen.play().catch(() => {}); }
   });
 
-  // ショップメニュー閉じる
   shopMenuClose.addEventListener('click', () => {
     shopMenu.style.display = 'none';
     shopBackButton.style.display = 'none';
-
-    if (sfxClose) {
-      sfxClose.currentTime = 0;
-      sfxClose.play().catch(() => {});
-    }
+    if (sfxClose) { sfxClose.currentTime = 0; sfxClose.play().catch(() => {}); }
   });
 
-  // 売るボタン押したら売るパネル表示
   document.getElementById('btn-sell').addEventListener('click', () => {
     shopMenu.style.display = 'none';
     shopSellPanel.style.display = 'block';
     shopBuyPanel.style.display = 'none';
-
     showBackButton();
-
     renderSellDogsList();
   });
 
-  // 買うボタン押したら買うパネル表示
   document.getElementById('btn-buy').addEventListener('click', () => {
     shopMenu.style.display = 'none';
     shopSellPanel.style.display = 'none';
     shopBuyPanel.style.display = 'block';
-
     showBackButton();
   });
 
-  // 売るパネル閉じるボタン
   sellClose.addEventListener('click', () => {
     shopSellPanel.style.display = 'none';
     shopBackButton.style.display = 'none';
-
-    if (sfxClose) {
-      sfxClose.currentTime = 0;
-      sfxClose.play().catch(() => {});
-    }
+    if (sfxClose) { sfxClose.currentTime = 0; sfxClose.play().catch(() => {}); }
   });
 
-  // 買うパネル閉じるボタン
   buyClose.addEventListener('click', () => {
     shopBuyPanel.style.display = 'none';
     shopBackButton.style.display = 'none';
-
-    if (sfxClose) {
-      sfxClose.currentTime = 0;
-      sfxClose.play().catch(() => {});
-    }
+    if (sfxClose) { sfxClose.currentTime = 0; sfxClose.play().catch(() => {}); }
   });
 
-  // 戻るボタンの動作
   shopBackButton.addEventListener('click', () => {
     if (shopSellPanel.style.display === 'block' || shopBuyPanel.style.display === 'block') {
-      // 売る・買うパネルからメニュー画面に戻る
       shopSellPanel.style.display = 'none';
       shopBuyPanel.style.display = 'none';
       shopMenu.style.display = 'block';
     } else if (shopMenu.style.display === 'block') {
-      // メニュー画面からショップ閉じる
       shopMenu.style.display = 'none';
       shopBackButton.style.display = 'none';
     }
   });
 
-  // 初期は非表示
   shopBackButton.style.display = 'none';
 });
