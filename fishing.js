@@ -47,6 +47,10 @@ function degToRad(deg) {
   return deg * Math.PI / 180;
 }
 
+function radToDeg(rad) {
+  return (rad * 180 / Math.PI + 360) % 360;
+}
+
 function isAngleInRange(angle, start, end) {
   if (start <= end) return angle >= start && angle <= end;
   return angle >= start || angle <= end;
@@ -56,7 +60,7 @@ function generateRedZones(catchRate) {
   redZones = [];
   const segmentDeg = 360 / SEGMENTS;
   const baseWidth = segmentDeg * (0.6 + catchRate * 0.4); 
-  const zoneCount = Math.floor(Math.random() * 2) + 1;
+  const zoneCount = Math.floor(Math.random() * 2) + 1; // 1〜2個
 
   for (let i = 0; i < zoneCount; i++) {
     let start = (i * (360 / zoneCount) + Math.random() * segmentDeg) % 360;
@@ -91,6 +95,7 @@ function drawRoulette() {
     ctx.stroke();
   }
 
+  // 針描画
   ctx.save();
   ctx.translate(CENTER, CENTER);
   ctx.rotate(needleAngle);
@@ -135,7 +140,8 @@ function startSpin() {
 }
 
 function checkResult() {
-  let needleDeg = (needleAngle * 180 / Math.PI + 360) % 360;
+  // 針の先端の角度を計算（右0°基準）
+  let needleDeg = radToDeg(needleAngle);
   const isHit = redZones.some(zone => isAngleInRange(needleDeg, zone.start, zone.end));
 
   if (isHit) {
@@ -143,8 +149,8 @@ function checkResult() {
     if (sfxHit) { sfxHit.currentTime = 0; sfxHit.play(); }
     setTimeout(() => {
       fishingResult.textContent = "";
-      removeCaughtDog();
-      showCatchOverlay(selectedDogId);
+      showCatchOverlay(selectedDogId); // 先に表示
+      removeCaughtDog(); // 表示後に削除
       isFishing = false;
     }, 1000);
   } else {
@@ -206,12 +212,12 @@ function showCatchOverlay(dogId) {
   const dogData = window.allDogs.find(d => String(d.number) === String(dogId));
 
   if (!dogData) {
-    img.src = '';
+    img.src = 'no_image.png';
     msg.textContent = '犬のデータが読み込まれませんでした。';
     img.style.boxShadow = '';
   } else {
     console.log("捕まえた犬データ:", dogData);
-    img.src = dogData.image || '';
+    img.src = dogData.image || 'no_image.png';
     msg.textContent = `${dogData.name || '名無し'}をつかまえた！`;
     const auraColor = rarityColors[dogData.rarity] || '#fff';
     img.style.boxShadow = `
