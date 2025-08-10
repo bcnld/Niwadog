@@ -8,14 +8,14 @@ const CANVAS_SIZE = 300;
 const CENTER = CANVAS_SIZE / 2;
 const RADIUS = CANVAS_SIZE / 2 - 20;
 
-const SEGMENTS = 12; // 分割数を増やす（48等分）
+const SEGMENTS = 12; // 12分割、30度ずつ
 
 let isFishing = false;
 let selectedDogId = null;
 
-let needleAngle = 0;       
-let needleSpeed = 0.1;     
-let isSpinning = false;    
+let needleAngle = 0;
+let needleSpeed = 0.1;
+let isSpinning = false;
 
 // 効果音
 const sfxRouletteLoop = document.getElementById('sfx-roulette-loop');
@@ -30,7 +30,7 @@ let redZones = [];
 
 // キャッチレート取得
 function getCatchRate(dogId) {
-  const dogData = window.allDogs ? window.allDogs.find(d => d.id.toString() === dogId.toString()) : null;
+  const dogData = window.allDogs ? window.allDogs.find(d => d.number.toString() === dogId.toString()) : null;
   return dogData ? (dogData.catchRate || 0.2) : 0.2;
 }
 
@@ -47,27 +47,24 @@ function isAngleInRange(angle, start, end) {
   }
 }
 
-// 赤ゾーン生成（最低1個必ず生成）
+// 赤ゾーン生成（catchRateで幅調整、12分割の30度に合わせる）
 function generateRedZones(catchRate) {
   redZones = [];
-  const baseWidth = 20; // 基本の赤ゾーン幅（度）
-  const width = baseWidth + (baseWidth * catchRate * 3); // キャッチレートで幅を調整（最大約80度くらい）
+  const segmentDeg = 360 / SEGMENTS; // 30度
+  const baseWidth = segmentDeg * (0.6 + catchRate * 0.4); // 赤ゾーン幅は30度の60%～100%
 
-  const zoneCount = Math.floor(Math.random() * 3) + 1; // 1〜3個の赤ゾーン
+  const zoneCount = Math.floor(Math.random() * 2) + 1; // 1～2個の赤ゾーン
 
   for (let i = 0; i < zoneCount; i++) {
-    // 赤ゾーン開始角度は均等に散らばるように調整（0〜360をzoneCount分割して少しズラす）
     const baseStart = (360 / zoneCount) * i;
-    // 少しランダムずらし
-    const randomOffset = (Math.random() * (360 / zoneCount - width));
-    let start = (baseStart + randomOffset) % 360;
-    let end = (start + width) % 360;
+    // 赤ゾーン開始は30度刻みに近い角度にランダムスナップ
+    let start = (baseStart + Math.floor(Math.random() * 10) * (segmentDeg / 10)) % 360;
+    let end = (start + baseWidth) % 360;
     redZones.push({ start, end });
   }
 
-  // 念のため最低1つ赤ゾーンあるかチェック（あればOK）
   if (redZones.length === 0) {
-    redZones.push({ start: 0, end: width });
+    redZones.push({ start: 0, end: baseWidth });
   }
 }
 
@@ -78,7 +75,7 @@ function drawRoulette() {
   const segmentAngle = (2 * Math.PI) / SEGMENTS;
   const segmentDeg = 360 / SEGMENTS;
 
-  for(let i=0; i<SEGMENTS; i++) {
+  for (let i = 0; i < SEGMENTS; i++) {
     const startAngle = i * segmentAngle;
     const endAngle = startAngle + segmentAngle;
 
@@ -87,8 +84,8 @@ function drawRoulette() {
 
     // セグメントが赤ゾーンと少しでも重なっているか判定
     const inRedZone = redZones.some(zone => {
-      return isAngleInRange(segStartDeg, zone.start, zone.end) ||
-             isAngleInRange(segEndDeg, zone.start, zone.end) ||
+      return isAngleInRange(segStartDeg + 1, zone.start, zone.end) || // 境界付近を少しずらして判定
+             isAngleInRange(segEndDeg - 1, zone.start, zone.end) ||
              (zone.start > zone.end && (segStartDeg >= zone.start || segEndDeg <= zone.end));
     });
 
@@ -154,8 +151,8 @@ function startSpin() {
 }
 
 function checkResult() {
-  let needleDeg = (needleAngle * 180 / Math.PI) % 360;
-  if (needleDeg < 0) needleDeg += 360;
+  let needleDeg = (needleAngle * 180 / Math.PI);
+  needleDeg = (needleDeg + 360) % 360; // 負の角度補正
 
   const isHit = redZones.some(zone => isAngleInRange(needleDeg, zone.start, zone.end));
 
@@ -219,7 +216,7 @@ function showCatchOverlay(dogId) {
   const caughtDogImg = document.getElementById('caught-dog-img');
   const caughtMessage = document.getElementById('caught-message');
 
-  // レアリティカラー定義（dog.jsonのレアリティ文字列に対応）
+  // レアリティカラー定義
   const rarityColors = {
     "かす": "#353839",
     "ごみ": "#b5a642",
