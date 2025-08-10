@@ -207,7 +207,25 @@ function showCatchOverlay(dogId) {
   const caughtDogImg = document.getElementById('caught-dog-img');
   const caughtMessage = document.getElementById('caught-message');
 
-  const dogData = window.allDogs ? window.allDogs.find(d => d.id.toString() === dogId.toString()) : null;
+  let dogData = null;
+
+  // まず window.allDogs から探す
+  if (window.allDogs && Array.isArray(window.allDogs)) {
+    dogData = window.allDogs.find(d => String(d.id) === String(dogId));
+  }
+
+  // 見つからなかった場合はHTML側から直接取得
+  if (!dogData) {
+    const dogElement = document.querySelector(`[data-dog-id="${dogId}"]`);
+    if (dogElement) {
+      dogData = {
+        name: dogElement.dataset.dogName || "なぞの犬",
+        image: dogElement.dataset.dogImage || "",
+      };
+    }
+  }
+
+  // 表示処理
   if (!dogData) {
     caughtDogImg.src = '';
     caughtMessage.textContent = '犬データがありません';
@@ -217,7 +235,11 @@ function showCatchOverlay(dogId) {
   }
 
   catchOverlay.style.display = 'flex';
-  if (sfxCatch) { sfxCatch.currentTime = 0; sfxCatch.play(); }
+
+  if (sfxCatch) {
+    sfxCatch.currentTime = 0;
+    sfxCatch.play();
+  }
 }
 
 document.getElementById('catch-close').addEventListener('click', () => {
