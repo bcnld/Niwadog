@@ -1,5 +1,3 @@
-// タイトル画面制御用JS
-
 class TitleScreen {
   constructor() {
     // DOM生成
@@ -21,8 +19,9 @@ class TitleScreen {
     this.menuItems = ["New Game", "Load Game"];
     this.selectedIndex = 0;
 
-    // イベント登録
+    // イベント登録（キーボード・スマホタップ対応）
     window.addEventListener("keydown", (e) => this.onAnyKey(e));
+    window.addEventListener("touchstart", (e) => this.onAnyKey(e));
 
     // 開始
     this.run();
@@ -69,7 +68,7 @@ class TitleScreen {
     this.bg.style.left = "0";
     this.bg.style.width = "200%";
     this.bg.style.height = "100%";
-    this.bg.style.backgroundImage = "url('images/title_bg.jpg')"; // ここは実際の背景画像パスに変えてください
+    this.bg.style.backgroundImage = "url('images/title_bg.jpg')"; // 実際の背景画像パスに変えてください
     this.bg.style.backgroundRepeat = "repeat-x";
     this.bg.style.backgroundSize = "cover";
     this.titleScreen.appendChild(this.bg);
@@ -122,6 +121,7 @@ class TitleScreen {
     this.menu.style.opacity = "0";
     this.menu.style.transition = "opacity 1s ease";
     this.menu.style.cursor = "default";
+    this.menu.style.pointerEvents = "none";
     this.titleScreen.appendChild(this.menu);
 
     this.menuItemsElements = [];
@@ -233,6 +233,8 @@ class TitleScreen {
       this.pressKeyText.style.opacity = "0";
       this.menu.style.opacity = "1";
       this.menu.style.pointerEvents = "auto";
+
+      if (e.cancelable) e.preventDefault();
     }
   }
 
