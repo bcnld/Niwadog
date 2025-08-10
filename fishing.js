@@ -208,12 +208,18 @@ function showCatchOverlay(dogId) {
   const caughtMessage = document.getElementById('caught-message');
 
   const rarityColors = {
-    common: '#aaaaaa',
-    rare: '#33ccff',
-    epic: '#9933ff',
-    legendary: '#ffcc00',
-  };
-
+  "かす": "#353839",             // 黒曜石
+  "ごみ": "#b5a642",             // 砂金（愚者の金）
+  "いらない": "#b08d57",         // 青銅
+  "まあまあ": "#00a86b",         // 翡翠
+  "ふつう": "#26619c",           // ラピスラズリ
+  "甘えんなって": "#9966cc",     // 紫水晶
+  "ちらちら見てたよな？": "#f0d36d", // 黄鉄鉱
+  "ふーん、えっちじゃん": "#8a2d2d", // 赤鉄鉱
+  "どしたん話聞こか": "#40e0d0",     // ターコイズ
+  "じゃあ挿れるね": "#b22222"          // ルビー
+};
+  
   // dog.jsonデータから該当犬を探す
   const dogData = window.allDogs ? window.allDogs.find(d => String(d.id) === String(dogId)) : null;
 
