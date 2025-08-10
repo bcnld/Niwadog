@@ -170,12 +170,18 @@ window.addEventListener('load', () => {
     shopSellPanel.style.display = 'none';
     shopBuyPanel.style.display = 'none';
 
-    sfxOpen.play().catch(() => {});
+    if (sfxOpen) {
+      sfxOpen.currentTime = 0;
+      sfxOpen.play().catch(() => {});
+    }
   });
 
   shopMenuClose.addEventListener('click', () => {
     shopMenu.style.display = 'none';
-    sfxClose.play().catch(() => {});
+    if (sfxClose) {
+      sfxClose.currentTime = 0;
+      sfxClose.play().catch(() => {});
+    }
   });
 
   document.getElementById('btn-sell').addEventListener('click', () => {
@@ -193,11 +199,17 @@ window.addEventListener('load', () => {
 
   sellClose.addEventListener('click', () => {
     shopSellPanel.style.display = 'none';
-    sfxClose.play().catch(() => {});
+    if (sfxClose) {
+      sfxClose.currentTime = 0;
+      sfxClose.play().catch(() => {});
+    }
   });
 
   buyClose.addEventListener('click', () => {
     shopBuyPanel.style.display = 'none';
-    sfxClose.play().catch(() => {});
+    if (sfxClose) {
+      sfxClose.currentTime = 0;
+      sfxClose.play().catch(() => {});
+    }
   });
 });
