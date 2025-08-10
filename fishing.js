@@ -198,30 +198,32 @@ function startSpin() {
 }
 
 // 結果判定
-function checkResult() {
-  const needleDeg = radToDeg(needleAngle);
-  const hit = isAngleInRange(needleDeg, redZone.start, redZone.end);
+if (hit) {
+  fishingResult.textContent = "ヒット！";
+  if (sfxHit) { sfxHit.currentTime = 0; sfxHit.play(); }
 
-  if (hit) {
-    fishingResult.textContent = "ヒット！";
-    if (sfxHit) { sfxHit.currentTime = 0; sfxHit.play(); }
+  // 釣った犬を所持リストと図鑑に登録
+  addCaughtDog(selectedDogId);
+  registerDog(selectedDogId);
 
-    // 釣った犬を所持リストと図鑑に登録
-    addCaughtDog(selectedDogId);
-    registerDog(selectedDogId);
+  setTimeout(() => {
+    fishingResult.textContent = "";
+    removeCaughtDog();
+    showCatchOverlay(selectedDogId);
 
-    setTimeout(() => {
-      fishingResult.textContent = "";
-      removeCaughtDog();
-      showCatchOverlay(selectedDogId);
+    // 図鑑再描画
+    if (typeof renderZukanList === "function") {
+      renderZukanList();
+    }
 
-      // 図鑑があれば再描画（存在チェック）
-      if (typeof renderZukanList === "function") {
-        renderZukanList();
-      }
+    // ここでショップ所持リスト再描画を呼ぶ（関数名は仮）
+    if (typeof renderShopInventory === "function") {
+      renderShopInventory();
+    }
 
-      isFishing = false;
-    }, 1000);
+    isFishing = false;
+  }, 1000);
+}
 
   } else {
     fishingResult.textContent = "逃げられた...";
