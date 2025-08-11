@@ -1,56 +1,77 @@
-body, html {
-  margin: 0; padding: 0; height: 100%;
-  background-color: black;
-  color: white;
-  font-family: 'Arial Black', sans-serif;
-  user-select: none;
+body, html {  
+  margin: 0; padding: 0; height: 100%;  
+  background-color: black;  
+  color: white;  
+  font-family: 'Arial Black', sans-serif;  
+  user-select: none;  
+  overflow: hidden;  
+}  
+  
+#center-text {  
+  position: fixed;  
+  top: 50%; left: 50%;  
+  transform: translate(-50%, -50%);  
+  font-size: 48px;  
+  font-weight: bold;  
+  color: white;  
+  text-align: center;  
+  cursor: pointer;  
+  user-select: none;  
+  max-width: 90vw;  
+  padding: 20px;  
+  z-index: 10000; /* 確実に最前面に */
+}  
+  
+/* 会社ロゴコンテナ */  
+#company-logos {  
+  position: fixed;    /* 画面に固定 */  
+  top: 50%;  
+  left: 50%;  
+  transform: translate(-50%, -50%);  
+  z-index: 9999;     /* 高めに */  
+  width: 100vw;      /* コンテナ幅を画面いっぱいに */
+  height: 100vh;     /* 高さも画面いっぱい */
+  pointer-events: none; /* 最初はクリック無効 */
+  display: flex;          /* 中央揃え用にフレックス */
+  justify-content: center;
+  align-items: center;
   overflow: hidden;
-}
-
-#center-text {
-  position: fixed;
-  top: 50%; left: 50%;
-  transform: translate(-50%, -50%);
-  font-size: 48px;
-  font-weight: bold;
-  color: white;
-  text-align: center;
-  cursor: pointer;
-  user-select: none;
-  max-width: 90vw;
-  padding: 20px;
-}
-
-/* 会社ロゴ共通 */
-.company-logo {
-  display: none;        /* 最初は非表示に */
+}  
+  
+.company-logo {  
+  display: none; /* 最初は非表示 */
   opacity: 0;
-  pointer-events: none;
-  transition: opacity 1s ease;
-  position: fixed;      /* ここ追加 */
-  top: 50%;
-  left: 50%;
+  pointer-events: none;  
+  max-width: 300px;  
+  max-height: 150px;  
+  width: 80vw; /* 画面幅の80%以内で縮小 */
+  height: auto;  
+  transition: opacity 1s ease;  
+  position: absolute; /* それぞれを重ねる */
+  top: 50%;  
+  left: 50%;  
   transform: translate(-50%, -50%);
-  max-width: 300px;
-  max-height: 150px;
-  z-index: 9999;        /* 確実に上に出るように */
-}
-
-.company-logo.active {
-  display: block;
-  opacity: 1;
-  pointer-events: auto;
-}
-
-/* スマホ対応 */
-@media (max-width: 600px) {
-  #center-text {
-    font-size: 28px;
-    padding: 15px;
-  }
-
-  .company-logo {
-    max-width: 200px;
-    max-height: 100px;
-  }
+  user-select: none;
+  z-index: 10000;
+}  
+  
+.company-logo.active {  
+  display: block;  
+  opacity: 1;  
+  pointer-events: auto;  
+}  
+  
+/* スマホ対応 */  
+@media (max-width: 600px) {  
+  #center-text {  
+    font-size: 28px;  
+    padding: 15px;  
+  }  
+  
+  .company-logo {  
+    max-width: 90vw; /* 幅は90%に */
+    max-height: 100px;  
+    width: auto;  
+    height: auto;  
+  }  
 }
