@@ -1,20 +1,20 @@
 /* --- 共通リセット・ベース --- */
 body, html {
   margin: 0; padding: 0; height: 100%;
-  background-color: transparent; /* 背景透明 */
+  background-color: black;
   color: white;
   font-family: 'Arial Black', sans-serif;
   user-select: none;
   overflow: hidden;
 }
 
-/* 質問モーダル全体 */
+/* 質問オーバーレイ全体 */
 .overlay {
   position: fixed;
   top: 0; left: 0;
   width: 100vw;
   height: 100vh;
-  background-color: rgba(0,0,0,0.85); /* 半透明黒 */
+  background-color: black; /* 黒背景 */
   display: flex;
   justify-content: center;
   align-items: center;
@@ -25,30 +25,12 @@ body, html {
   user-select: none;
 }
 
-/* モーダル非表示時は display:none */
+/* モーダル非表示時 */
 .overlay:not(.active) {
   display: none;
 }
 
-/* 「はい」ボタン */
-#question-yes-btn {
-  margin-top: 20px;
-  padding: 12px 40px;
-  font-size: 22px;
-  font-weight: bold;
-  border-radius: 8px;
-  border: none;
-  cursor: pointer;
-  background-color: #2196F3;
-  color: white;
-  user-select: none;
-  transition: background-color 0.3s ease;
-}
-#question-yes-btn:hover {
-  background-color: #1976d2;
-}
-
-/* 企業名とロゴ */
+/* 企業名・ロゴ */
 #company-name {
   position: fixed;
   top: 50%;
@@ -61,7 +43,6 @@ body, html {
   transition: opacity 1s ease;
   font-size: 48px;
   color: white;
-  user-select: none;
   z-index: 1000;
 }
 
@@ -69,12 +50,11 @@ body, html {
   max-width: 300px;
   max-height: 150px;
   margin-bottom: 20px;
-  user-select: none;
 }
 
 /* ゲームタイトル */
 #game-title {
-  display: none; /* 最初は非表示 */
+  display: none;
   position: fixed;
   top: 50%;
   left: 50%;
@@ -83,13 +63,11 @@ body, html {
   align-items: center;
   opacity: 0;
   transition: opacity 1s ease;
-  user-select: none;
   z-index: 1000;
 }
 
 #game-title img {
   max-width: 80vw;
-  user-select: none;
 }
 
 #game-title > div {
@@ -106,17 +84,17 @@ body, html {
   text-align: center;
   font-size: 24px;
   color: white;
-  user-select: none;
   opacity: 0;
   transition: opacity 0.7s ease-in-out;
   pointer-events: none;
   z-index: 1000;
 }
 
-/* 背景画像用div */
+/* 背景画像 */
 #background {
   position: fixed;
-  top: 0; left: 0;
+  top: 0;
+  left: 0;
   width: 100vw;
   height: 100vh;
   background-size: cover;
@@ -126,6 +104,4 @@ body, html {
   transform-origin: center center;
   transform: scale(1.2);
   transition: transform 3s ease-out, filter 3s ease-out;
-  background-repeat: no-repeat;
-  background-color: transparent;
 }
