@@ -1,9 +1,7 @@
 document.addEventListener("DOMContentLoaded", () => {
   const centerText = document.getElementById("center-text");
   const logos = document.querySelectorAll(".company-logo");
-  const bgOverlay = document.getElementById("background-overlay"); // 背景白くするdiv
-  const bgm = document.getElementById("bgm"); // <audio>タグで用意
-
+  const backgroundOverlay = document.getElementById("background-overlay");
   let currentIndex = 0;
   let started = false;
 
@@ -47,22 +45,21 @@ document.addEventListener("DOMContentLoaded", () => {
     });
   }
 
-  // ロゴを順番に表示
+  // 会社ロゴを順番に表示
   async function showNextLogo() {
     if (currentIndex >= logos.length) {
-      // すべて表示終わったらBGM再生
-      if (bgm) {
-        bgm.loop = true;
-        bgm.play();
-      }
+      // 背景画像をフェードで切り替え
+      // フェードアウト
+      backgroundOverlay.style.transition = "opacity 1s ease";
+      backgroundOverlay.style.opacity = 0;
+      await new Promise(r => setTimeout(r, 1000));
+      // 背景画像変更
+      backgroundOverlay.style.backgroundImage = "url('images/press_bg.png')";
+      backgroundOverlay.style.backgroundSize = "cover";
+      backgroundOverlay.style.backgroundPosition = "center center";
+      // フェードイン
+      backgroundOverlay.style.opacity = 1;
       return;
-    }
-
-    // 2枚目以降は背景を白＋暗めに
-    if (currentIndex >= 1 && bgOverlay) {
-      bgOverlay.style.backgroundColor = "rgba(255,255,255,0.8)";
-    } else if (bgOverlay) {
-      bgOverlay.style.backgroundColor = "transparent";
     }
 
     const logo = logos[currentIndex];
@@ -74,6 +71,7 @@ document.addEventListener("DOMContentLoaded", () => {
     showNextLogo();
   }
 
+  // 最初のクリックテキスト処理開始
   centerText.addEventListener("click", () => {
     if (started) return;
     started = true;
@@ -82,9 +80,14 @@ document.addEventListener("DOMContentLoaded", () => {
     });
   });
 
-  // 初期はロゴ非表示
+  // ページ読み込み時に会社ロゴは全部非表示に設定
   logos.forEach(logo => {
     logo.style.display = "none";
     logo.style.opacity = 0;
   });
+
+  // 背景オーバーレイ初期設定
+  backgroundOverlay.style.backgroundColor = "transparent";
+  backgroundOverlay.style.opacity = 1;
+  backgroundOverlay.style.backgroundImage = "";
 });
