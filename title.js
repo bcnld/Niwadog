@@ -52,21 +52,25 @@ document.addEventListener("DOMContentLoaded", () => {
     backgroundOverlay.style.backgroundImage = "url('images/press_bg.png')";
     backgroundOverlay.style.backgroundSize = "cover";
     backgroundOverlay.style.backgroundPosition = "center center";
+    backgroundOverlay.style.backgroundRepeat = "no-repeat";
 
-    // 初期状態
+    // 初期状態セット（非表示・ぼかし・拡大）
+    backgroundOverlay.style.transition = "none";
     backgroundOverlay.style.opacity = 0;
     backgroundOverlay.style.filter = "blur(5px)";
     backgroundOverlay.style.transform = "scale(1.2)";
     backgroundOverlay.style.display = "block";
 
-    // トランジション設定（opacity, filter, transform）
-    backgroundOverlay.style.transition = "opacity 1.5s ease, filter 1.5s ease, transform 1.5s ease";
-
-    // 1フレーム後にトランジション開始（opacityを1に、filterとtransformを元に戻す）
+    // 次のフレームでトランジション設定と状態を戻す
     await new Promise(requestAnimationFrame);
+    backgroundOverlay.style.transition = "opacity 1.5s ease, filter 1.5s ease, transform 1.5s ease";
     backgroundOverlay.style.opacity = 1;
     backgroundOverlay.style.filter = "blur(0)";
     backgroundOverlay.style.transform = "scale(1)";
+
+    // BGMループ再生をここで早めに開始
+    bgm.loop = true;
+    bgm.play();
 
     // トランジション完了まで待つ
     await new Promise(resolve => setTimeout(resolve, 1600));
@@ -74,26 +78,24 @@ document.addEventListener("DOMContentLoaded", () => {
 
   async function showNextLogo() {
     if (currentIndex >= logos.length) {
-      // 3枚すべて表示終わったあと背景画像フェードイン→BGM再生
+      // 3枚すべて表示終わったあと背景画像フェードイン＋BGM再生
       await fadeInBackgroundImage();
-      bgm.loop = true;
-      bgm.play();
       return;
     }
 
-    // 背景を白く（半透明）に戻すのは1回目以降のロゴ表示の直前
+    // 2枚目以降のロゴ表示前は背景を白く半透明に
     if (currentIndex > 0) {
       backgroundOverlay.style.transition = "none";
       backgroundOverlay.style.backgroundImage = "";
       backgroundOverlay.style.backgroundColor = "rgba(255,255,255,0.8)";
       backgroundOverlay.style.opacity = 1;
 
-      // すぐにトランジションを戻す（次回切り替え用）
+      // 少し遅延してトランジションを元に戻す
       setTimeout(() => {
         backgroundOverlay.style.transition = "opacity 1s ease";
       }, 10);
     } else {
-      // 最初は透明背景にしておく
+      // 最初は背景透明に設定
       backgroundOverlay.style.backgroundColor = "transparent";
       backgroundOverlay.style.opacity = 1;
     }
@@ -115,7 +117,7 @@ document.addEventListener("DOMContentLoaded", () => {
     });
   });
 
-  // 初期状態ロゴ非表示
+  // 初期状態でロゴは全部非表示にしておく
   logos.forEach(logo => {
     logo.style.display = "none";
     logo.style.opacity = 0;
