@@ -2,15 +2,13 @@ document.addEventListener("DOMContentLoaded", () => {
   const centerText = document.getElementById("center-text");
   const logos = document.querySelectorAll(".company-logo");
   let currentIndex = 0;
-  let started = false; // クリックスタート済みフラグ
+  let started = false;
 
-  // 初期状態でロゴは非表示、透明度0にセット
   logos.forEach(logo => {
     logo.style.display = "none";
     logo.style.opacity = 0;
   });
 
-  // ロゴフェードイン・アウト関数
   function fadeIn(element, duration = 1000) {
     element.style.opacity = 0;
     element.style.display = "block";
@@ -51,7 +49,6 @@ document.addEventListener("DOMContentLoaded", () => {
     });
   }
 
-  // ロゴを順番に表示
   async function showNextLogo() {
     if (currentIndex >= logos.length) {
       console.log("すべてのロゴ表示完了");
@@ -59,17 +56,15 @@ document.addEventListener("DOMContentLoaded", () => {
     }
     const logo = logos[currentIndex];
     await fadeIn(logo, 1000);
-    await new Promise(r => setTimeout(r, 2000)); // 2秒表示キープ
+    await new Promise(r => setTimeout(r, 2000));
     await fadeOut(logo, 1000);
     currentIndex++;
-    showNextLogo();
+    await showNextLogo();  // ここを await に修正
   }
 
-  // テキストクリックイベント
   centerText.addEventListener("click", () => {
-    if (started) return; // 多重クリック防止
+    if (started) return;
     started = true;
-    // テキストをフェードアウトしてから非表示
     fadeOut(centerText, 500).then(() => {
       showNextLogo();
     });
