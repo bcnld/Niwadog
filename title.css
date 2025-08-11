@@ -26,8 +26,14 @@ body, html {
   background-color: #111;
   padding: 30px 40px;
   border-radius: 12px;
-  text-align: center;
   max-width: 90vw;
+  width: 600px;          /* 最大幅600px */
+  
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  box-sizing: border-box;
 }
 
 #question-box p {
@@ -36,6 +42,21 @@ body, html {
   margin: 0;
   color: white;
   text-align: center;
+}
+
+/* スマホ用 */
+@media (max-width: 600px) {
+  #question-box {
+    width: 90vw;
+    padding: 20px 25px;
+  }
+  #question-box p {
+    font-size: 28px;
+  }
+  #question-yes-btn {
+    font-size: 18px;
+    padding: 10px 30px;
+  }
 }
 
 #question-yes-btn {
