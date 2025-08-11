@@ -1,195 +1,184 @@
-/* ===== 共通リセット ===== */
-body, html {
-  margin: 0;
-  padding: 0;
-  height: 100%;
-  background-color: black;
-  color: white;
-  font-family: 'Arial Black', sans-serif;
-  user-select: none;
-  overflow: hidden;
-}
+document.addEventListener("DOMContentLoaded", () => {
+  const centerText = document.getElementById("center-text");
+  const logos = document.querySelectorAll(".company-logo");
+  const backgroundOverlay = document.getElementById("background-overlay");
+  const bgm = document.getElementById("bgm");
 
-/* 中央の質問テキスト */
-#center-text {
-  position: fixed;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%);
-  font-size: 48px;
-  font-weight: bold;
-  color: white;
-  text-align: center;
-  cursor: pointer;
-  max-width: 90vw;
-  padding: 20px;
-  z-index: 20;
-}
+  const titleImg1 = document.getElementById("title-img1");
+  const titleImg2 = document.getElementById("title-img2");
+  const pressKeyText = document.getElementById("press-key-text");
 
-/* 背景オーバーレイ */
-#background-overlay {
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  background-color: transparent;
-  transition: background-color 1s ease;
-  z-index: 5;
-}
+  let currentIndex = 0;
+  let started = false;
 
-/* 企業ロゴ群コンテナ */
-#company-logos {
-  position: fixed;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%);
-  z-index: 10;
-  width: 100vw;
-  height: 100vh;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  pointer-events: none;
-}
-
-.company-logo {
-  position: absolute;
-  opacity: 0;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%);
-  transition: opacity 1s ease;
-}
-
-.company-logo img {
-  max-width: 40vw;
-  max-height: 40vh;
-  object-fit: contain;
-}
-
-/* ===== タイトル画像 ===== */
-#title-images {
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  z-index: 30;
-  pointer-events: none;
-}
-
-/* タイトル1（光って出る） */
-#title-img1 {
-  position: absolute;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%);
-  opacity: 0;
-  max-width: 95vw;
-  max-height: 95vh;
-  filter: drop-shadow(0 0 20px rgba(255,255,255,0.8));
-  transition: opacity 1s ease;
-}
-
-/* タイトル2（少し上） */
-#title-img2 {
-  position: absolute;
-  top: 40%;
-  left: 50%;
-  transform: translate(-50%, -50%);
-  opacity: 0;
-  max-width: 90vw;
-  max-height: 90vh;
-  transition: opacity 1s ease;
-}
-
-/* Press any key テキスト */
-#press-key-text {
-  position: fixed;
-  top: 85%;
-  left: 50%;
-  transform: translateX(-50%);
-  color: white;
-  font-size: 24px;
-  font-weight: bold;
-  opacity: 0;
-  user-select: none;
-  pointer-events: none;
-  transition: opacity 1s ease;
-  z-index: 40;
-
-  /* 黒縁取り */
-  -webkit-text-stroke: 1px black; /* Safari用 */
-  text-stroke: 1px black; /* 標準用 */
-  text-shadow:
-    -1px -1px 0 black,
-    1px -1px 0 black,
-    -1px 1px 0 black,
-    1px 1px 0 black;
-}
-
-/* スクロール背景用 */
-#scrolling-background {
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 200vw;
-  height: 100vh;
-  background-image: url('images/menu.png'), url('images/menu.png');
-  background-repeat: repeat-x;
-  background-position: 0 0, 100% 0;
-  background-size: cover;
-  z-index: 1;
-  pointer-events: none;
-  will-change: background-position;
-}
-
-/* 全画面切替ボタン */
-#fullscreen-toggle {
-  position: fixed;
-  top: 10px;
-  right: 10px;
-  background: rgba(50, 50, 50, 0.8);
-  color: white;
-  border: none;
-  padding: 8px 14px;
-  font-size: 14px;
-  cursor: pointer;
-  border-radius: 5px;
-  z-index: 10000;
-  user-select: none;
-  transition: background 0.3s ease;
-}
-
-#fullscreen-toggle:hover {
-  background: rgba(80, 80, 80, 1);
-}
-
-/* スマホ対応 */
-@media (max-width: 600px) {
-  #center-text {
-    font-size: 28px;
-    padding: 15px;
+  // フェードイン関数
+  function fadeIn(element, duration = 1000) {
+    element.style.display = "block";
+    element.style.opacity = 0;
+    let start = null;
+    return new Promise(resolve => {
+      function step(timestamp) {
+        if (!start) start = timestamp;
+        const progress = Math.min((timestamp - start) / duration, 1);
+        element.style.opacity = progress;
+        if (progress < 1) {
+          requestAnimationFrame(step);
+        } else {
+          resolve();
+        }
+      }
+      requestAnimationFrame(step);
+    });
   }
 
-  .company-logo img {
-    max-width: 90vw;
-    max-height: 50vh;
+  // フェードアウト関数
+  function fadeOut(element, duration = 1000) {
+    element.style.opacity = 1;
+    let start = null;
+    return new Promise(resolve => {
+      function step(timestamp) {
+        if (!start) start = timestamp;
+        const progress = Math.min((timestamp - start) / duration, 1);
+        element.style.opacity = 1 - progress;
+        if (progress < 1) {
+          requestAnimationFrame(step);
+        } else {
+          element.style.display = "none";
+          resolve();
+        }
+      }
+      requestAnimationFrame(step);
+    });
   }
 
-  #title-img1 {
-    max-width: 95vw;
-    max-height: 80vh;
+  // 背景画像フェードイン＋ぼかし・拡大解除演出
+  async function fadeInBackgroundImage() {
+    backgroundOverlay.style.backgroundImage = "url('images/press_bg.png')";
+    backgroundOverlay.style.backgroundSize = "cover";
+    backgroundOverlay.style.backgroundPosition = "center center";
+    backgroundOverlay.style.backgroundRepeat = "no-repeat";
+
+    backgroundOverlay.style.transition = "none";
+    backgroundOverlay.style.opacity = 0;
+    backgroundOverlay.style.filter = "blur(5px)";
+    backgroundOverlay.style.transform = "scale(1.2)";
+    backgroundOverlay.style.display = "block";
+
+    await new Promise(requestAnimationFrame);
+    backgroundOverlay.style.transition = "opacity 2s ease, filter 2s ease, transform 2s ease";
+    backgroundOverlay.style.opacity = 1;
+    backgroundOverlay.style.filter = "blur(0)";
+    backgroundOverlay.style.transform = "scale(1)";
+
+    // BGMループ再生をここで早めに開始
+    bgm.loop = true;
+    bgm.play();
+
+    await new Promise(resolve => setTimeout(resolve, 2100));
   }
 
-  #title-img2 {
-    max-width: 90vw;
-    max-height: 75vh;
+  // タイトル画像表示シーケンス
+  async function showTitleImages() {
+    // 1枚目タイトル表示（中央・光る演出）
+    titleImg1.style.display = "block";
+    titleImg1.style.opacity = 0;
+    titleImg1.style.filter = "drop-shadow(0 0 20px white)"; // 光らせる
+    await fadeIn(titleImg1, 1000);
+    await new Promise(r => setTimeout(r, 3000));
+    await fadeOut(titleImg1, 1000);
+    titleImg1.style.filter = "none";
+
+    // 2枚目タイトル表示（中央より少し上）
+    titleImg2.style.display = "block";
+    titleImg2.style.opacity = 0;
+    titleImg2.style.transform = "translate(-50%, -60%)"; // 少し上に移動
+    await fadeIn(titleImg2, 1000);
+
+    // ★ タイトル2が出たタイミングでPress any keyテキスト表示
+    pressKeyText.style.display = "block";
+    // フェードインさせるため次フレームでopacityを1に
+    requestAnimationFrame(() => {
+      pressKeyText.style.opacity = "1";
+    });
+
+    // 「Press any key」からの入力待ちをセット
+    waitForPressKey();
   }
 
-  #press-key-text {
-    font-size: 18px;
-    top: 90%;
+  // 「Press any key」待ちイベント設定
+  function waitForPressKey() {
+    function onInput() {
+      window.removeEventListener("keydown", onInput);
+      window.removeEventListener("touchstart", onInput);
+
+      // Press any key フェードアウト＋タイトル2・背景オーバーレイもフェードアウト後にスクロール背景開始
+      fadeOut(pressKeyText, 800).then(() => {
+        fadeOut(titleImg2, 800);
+        fadeOut(backgroundOverlay, 800).then(() => {
+          startBackgroundScroll();
+          console.log("メインメニュー開始");
+        });
+      });
+    }
+    window.addEventListener("keydown", onInput);
+    window.addEventListener("touchstart", onInput);
   }
-}
+
+  // 企業ロゴを順に表示
+  async function showNextLogo() {
+    if (currentIndex >= logos.length) {
+      await fadeInBackgroundImage();
+      await showTitleImages();
+      return;
+    }
+
+    if (currentIndex > 0) {
+      backgroundOverlay.style.transition = "none";
+      backgroundOverlay.style.backgroundImage = "";
+      backgroundOverlay.style.backgroundColor = "rgba(255,255,255,0.8)";
+      backgroundOverlay.style.opacity = 1;
+      setTimeout(() => {
+        backgroundOverlay.style.transition = "opacity 1s ease";
+      }, 10);
+    } else {
+      backgroundOverlay.style.backgroundColor = "transparent";
+      backgroundOverlay.style.opacity = 1;
+    }
+
+    const logo = logos[currentIndex];
+    await fadeIn(logo, 1000);
+    await new Promise(r => setTimeout(r, 2000));
+    await fadeOut(logo, 1000);
+
+    currentIndex++;
+    showNextLogo();
+  }
+
+  // スクロール背景用変数・関数
+  let bgPosX = 0;
+  const scrollSpeed = 1;
+  let scrollingBg = null;
+
+  function animateScrollingBackground() {
+    bgPosX -= scrollSpeed;
+    if (bgPosX <= -window.innerWidth) {
+      bgPosX = 0;
+    }
+    if (scrollingBg) {
+      scrollingBg.style.backgroundPosition = `${bgPosX}px 0, ${bgPosX + window.innerWidth}px 0`;
+      requestAnimationFrame(animateScrollingBackground);
+    }
+  }
+
+  function startBackgroundScroll() {
+    backgroundOverlay.style.display = "none";
+
+    scrollingBg = document.createElement("div");
+    scrollingBg.id = "scrolling-background";
+    scrollingBg.style.position = "fixed";
+    scrollingBg.style.top = "0";
+    scrollingBg.style.left = "0";
+    scrollingBg.style.width = "200vw";
+    scrollingBg.style.height = "100vh";
+    scrollingBg.style.backgroundImage = "url('images/menu.png'), url('images/menu.png')";
+    scrollingBg.style.backgroundRepeat
