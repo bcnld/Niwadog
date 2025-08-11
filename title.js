@@ -186,41 +186,40 @@ document.addEventListener("DOMContentLoaded", () => {
   }
 
   function animateScrollingBackground() {
-    for (let i = 0; i < bgElements.length; i++) {
-      const div = bgElements[i];
-      let currentX = parseFloat(div.style.left);
+  for (let i = 0; i < bgElements.length; i++) {
+    const div = bgElements[i];
+    let currentX = parseFloat(div.style.left);
 
-      // 右方向へスクロール
-      let newX = currentX + scrollSpeed;
-      div.style.left = `${newX}px`;
-    }
-
-    // 左端にあるdiv（画面左側、一番左の画像）
-    const leftmostDiv = bgElements[0];
-    const leftmostX = parseFloat(leftmostDiv.style.left);
-
-    // 画像が完全に画面右端を超えたら削除
-    if (leftmostX >= containerWidth) {
-      const removed = bgElements.shift();
-      if (removed && removed.parentNode) {
-        removed.parentNode.removeChild(removed);
-      }
-    }
-
-    // 右端にあるdiv（一番右の画像）
-    const rightmostDiv = bgElements[bgElements.length - 1];
-    const rightmostX = parseFloat(rightmostDiv.style.left);
-
-    // 右端の画像の右端が画面の右端を超えたら左側に新しい画像を追加
-    // (右方向スクロールなので、画像を左に追加してつなげる)
-    if (rightmostX + bgImageWidth <= containerWidth) {
-      const newDiv = createBgDiv(rightmostX - bgImageWidth);
-      scrollWrapper.appendChild(newDiv);
-      bgElements.push(newDiv);
-    }
-
-    requestAnimationFrame(animateScrollingBackground);
+    // 右方向へスクロール
+    let newX = currentX + scrollSpeed;
+    div.style.left = `${newX}px`;
   }
+
+  // 左端にあるdiv（画面左側、一番左の画像）
+  const leftmostDiv = bgElements[0];
+  const leftmostX = parseFloat(leftmostDiv.style.left);
+
+  // 画像が完全に画面右端を超えたら削除
+  if (leftmostX >= containerWidth) {
+    const removed = bgElements.shift();
+    if (removed && removed.parentNode) {
+      removed.parentNode.removeChild(removed);
+    }
+  }
+
+  // 右端にあるdiv（一番右の画像）
+  const rightmostDiv = bgElements[bgElements.length - 1];
+  const rightmostX = parseFloat(rightmostDiv.style.left);
+
+  // 右端の画像の右端が画面の右端より小さい場合、新しい画像を右側に追加
+  if (rightmostX + bgImageWidth <= containerWidth) {
+    const newDiv = createBgDiv(rightmostX + bgImageWidth);  // ←ここを修正
+    scrollWrapper.appendChild(newDiv);
+    bgElements.push(newDiv);
+  }
+
+  requestAnimationFrame(animateScrollingBackground);
+}
 
   function startBackgroundScroll() {
     backgroundOverlay.style.display = "none";
