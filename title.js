@@ -11,26 +11,6 @@ document.addEventListener("DOMContentLoaded", () => {
   let currentIndex = 0;
   let started = false;
 
-  // 効果音準備（効果音ファイルのパスは適宜変更してください）
-  const transitionSound = new Audio("Sounds/transition.mp3");
-
-  // 中央フェードアウト用画像（初回作成）
-  let transitionImage = null;
-  function createTransitionImage() {
-    const img = document.createElement("img");
-    img.src = "images/transition.png"; // 画面中央に表示する画像パス
-    img.style.position = "fixed";
-    img.style.top = "50%";
-    img.style.left = "50%";
-    img.style.transform = "translate(-50%, -50%)";
-    img.style.zIndex = "9999";
-    img.style.pointerEvents = "none";
-    img.style.opacity = "0";
-    img.style.transition = "opacity 1s ease";
-    document.body.appendChild(img);
-    return img;
-  }
-
   // フェードイン関数
   function fadeIn(element, duration = 1000) {
     element.style.display = "block";
@@ -71,23 +51,8 @@ document.addEventListener("DOMContentLoaded", () => {
     });
   }
 
-  // 背景画像切り替え時に中央画像をフェードアウト＋効果音＋背景フェードイン演出
+  // 背景フェードイン演出（トランジション画像無し）
   async function fadeInBackgroundImage() {
-    if (transitionSound) {
-      transitionSound.currentTime = 0;
-      transitionSound.play();
-    }
-
-    if (!transitionImage) {
-      transitionImage = createTransitionImage();
-    }
-    transitionImage.style.opacity = "1";
-    transitionImage.style.display = "block";
-
-    // フェードアウト（1秒）
-    await fadeOut(transitionImage, 1000);
-
-    // 背景フェードイン演出
     backgroundOverlay.style.backgroundImage = "url('images/press_bg.png')";
     backgroundOverlay.style.backgroundSize = "cover";
     backgroundOverlay.style.backgroundPosition = "center center";
@@ -138,7 +103,6 @@ document.addEventListener("DOMContentLoaded", () => {
   // 「Press any key」待ちイベント設定（押したら背景切替演出）
   function waitForPressKey() {
     function onInput() {
-      // ここではPress any keyは消さずに、その後背景切替時にfadeInBackgroundImageで消す
       fadeOut(titleImg2, 800).then(() => {
         fadeInBackgroundImage().then(() => {
           startBackgroundScroll();
