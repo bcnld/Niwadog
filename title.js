@@ -110,7 +110,6 @@ document.addEventListener("DOMContentLoaded", () => {
   // 「Press any key」待ちイベント設定
   function waitForPressKey() {
     function onInput() {
-      // イベントはonce:trueで自動解除なのでremove不要
       fadeOut(pressKeyText, 800).then(() => {
         fadeOut(titleImg2, 800);
         fadeOut(backgroundOverlay, 800).then(() => {
@@ -153,12 +152,13 @@ document.addEventListener("DOMContentLoaded", () => {
     showNextLogo();
   }
 
-  // スクロール背景関連
+  // ここから背景スクロール関連
 
   const scrollSpeed = 1;
   const containerWidth = window.innerWidth;
   const containerHeight = window.innerHeight;
 
+  // 背景スクロールを入れる親コンテナ
   const scrollWrapper = document.createElement("div");
   scrollWrapper.id = "scroll-wrapper";
   scrollWrapper.style.position = "fixed";
@@ -170,6 +170,9 @@ document.addEventListener("DOMContentLoaded", () => {
   scrollWrapper.style.zIndex = "1";
   scrollWrapper.style.pointerEvents = "none";
 
+  // 背景画像の横幅（実画像サイズとCSSの背景サイズに注意）
+  const bgImageWidth = containerWidth; // 今回は画面幅いっぱいを1画像分と仮定
+
   let bgElements = [];
 
   function createBgDiv(x) {
@@ -177,7 +180,7 @@ document.addEventListener("DOMContentLoaded", () => {
     div.style.position = "absolute";
     div.style.top = "0";
     div.style.left = `${x}px`;
-    div.style.width = `${containerWidth}px`;
+    div.style.width = `${bgImageWidth}px`;
     div.style.height = `${containerHeight}px`;
     div.style.backgroundImage = "url('images/menu.png')";
     div.style.backgroundSize = "cover";
@@ -196,10 +199,10 @@ document.addEventListener("DOMContentLoaded", () => {
 
     const rightmostDiv = bgElements[bgElements.length - 1];
     const rightmostX = parseFloat(rightmostDiv.style.left);
-    const rightmostRightEdge = rightmostX + containerWidth;
+    const rightmostRightEdge = rightmostX + bgImageWidth;
 
-    // 画面右端まで右端が来たら追加
-    if (rightmostRightEdge <= containerWidth) {
+    // 画面の右端が一番右の画像の右端に達したら新しい画像を追加
+    if (rightmostRightEdge <= window.innerWidth) {
       const newDiv = createBgDiv(rightmostRightEdge);
       scrollWrapper.appendChild(newDiv);
       bgElements.push(newDiv);
@@ -207,7 +210,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
     const leftmostDiv = bgElements[0];
     const leftmostX = parseFloat(leftmostDiv.style.left);
-    if (leftmostX <= -containerWidth) {
+    if (leftmostX <= -bgImageWidth) {
       const removed = bgElements.shift();
       if (removed && removed.parentNode) {
         removed.parentNode.removeChild(removed);
@@ -221,9 +224,9 @@ document.addEventListener("DOMContentLoaded", () => {
     backgroundOverlay.style.display = "none";
     document.body.appendChild(scrollWrapper);
 
-    // 初期に2枚設置
+    // 初期状態で2枚背景画像を用意
     bgElements.push(createBgDiv(0));
-    bgElements.push(createBgDiv(containerWidth));
+    bgElements.push(createBgDiv(bgImageWidth));
     bgElements.forEach(div => scrollWrapper.appendChild(div));
 
     animateScrollingBackground();
