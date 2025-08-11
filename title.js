@@ -83,7 +83,6 @@ document.addEventListener("DOMContentLoaded", () => {
 
   // タイトル画像表示シーケンス
   async function showTitleImages() {
-    // 1枚目タイトル表示（中央・光る演出）
     titleImg1.style.display = "block";
     titleImg1.style.opacity = 0;
     titleImg1.style.filter = "drop-shadow(0 0 20px white)";
@@ -92,13 +91,11 @@ document.addEventListener("DOMContentLoaded", () => {
     await fadeOut(titleImg1, 1000);
     titleImg1.style.filter = "none";
 
-    // 2枚目タイトル表示（中央より少し上）
     titleImg2.style.display = "block";
     titleImg2.style.opacity = 0;
     titleImg2.style.transform = "translate(-50%, -60%)";
     await fadeIn(titleImg2, 1000);
 
-    // タイトル2表示時にPress any key表示
     pressKeyText.style.display = "block";
     requestAnimationFrame(() => {
       pressKeyText.style.opacity = "1";
@@ -152,26 +149,23 @@ document.addEventListener("DOMContentLoaded", () => {
     showNextLogo();
   }
 
-  // ここから背景スクロール関連
+  // ----------- スクロール背景関連 ------------
 
   const scrollSpeed = 1;
-  const containerWidth = window.innerWidth;
   const containerHeight = window.innerHeight;
+  const bgImageWidth = 3600;  // 900px × 4枚の横長画像幅
+  const bgImageHeight = containerHeight; // 高さは画面高さに合わせる
 
-  // 背景スクロールを入れる親コンテナ
   const scrollWrapper = document.createElement("div");
   scrollWrapper.id = "scroll-wrapper";
   scrollWrapper.style.position = "fixed";
   scrollWrapper.style.top = "0";
   scrollWrapper.style.left = "0";
-  scrollWrapper.style.width = `${containerWidth}px`;
+  scrollWrapper.style.width = `${window.innerWidth}px`;
   scrollWrapper.style.height = `${containerHeight}px`;
   scrollWrapper.style.overflow = "hidden";
   scrollWrapper.style.zIndex = "1";
   scrollWrapper.style.pointerEvents = "none";
-
-  // 背景画像の横幅（実画像サイズとCSSの背景サイズに注意）
-  const bgImageWidth = containerWidth; // 今回は画面幅いっぱいを1画像分と仮定
 
   let bgElements = [];
 
@@ -181,7 +175,7 @@ document.addEventListener("DOMContentLoaded", () => {
     div.style.top = "0";
     div.style.left = `${x}px`;
     div.style.width = `${bgImageWidth}px`;
-    div.style.height = `${containerHeight}px`;
+    div.style.height = `${bgImageHeight}px`;
     div.style.backgroundImage = "url('images/menu.png')";
     div.style.backgroundSize = "cover";
     div.style.backgroundRepeat = "no-repeat";
@@ -193,28 +187,33 @@ document.addEventListener("DOMContentLoaded", () => {
       const div = bgElements[i];
       let currentX = parseFloat(div.style.left);
 
-      let newX = currentX - scrollSpeed;
+      // 右方向へスクロール
+      let newX = currentX + scrollSpeed;
       div.style.left = `${newX}px`;
     }
 
-    const rightmostDiv = bgElements[bgElements.length - 1];
-    const rightmostX = parseFloat(rightmostDiv.style.left);
-    const rightmostRightEdge = rightmostX + bgImageWidth;
-
-    // 画面の右端が一番右の画像の右端に達したら新しい画像を追加
-    if (rightmostRightEdge <= window.innerWidth) {
-      const newDiv = createBgDiv(rightmostRightEdge);
-      scrollWrapper.appendChild(newDiv);
-      bgElements.push(newDiv);
-    }
-
+    // 左端に一番あるdiv（古い画像）
     const leftmostDiv = bgElements[0];
     const leftmostX = parseFloat(leftmostDiv.style.left);
-    if (leftmostX <= -bgImageWidth) {
+
+    // 画面右端より完全に右に出たら削除
+    if (leftmostX >= window.innerWidth) {
       const removed = bgElements.shift();
       if (removed && removed.parentNode) {
         removed.parentNode.removeChild(removed);
       }
+    }
+
+    // 右端にあるdiv（新しい画像）
+    const rightmostDiv = bgElements[bgElements.length - 1];
+    const rightmostX = parseFloat(rightmostDiv.style.left);
+
+    // 右端画像の左端が画面の左端以下（左端より左に見切れてる）になったら
+    // 新しい画像を左側に追加（右へスクロールなので左に追加する）
+    if (rightmostX <= 0) {
+      const newDiv = createBgDiv(rightmostX - bgImageWidth);
+      scrollWrapper.appendChild(newDiv);
+      bgElements.push(newDiv);
     }
 
     requestAnimationFrame(animateScrollingBackground);
@@ -224,9 +223,9 @@ document.addEventListener("DOMContentLoaded", () => {
     backgroundOverlay.style.display = "none";
     document.body.appendChild(scrollWrapper);
 
-    // 初期状態で2枚背景画像を用意
+    // 初期に2枚設置。1枚目は画面左端(0)、2枚目は左にマイナスの位置に設置
     bgElements.push(createBgDiv(0));
-    bgElements.push(createBgDiv(bgImageWidth));
+    bgElements.push(createBgDiv(-bgImageWidth));
     bgElements.forEach(div => scrollWrapper.appendChild(div));
 
     animateScrollingBackground();
