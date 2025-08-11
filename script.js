@@ -1,19 +1,24 @@
-window.addEventListener('DOMContentLoaded', () => {
-  const bgm = document.getElementById('bgm');
-  if (!bgm) return;
+document.addEventListener("DOMContentLoaded", () => {
+  const btn = document.getElementById("fullscreen-toggle");
 
-  bgm.volume = 0.5;
-  bgm.loop = true;
-
-  bgm.play().catch(() => {
-    console.log('自動再生失敗。ユーザー操作を待機。');
+  btn.addEventListener("click", () => {
+    if (!document.fullscreenElement) {
+      // 全画面でなければ全画面に切り替え
+      document.documentElement.requestFullscreen().catch((err) => {
+        alert(`全画面にできませんでした: ${err.message}`);
+      });
+    } else {
+      // 全画面中なら解除
+      document.exitFullscreen();
+    }
   });
 
-  document.body.addEventListener('click', () => {
-    bgm.play().then(() => {
-      console.log('ユーザー操作でBGM再生成功');
-    }).catch(e => {
-      console.error('ユーザー操作でBGM再生失敗:', e);
-    });
+  // 全画面状態が変わったらボタンテキストを更新
+  document.addEventListener("fullscreenchange", () => {
+    if (document.fullscreenElement) {
+      btn.textContent = "全画面解除";
+    } else {
+      btn.textContent = "全画面切替";
+    }
   });
 });
