@@ -171,14 +171,24 @@ document.addEventListener("DOMContentLoaded", () => {
   }
 
   function startBackgroundScroll() {
-    backgroundOverlay.style.display = "none";
+  backgroundOverlay.style.display = "none";
 
-    scrollingBg = document.createElement("div");
-    scrollingBg.id = "scrolling-background";
-    scrollingBg.style.position = "fixed";
-    scrollingBg.style.top = "0";
-    scrollingBg.style.left = "0";
-    scrollingBg.style.width = "200vw";
-    scrollingBg.style.height = "100vh";
-    scrollingBg.style.backgroundImage = "url('images/menu.png'), url('images/menu.png')";
-    scrollingBg.style.backgroundRepeat
+  scrollingBg = document.createElement("div");
+  scrollingBg.id = "scrolling-background";
+  scrollingBg.style.position = "fixed";
+  scrollingBg.style.top = "0";
+  scrollingBg.style.left = "0";
+  scrollingBg.style.width = "200vw";
+  scrollingBg.style.height = "100vh";
+  scrollingBg.style.backgroundImage = "url('images/menu.png'), url('images/menu.png')";
+  scrollingBg.style.backgroundRepeat = "repeat-x, repeat-x";
+  scrollingBg.style.backgroundPosition = "0 0, 100% 0";
+  scrollingBg.style.backgroundSize = "cover, cover";
+  scrollingBg.style.zIndex = "1";
+  scrollingBg.style.pointerEvents = "none";
+  scrollingBg.style.willChange = "background-position";
+
+  document.body.appendChild(scrollingBg);
+
+  animateScrollingBackground();
+}
