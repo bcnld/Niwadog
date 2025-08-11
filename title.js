@@ -2,71 +2,78 @@ document.addEventListener("DOMContentLoaded", () => {
   const centerText = document.getElementById("center-text");
   const logos = document.querySelectorAll(".company-logo");
 
-  // 会社ロゴは最初非表示かつ透明に設定
+  // 最初はロゴ非表示
   logos.forEach(logo => {
     logo.style.opacity = 0;
     logo.style.display = "none";
   });
 
-  function fadeIn(element, duration = 1000, callback) {
-    element.style.display = "block";
+  centerText.addEventListener("click", () => {
+    // 文字を消す
+    centerText.style.display = "none";
+
+    let index = 0;
+
+    function showNextLogo() {
+      if (index >= logos.length) {
+        // すべて表示し終えたら終了
+        return;
+      }
+      const logo = logos[index];
+      logo.style.display = "block";
+
+      // フェードイン
+      fadeIn(logo, 1000, () => {
+        // 2秒表示後フェードアウト
+        setTimeout(() => {
+          fadeOut(logo, 1000, () => {
+            logo.style.display = "none";
+            index++;
+            showNextLogo();
+          });
+        }, 2000);
+      });
+    }
+
+    showNextLogo();
+  });
+
+  // フェードイン関数
+  function fadeIn(element, duration, callback) {
     element.style.opacity = 0;
     let opacity = 0;
     const interval = 50;
     const increment = interval / duration;
 
-    function animate() {
+    function step() {
       opacity += increment;
       if (opacity >= 1) {
         element.style.opacity = 1;
         if (callback) callback();
       } else {
         element.style.opacity = opacity;
-        setTimeout(animate, interval);
+        setTimeout(step, interval);
       }
     }
-    animate();
+    step();
   }
 
-  function fadeOut(element, duration = 1000, callback) {
+  // フェードアウト関数
+  function fadeOut(element, duration, callback) {
     let opacity = 1;
     const interval = 50;
     const decrement = interval / duration;
 
-    function animate() {
+    function step() {
       opacity -= decrement;
       if (opacity <= 0) {
         element.style.opacity = 0;
-        element.style.display = "none";
         if (callback) callback();
       } else {
         element.style.opacity = opacity;
-        setTimeout(animate, interval);
+        setTimeout(step, interval);
       }
     }
-    animate();
+    step();
   }
-
-  // 会社ロゴを順番に表示していく関数
-  function showLogosSequentially(index = 0) {
-    if (index >= logos.length) {
-      console.log("全ての会社ロゴを表示完了");
-      return;
-    }
-    const logo = logos[index];
-    fadeIn(logo, 1000, () => {
-      setTimeout(() => {
-        fadeOut(logo, 1000, () => {
-          showLogosSequentially(index + 1);
-        });
-      }, 2000); // 2秒表示
-    });
-  }
-
-  // 中央テキストクリック時の処理
-  centerText.addEventListener("click", () => {
-    centerText.style.display = "none";
-    console.log("クリックされたので非表示にしました");
-    showLogosSequentially();
-  });
 });
