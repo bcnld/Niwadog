@@ -59,12 +59,16 @@
   <!-- 背景オーバーレイ -->
   <div id="background-overlay"></div>
 
-  <!-- 企業ロゴ群 -->
-  <div id="company-logos">
-    <div class="company-logo"><img src="images/mdm_logo.png" alt="Mdm" /></div>
-    <div class="company-logo"><img src="images/Sus_logo.png" alt="Sus Dog" /></div>
-    <div class="company-logo"><img src="images/homo_logo.png" alt="Homo iranai" /></div>
-  </div>
+  <!-- 企業ロゴはこんな感じに3つ -->
+<img class="company-logo" src="images/mdm_logo.png" alt="Logo 1" />
+<img class="company-logo" src="images/Sus_logo.png" alt="Logo 2" />
+<img class="company-logo" src="images/homo_logo.png" alt="Logo 3" />
+
+<!-- 全画面演出用画像（初期は非表示、中央に固定配置） -->
+<img id="fullscreen-effect" src="images/fullscreen_effect.png" alt="Effect" style="display:none; position:fixed; top:50%; left:50%; transform: translate(-50%, -50%) scale(1.2); opacity:0; z-index:9999; pointer-events:none;" />
+
+<!-- 効果音 -->
+<audio id="effect-sfx" src="sounds/effect.mp3"></audio>
 
   <!-- ゲームタイトル画像 -->
   <div id="title-images">
@@ -135,6 +139,7 @@
 
 </body>
 </html>
+
 
 
 
