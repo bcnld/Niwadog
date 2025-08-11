@@ -39,7 +39,7 @@ class TitleScreen {
     // 企業リスト
     this.companyList = [
       { name: "Mdm", logo: "images/mdm_logo.png" },
-      { name: "Sus Dog", logo: "images/Sus_logo.png" },
+      { name: "Sus Dog", logo: "images/dog.gif" },
       { name: "Homo iranai", logo: "images/homo_logo.png" }
     ];
     this.currentCompanyIndex = 0;
