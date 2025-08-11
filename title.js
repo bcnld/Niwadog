@@ -17,7 +17,8 @@ class TitleScreen {
         filter: "blur(8px)",
         transformOrigin: "center center",
         transform: "scale(1.2)",
-        transition: "transform 3s ease-out, filter 3s ease-out"
+        transition: "transform 3s ease-out, filter 3s ease-out",
+        backgroundColor: "black", // 企業表示中は黒背景
       });
       document.body.appendChild(this.bgDiv);
     }
@@ -55,9 +56,6 @@ class TitleScreen {
     // 背景画像
     this.pressBgImage = "images/press_bg.png";  // Press Any Key背景
     this.menuBgImage = "images/title_bg.png";    // メインメニュー背景
-
-    // 背景初期セット（Press Any Key用）
-    this.bgDiv.style.backgroundImage = `url('${this.pressBgImage}')`;
 
     // イベント登録
     window.addEventListener("keydown", (e) => this.onAnyKey(e));
@@ -115,12 +113,13 @@ class TitleScreen {
             this.opacity = 0;
             this.fadeIn = true;
 
+            // 背景をPress Any Key用に切り替え（ズームアウト＆ぼかし付き）
+            this.bgDiv.style.backgroundImage = `url('${this.pressBgImage}')`;
+            this.bgDiv.style.transform = "scale(1.2)";
+            this.bgDiv.style.filter = "blur(8px)";
+
             // BGM再生（ユーザー操作済みならOK）
             this.bgm.play().catch(() => {});
-
-            // 背景のズームアウト＆ぼかし解除開始
-            this.bgDiv.style.transform = "scale(1)";
-            this.bgDiv.style.filter = "blur(0px)";
 
             return;
           }
@@ -144,6 +143,10 @@ class TitleScreen {
         this.state = "waitKey";
         this.pressKeyAlpha = 0;
         this.pressKeyFadeIn = true;
+
+        // 背景のズームアウト＆ぼかし解除開始
+        this.bgDiv.style.transform = "scale(1)";
+        this.bgDiv.style.filter = "blur(0px)";
       }
       this.gameTitleDiv.style.opacity = this.opacity.toFixed(2);
     }
