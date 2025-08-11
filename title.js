@@ -6,12 +6,12 @@ window.addEventListener('load', () => {
 
   let delay = 500; // 最初のロゴ表示までの遅延
 
-  companyLogos.forEach((logo, index) => {
+  companyLogos.forEach((logo) => {
     setTimeout(() => {
       // フェードイン
       logo.style.opacity = '1';
 
-      // 表示時間 2秒後にフェードアウト
+      // 2秒後フェードアウト
       setTimeout(() => {
         logo.style.opacity = '0';
       }, 2000);
@@ -22,10 +22,15 @@ window.addEventListener('load', () => {
     delay += 4000;
   });
 
-  // 全ロゴ表示後に背景ズームアウト
+  // 全ロゴ後に背景フェードイン＆ズームアウト
   setTimeout(() => {
-    background.style.transform = 'scale(1.0)';
-    background.style.filter = 'blur(0px)';
+    background.style.opacity = '1';
+    setTimeout(() => {
+      background.style.transform = 'scale(1.0)';
+      background.style.filter = 'blur(0px)';
+    }, 200);
+
+    // BGM再生
     bgm.play().catch(err => console.log("BGM自動再生ブロック:", err));
   }, delay);
 
