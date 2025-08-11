@@ -18,6 +18,15 @@ document.addEventListener("DOMContentLoaded", () => {
   let currentIndex = 0;
   let started = false;
 
+  // 企業ロゴは中央固定、前面に出す
+  logos.forEach(logo => {
+    logo.style.position = "fixed";
+    logo.style.top = "50%";
+    logo.style.left = "50%";
+    logo.style.transform = "translate(-50%, -50%)";
+    logo.style.zIndex = "9998"; // fullscreenEffectの手前
+  });
+
   // フェードイン関数
   function fadeIn(element, duration = 1000) {
     element.style.display = "block";
@@ -62,24 +71,25 @@ document.addEventListener("DOMContentLoaded", () => {
   async function showFullscreenEffect() {
     if (!fullscreenEffect) return;
     if (effectSfx) {
-      effectSfx.currentTime = 0;
-      effectSfx.play();
+      try {
+        effectSfx.currentTime = 0;
+        await effectSfx.play();
+      } catch {
+        // 再生できない場合は無視
+      }
     }
     fullscreenEffect.style.display = "block";
     fullscreenEffect.style.opacity = "0";
     fullscreenEffect.style.transform = "translate(-50%, -50%) scale(1.2)";
     fullscreenEffect.style.transition = "none";
 
-    // フェードイン（0.5秒）
     await new Promise(requestAnimationFrame);
     fullscreenEffect.style.transition = "opacity 0.5s ease, transform 0.5s ease";
     fullscreenEffect.style.opacity = "1";
     fullscreenEffect.style.transform = "translate(-50%, -50%) scale(1.0)";
 
-    // 2秒表示キープ
     await new Promise(resolve => setTimeout(resolve, 2000));
 
-    // ゆっくりフェードアウト（1.5秒）
     fullscreenEffect.style.transition = "opacity 1.5s ease";
     fullscreenEffect.style.opacity = "0";
 
@@ -223,40 +233,34 @@ document.addEventListener("DOMContentLoaded", () => {
   }
 
   function animateScrollingBackground() {
-    for (let i = 0; i < bgElements.length; i++) {
-      const div = bgElements[i];
-      let currentX = parseFloat(div.style.left);
+  for (let i = 0; i < bgElements.length; i++) {
+    const div = bgElements[i];
+    let currentX = parseFloat(div.style.left);
 
-      // 右方向にスクロール (x座標を増やす)
-      let newX = currentX + scrollSpeed;
-      div.style.left = `${newX}px`;
-    }
-
-    // 左端の画像のx位置を取得
-    const leftmostDiv = bgElements[0];
-    const leftmostX = parseFloat(leftmostDiv.style.left);
-
-    // 画面右端を超えたら左端の画像削除
-    if (leftmostX >= containerWidth) {
-      const removed = bgElements.shift();
-      if (removed && removed.parentNode) {
-        removed.parentNode.removeChild(removed);
-      }
-    }
-
-    // 右端の画像のx位置を取得
-    const rightmostDiv = bgElements[bgElements.length - 1];
-    const rightmostX = parseFloat(rightmostDiv.style.left);
-
-    // 右端の画像の右端が画面右端を超えたら左端に画像追加
-    if (rightmostX + bgImageWidth <= containerWidth) {
-      const newDiv = createBgDiv(rightmostX - bgImageWidth);
-      scrollWrapper.appendChild(newDiv);
-      bgElements.push(newDiv);
-    }
-
-    requestAnimationFrame(animateScrollingBackground);
+    // 右方向にスクロール (x座標を増やす)
+    let newX = currentX + scrollSpeed;
+    div.style.left = `${newX}px`;
   }
+
+  // 画面左端より右にずれすぎた画像を削除（完全に画面外）
+  const firstDiv = bgElements[0];
+  if (parseFloat(firstDiv.style.left) > containerWidth) {
+    const removed = bgElements.shift();
+    if (removed.parentNode) removed.parentNode.removeChild(removed);
+  }
+
+  // 画面右端を超えたら左端の左側に新しい画像を追加
+  const lastDiv = bgElements[bgElements.length - 1];
+  const lastRight = parseFloat(lastDiv.style.left) + bgImageWidth;
+  if (lastRight >= 0) {
+    const firstLeft = parseFloat(bgElements[0].style.left);
+    const newDiv = createBgDiv(firstLeft - bgImageWidth);
+    scrollWrapper.appendChild(newDiv);
+    bgElements.unshift(newDiv);
+  }
+
+  requestAnimationFrame(animateScrollingBackground);
+}
 
   function startBackgroundScroll() {
     backgroundOverlay.style.display = "none";
