@@ -1,6 +1,5 @@
 body, html {
-  margin: 0; padding: 0;
-  height: 100%;
+  margin: 0; padding: 0; height: 100%;
   background-color: black;
   color: white;
   font-family: 'Arial Black', sans-serif;
@@ -8,26 +7,43 @@ body, html {
   overflow: hidden;
 }
 
-#background {
+/* オーバーレイ全体 */
+.overlay {
   position: fixed;
   top: 0; left: 0;
   width: 100vw; height: 100vh;
-  background-image: url('press/bg.jpg');
-  background-size: cover;
-  background-position: center;
-  filter: none;
-  transform: scale(1);
-  z-index: 100;
+  background-color: rgba(0,0,0,0.9);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 10000;
 }
 
-#press-any-key {
-  position: fixed;
-  bottom: 10vh;
-  width: 100%;
+/* 非アクティブ状態は非表示 */
+.overlay:not(.active) {
+  display: none;
+}
+
+#question-box {
+  background-color: #111;
+  padding: 30px 40px;
+  border-radius: 12px;
   text-align: center;
-  font-size: 24px;
+  font-size: 28px;
+}
+
+#question-yes-btn {
+  margin-top: 20px;
+  padding: 12px 36px;
+  font-size: 22px;
+  font-weight: bold;
+  border-radius: 8px;
+  border: none;
+  cursor: pointer;
+  background-color: #2196F3;
   color: white;
-  opacity: 1;
-  user-select: none;
-  pointer-events: none;
+  transition: background-color 0.3s ease;
+}
+#question-yes-btn:hover {
+  background-color: #1976d2;
 }
