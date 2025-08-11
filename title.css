@@ -177,3 +177,17 @@ body, html {
     top: 90%;
   }
 }
+
+/* ===== スクロール背景 ===== */
+#scrolling-background {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 200vw; /* 画面幅の2倍 */
+  height: 100vh;
+  background-repeat: repeat-x;
+  background-size: cover;
+  pointer-events: none;
+  z-index: 1;
+  will-change: background-position;
+}
