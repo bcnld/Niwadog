@@ -66,10 +66,7 @@
 
 <!-- 全画面演出用画像（初期は非表示、中央に固定配置） -->
 <img id="fullscreen-effect" src="images/fullscreen_effect.png" alt="Effect" style="display:none; position:fixed; top:50%; left:50%; transform: translate(-50%, -50%) scale(1.2); opacity:0; z-index:9999; pointer-events:none;" />
-
-<!-- 効果音 -->
-<audio id="effect-sfx" src="sounds/effect.mp3"></audio>
-
+  
   <!-- ゲームタイトル画像 -->
   <div id="title-images">
     <img id="title-img1" src="images/title1.png" alt="Title 1" />
@@ -105,7 +102,8 @@
 
   <!-- BGM再生用オーディオ -->
   <audio id="bgm" src="Sounds/title.mp3" preload="auto"></audio>
-
+  <audio id="effect-sfx" src="sounds/effect.mp3"></audio>
+  
   <!-- 右上の全画面切替ボタン -->
   <button id="fullscreen-toggle">全画面切替</button>
 
@@ -139,6 +137,7 @@
 
 </body>
 </html>
+
 
 
 
