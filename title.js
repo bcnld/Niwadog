@@ -83,6 +83,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
   // タイトル画像表示シーケンス
   async function showTitleImages() {
+    // 1枚目タイトル表示（中央・光る演出）
     titleImg1.style.display = "block";
     titleImg1.style.opacity = 0;
     titleImg1.style.filter = "drop-shadow(0 0 20px white)";
@@ -91,11 +92,13 @@ document.addEventListener("DOMContentLoaded", () => {
     await fadeOut(titleImg1, 1000);
     titleImg1.style.filter = "none";
 
+    // 2枚目タイトル表示（中央より少し上）
     titleImg2.style.display = "block";
     titleImg2.style.opacity = 0;
     titleImg2.style.transform = "translate(-50%, -60%)";
     await fadeIn(titleImg2, 1000);
 
+    // タイトル2表示時にPress any key表示
     pressKeyText.style.display = "block";
     requestAnimationFrame(() => {
       pressKeyText.style.opacity = "1";
@@ -107,6 +110,7 @@ document.addEventListener("DOMContentLoaded", () => {
   // 「Press any key」待ちイベント設定
   function waitForPressKey() {
     function onInput() {
+      // イベントはonce:trueで自動解除なのでremove不要
       fadeOut(pressKeyText, 800).then(() => {
         fadeOut(titleImg2, 800);
         fadeOut(backgroundOverlay, 800).then(() => {
@@ -149,7 +153,8 @@ document.addEventListener("DOMContentLoaded", () => {
     showNextLogo();
   }
 
-  // スクロール背景用変数と関数
+  // スクロール背景関連
+
   const scrollSpeed = 1;
   const containerWidth = window.innerWidth;
   const containerHeight = window.innerHeight;
@@ -164,8 +169,6 @@ document.addEventListener("DOMContentLoaded", () => {
   scrollWrapper.style.overflow = "hidden";
   scrollWrapper.style.zIndex = "1";
   scrollWrapper.style.pointerEvents = "none";
-
-  document.body.appendChild(scrollWrapper);
 
   let bgElements = [];
 
@@ -182,11 +185,6 @@ document.addEventListener("DOMContentLoaded", () => {
     return div;
   }
 
-  // 初期に2枚設置
-  bgElements.push(createBgDiv(0));
-  bgElements.push(createBgDiv(containerWidth));
-  bgElements.forEach(div => scrollWrapper.appendChild(div));
-
   function animateScrollingBackground() {
     for (let i = 0; i < bgElements.length; i++) {
       const div = bgElements[i];
@@ -196,19 +194,17 @@ document.addEventListener("DOMContentLoaded", () => {
       div.style.left = `${newX}px`;
     }
 
-    // 右端の画像の右端座標
     const rightmostDiv = bgElements[bgElements.length - 1];
     const rightmostX = parseFloat(rightmostDiv.style.left);
     const rightmostRightEdge = rightmostX + containerWidth;
 
-    // 右端の画像が画面右端より左に来たら新しい画像追加
+    // 画面右端まで右端が来たら追加
     if (rightmostRightEdge <= containerWidth) {
       const newDiv = createBgDiv(rightmostRightEdge);
       scrollWrapper.appendChild(newDiv);
       bgElements.push(newDiv);
     }
 
-    // 左端の画像が画面外に完全に出たら削除
     const leftmostDiv = bgElements[0];
     const leftmostX = parseFloat(leftmostDiv.style.left);
     if (leftmostX <= -containerWidth) {
@@ -223,6 +219,13 @@ document.addEventListener("DOMContentLoaded", () => {
 
   function startBackgroundScroll() {
     backgroundOverlay.style.display = "none";
+    document.body.appendChild(scrollWrapper);
+
+    // 初期に2枚設置
+    bgElements.push(createBgDiv(0));
+    bgElements.push(createBgDiv(containerWidth));
+    bgElements.forEach(div => scrollWrapper.appendChild(div));
+
     animateScrollingBackground();
   }
 
