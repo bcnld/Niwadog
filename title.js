@@ -1,9 +1,9 @@
 document.addEventListener("DOMContentLoaded", () => {
   const centerText = document.getElementById("center-text");
   const logos = document.querySelectorAll(".company-logo");
-  const pressBgContainer = document.getElementById("press-bg-container");
-  const pressBgImage = document.getElementById("press-bg-image");
-  const pressAnyKey = document.getElementById("press-any-key");
+  const bgOverlay = document.getElementById("background-overlay"); // 背景白くするdiv
+  const bgm = document.getElementById("bgm"); // <audio>タグで用意
+
   let currentIndex = 0;
   let started = false;
 
@@ -47,12 +47,22 @@ document.addEventListener("DOMContentLoaded", () => {
     });
   }
 
-  // 会社ロゴを順番に表示
+  // ロゴを順番に表示
   async function showNextLogo() {
     if (currentIndex >= logos.length) {
-      // ロゴ全部表示終わったらPress any key表示
-      showPressAnyKey();
+      // すべて表示終わったらBGM再生
+      if (bgm) {
+        bgm.loop = true;
+        bgm.play();
+      }
       return;
+    }
+
+    // 2枚目以降は背景を白＋暗めに
+    if (currentIndex >= 1 && bgOverlay) {
+      bgOverlay.style.backgroundColor = "rgba(255,255,255,0.8)";
+    } else if (bgOverlay) {
+      bgOverlay.style.backgroundColor = "transparent";
     }
 
     const logo = logos[currentIndex];
@@ -64,37 +74,6 @@ document.addEventListener("DOMContentLoaded", () => {
     showNextLogo();
   }
 
-  // Press any key 背景とテキスト表示
-  function showPressAnyKey() {
-    pressBgContainer.style.display = "block";
-
-    // 1フレーム遅らせてぼかし・拡大解除のフェードイン開始
-    requestAnimationFrame(() => {
-      pressBgImage.style.filter = "blur(0)";
-      pressBgImage.style.transform = "scale(1)";
-    });
-
-    pressAnyKey.style.display = "block";
-
-    // キー押しで非表示にして次の処理へ
-    window.addEventListener("keydown", () => {
-      hidePressAnyKey();
-      // ここに次の処理を追加可能
-    }, { once: true });
-  }
-
-  // Press any key 非表示化
-  function hidePressAnyKey() {
-    pressBgImage.style.filter = "blur(5px)";
-    pressBgImage.style.transform = "scale(1.2)";
-
-    setTimeout(() => {
-      pressBgContainer.style.display = "none";
-      pressAnyKey.style.display = "none";
-    }, 1000);
-  }
-
-  // 最初のクリックテキスト処理開始
   centerText.addEventListener("click", () => {
     if (started) return;
     started = true;
@@ -103,7 +82,7 @@ document.addEventListener("DOMContentLoaded", () => {
     });
   });
 
-  // ページ読み込み時に会社ロゴは全部非表示に設定
+  // 初期はロゴ非表示
   logos.forEach(logo => {
     logo.style.display = "none";
     logo.style.opacity = 0;
