@@ -1,235 +1,80 @@
-html, body {
+/* 共通リセット */
+body, html {
   margin: 0;
   padding: 0;
   height: 100%;
-  overflow: hidden;
-  font-family: sans-serif;
-  background: black;
-}
-
-/* 全体コンテナ */
-#container {
-  position: relative;
-  width: 100vw;
-  height: 100vh;
+  background-color: black;
+  color: white;
+  font-family: 'Arial Black', sans-serif;
+  user-select: none;
   overflow: hidden;
 }
 
-/* 水エリア */
-#water-area {
-  position: absolute;
+/* 中央の質問テキスト */
+#center-text {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  font-size: 48px;
+  font-weight: bold;
+  color: white;
+  text-align: center;
+  cursor: pointer;
+  max-width: 90vw;
+  padding: 20px;
+  z-index: 20;
+}
+
+/* 背景のオーバーレイ（背景色変える用） */
+#background-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
   width: 100%;
   height: 100%;
-  overflow: hidden;
-  z-index: 1;
+  background-color: transparent; /* 初期は透明 */
+  transition: background-color 1s ease;
+  z-index: 5;
 }
 
-/* 犬のスタイル */
-.dog {
-  position: absolute;
-  cursor: pointer;
-  z-index: 2;
-}
-
-/* ボタン類 */
-button {
-  position: absolute;
-  z-index: 3;
-  padding: 10px 20px;
-  background-color: #fff;
-  border: 2px solid #333;
-  border-radius: 8px;
-  font-size: 16px;
-  cursor: pointer;
-}
-#zukan-btn {
-  top: 20px;
-  left: 20px;
-}
-#shop-btn {
-  top: 20px;
-  right: 20px;
-}
-
-/* パネル共通 */
-.panel {
-  position: absolute;
+/* 企業ロゴコンテナ */
+#company-logos {
+  position: fixed;
   top: 50%;
   left: 50%;
-  width: 80vw;
-  height: 80vh;
-  background: #fff;
-  border: 3px solid #333;
-  border-radius: 16px;
   transform: translate(-50%, -50%);
-  display: none;
   z-index: 10;
-  overflow: auto;
-  padding: 20px;
-}
-.panel.active {
-  display: block;
 }
 
-/* 図鑑のグリッド表示 */
-.zukan-grid {
-  display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  grid-template-rows: repeat(3, 1fr);
-  gap: 10px;
-}
-
-/* 図鑑アイテム */
-.zukan-entry {
-  width: 100%;
-  height: 100px;
-  border: 3px solid gray;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  background-color: #eee;
-  position: relative;
-}
-.zukan-entry.caught {
-  background-color: #faa;
-  border-color: white;
-}
-.zukan-entry img {
-  max-height: 90%;
-  max-width: 90%;
-}
-.zukan-entry .number {
+/* 各企業ロゴ */
+.company-logo {
+  display: none;
+  opacity: 0;
   position: absolute;
-  top: 5px;
-  left: 5px;
-  font-size: 14px;
-  color: #000;
-}
-
-/* 釣りUI全体 */
-#fishing-ui {
-  display: none; /* 最初は隠す */
-  position: fixed;
   top: 50%;
   left: 50%;
   transform: translate(-50%, -50%);
-  background: #222;
-  padding: 20px;
-  border-radius: 12px;
-  box-shadow: 0 0 10px rgba(0,0,0,0.7);
-  z-index: 1000;
-  width: 320px;
-  text-align: center;
-  color: #fff;
+  max-width: 80vw;
+  max-height: 80vh;
+  transition: opacity 1s ease;
 }
 
-/* ルーレットキャンバス */
-#roulette-canvas {
-  background: #333;
-  border-radius: 50%;
-  display: block;
-  margin: 0 auto 15px;
-  width: 300px;
-  height: 300px;
-}
-
-/* 釣り結果表示テキスト */
-#fishing-result {
-  font-size: 24px;
-  height: 30px;
-  margin-bottom: 10px;
-}
-
-/* リールボタン */
-#reel-button {
-  padding: 10px 20px;
-  font-size: 18px;
-  cursor: pointer;
-  border: none;
-  border-radius: 8px;
-  background: #f1c40f;
-  color: #222;
-  font-weight: bold;
-  user-select: none;
-}
-
-/* ボタン無効時の見た目 */
-#reel-button:disabled {
-  background: #ccc;
-  color: #666;
-  cursor: default;
-}
-
-/* 捕まえた犬オーバーレイ */
-#catch-overlay {
-  display: none;
-  position: fixed;
-  top: 0; left: 0;
-  width: 100vw;
-  height: 100vh;
-  background: rgba(0,0,0,0.7);
-  z-index: 1100;
-  align-items: center;
-  justify-content: center;
-  flex-direction: column;
-  color: white;
-  font-size: 24px;
-}
-
-/* 捕まえた犬画像 */
-#caught-dog-img {
-  max-width: 200px;
-  max-height: 200px;
-  margin-bottom: 20px;
-  border: 4px solid white;
-  border-radius: 12px;
-
-  /* オーラ（光彩）効果 */
-  box-shadow:
-    0 0 10px 4px rgba(255, 204, 0, 0.8),
-    0 0 20px 8px rgba(255, 204, 0, 0.6),
-    0 0 40px 12px rgba(255, 204, 0, 0.4);
-}
-
-/* 捕まえたメッセージ */
-#caught-message {
-  margin-bottom: 30px;
-  font-weight: bold;
-}
-
-/* 捕まえた犬オーバーレイが表示されている時のスタイル */
-#catch-overlay.active {
-  display: flex;
-}
-
-/* 閉じるボタン */
-#catch-close {
-  cursor: pointer;
-  background: #f1c40f;
-  border: none;
-  padding: 10px 25px;
-  border-radius: 8px;
-  color: #222;
-  font-weight: bold;
-  font-size: 18px;
+/* 画像のサイズ調整 */
+.company-logo img {
+  width: 100%;
+  height: auto;
 }
 
 /* スマホ対応 */
 @media (max-width: 600px) {
-  .panel {
-    width: 90vw;
-    height: 90vh;
+  #center-text {
+    font-size: 28px;
+    padding: 15px;
   }
 
-  .zukan-grid {
-    grid-template-columns: repeat(2, 1fr);
-  }
-
-  .zukan-entry {
-    height: 80px;
+  .company-logo {
+    max-width: 90vw;
+    max-height: 50vh;
   }
 }
-
-
-
-
