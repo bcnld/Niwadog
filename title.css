@@ -24,7 +24,8 @@ body, html {
 /* 会社ロゴ共通 */
 .company-logo {
   position: fixed;
-  top: 50%; left: 50%;
+  top: 50%;
+  left: 50%;
   transform: translate(-50%, -50%);
   max-width: 300px;
   max-height: 150px;
@@ -34,6 +35,13 @@ body, html {
   transition: opacity 1s ease;
   user-select: none;
   pointer-events: none;
+}
+
+/* 表示中はpointer-eventsを有効にしてクリックを受け付ける */
+.company-logo.active {
+  display: block;
+  opacity: 1;
+  pointer-events: auto;
 }
 
 /* スマホ対応 */
