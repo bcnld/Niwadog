@@ -1,27 +1,47 @@
 document.addEventListener("DOMContentLoaded", () => {
+  const centerText = document.getElementById("center-text");
   const logos = document.querySelectorAll(".company-logo");
-  let index = 0;
+  let currentIndex = 0;
 
-  function showLogo(i) {
-    if (i >= logos.length) {
-      // すべて表示終わったら処理終了または次の処理へ
+  // 最初は全てのロゴ非表示＆透明に
+  logos.forEach(logo => {
+    logo.style.display = "none";
+    logo.style.opacity = 0;
+  });
+
+  function showNextLogo() {
+    if (currentIndex >= logos.length) {
+      // ロゴ全部表示終わったら終わり
       return;
     }
-    const logo = logos[i];
 
-    // 表示開始
-    logo.classList.add("active");
+    const logo = logos[currentIndex];
+    logo.style.display = "block";
 
-    // 2秒表示した後フェードアウト
+    // 少し遅延させてからフェードイン（opacity=1）
+    setTimeout(() => {
+      logo.classList.add("active");
+    }, 50);
+
+    // 2秒表示したあとフェードアウト
     setTimeout(() => {
       logo.classList.remove("active");
-
-      // 次のロゴ表示まで少し待つ
+      // フェードアウト後に非表示にして次のロゴへ
       setTimeout(() => {
-        showLogo(i + 1);
-      }, 500);
+        logo.style.display = "none";
+        currentIndex++;
+        showNextLogo();
+      }, 1000); // フェードアウトに合わせる
     }, 2000);
   }
 
-  showLogo(index);
+  centerText.addEventListener("click", () => {
+    // 文字をフェードアウトして非表示にする
+    centerText.style.opacity = 0;
+    setTimeout(() => {
+      centerText.style.display = "none";
+      // 企業ロゴの順番表示開始
+      showNextLogo();
+    }, 500);
+  });
 });
