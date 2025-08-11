@@ -11,9 +11,27 @@ document.addEventListener("DOMContentLoaded", () => {
   let currentIndex = 0;
   let started = false;
 
-  pressKeyText.style.display = "none";
-  pressKeyText.style.opacity = "0";
+  // 効果音準備（効果音ファイルのパスは適宜変更してください）
+  const transitionSound = new Audio("Sounds/transition.mp3");
 
+  // 中央フェードアウト用画像（初回作成）
+  let transitionImage = null;
+  function createTransitionImage() {
+    const img = document.createElement("img");
+    img.src = "images/transition.png"; // 画面中央に表示する画像パス
+    img.style.position = "fixed";
+    img.style.top = "50%";
+    img.style.left = "50%";
+    img.style.transform = "translate(-50%, -50%)";
+    img.style.zIndex = "9999";
+    img.style.pointerEvents = "none";
+    img.style.opacity = "0";
+    img.style.transition = "opacity 1s ease";
+    document.body.appendChild(img);
+    return img;
+  }
+
+  // フェードイン関数
   function fadeIn(element, duration = 1000) {
     element.style.display = "block";
     element.style.opacity = 0;
@@ -33,6 +51,7 @@ document.addEventListener("DOMContentLoaded", () => {
     });
   }
 
+  // フェードアウト関数
   function fadeOut(element, duration = 1000) {
     element.style.opacity = 1;
     let start = null;
@@ -52,7 +71,23 @@ document.addEventListener("DOMContentLoaded", () => {
     });
   }
 
+  // 背景画像切り替え時に中央画像をフェードアウト＋効果音＋背景フェードイン演出
   async function fadeInBackgroundImage() {
+    if (transitionSound) {
+      transitionSound.currentTime = 0;
+      transitionSound.play();
+    }
+
+    if (!transitionImage) {
+      transitionImage = createTransitionImage();
+    }
+    transitionImage.style.opacity = "1";
+    transitionImage.style.display = "block";
+
+    // フェードアウト（1秒）
+    await fadeOut(transitionImage, 1000);
+
+    // 背景フェードイン演出
     backgroundOverlay.style.backgroundImage = "url('images/press_bg.png')";
     backgroundOverlay.style.backgroundSize = "cover";
     backgroundOverlay.style.backgroundPosition = "center center";
@@ -76,6 +111,7 @@ document.addEventListener("DOMContentLoaded", () => {
     await new Promise(resolve => setTimeout(resolve, 2100));
   }
 
+  // タイトル画像表示シーケンス（titleImg2は大きめ表示）
   async function showTitleImages() {
     titleImg1.style.display = "block";
     titleImg1.style.opacity = 0;
@@ -99,19 +135,24 @@ document.addEventListener("DOMContentLoaded", () => {
     waitForPressKey();
   }
 
-  // 「Press any key」押したらPress any keyだけ消して、タイトル2は残し背景スクロール開始
+  // 「Press any key」待ちイベント設定（押したら背景切替演出）
   function waitForPressKey() {
     function onInput() {
-      fadeOut(pressKeyText, 800).then(() => {
-        backgroundOverlay.style.display = "none";
-        startBackgroundScroll();
-        console.log("メインメニュー開始");
+      // ここではPress any keyは消さずに、その後背景切替時にfadeInBackgroundImageで消す
+      fadeOut(titleImg2, 800).then(() => {
+        fadeInBackgroundImage().then(() => {
+          startBackgroundScroll();
+          console.log("メインメニュー開始");
+        });
       });
+      window.removeEventListener("keydown", onInput, true);
+      window.removeEventListener("touchstart", onInput, true);
     }
-    window.addEventListener("keydown", onInput, { once: true, capture: true });
-    window.addEventListener("touchstart", onInput, { once: true, capture: true });
+    window.addEventListener("keydown", onInput, { capture: true });
+    window.addEventListener("touchstart", onInput, { capture: true });
   }
 
+  // 企業ロゴを順に表示
   async function showNextLogo() {
     if (currentIndex >= logos.length) {
       await fadeInBackgroundImage();
@@ -141,11 +182,13 @@ document.addEventListener("DOMContentLoaded", () => {
     showNextLogo();
   }
 
+  // ----------- スクロール背景関連 ------------
+
   const scrollSpeed = 1;
   const containerHeight = window.innerHeight;
   const containerWidth = window.innerWidth;
-  const bgImageWidth = 3600;
-  const bgImageHeight = containerHeight;
+  const bgImageWidth = 3600;  // 900px × 4枚の横長画像幅
+  const bgImageHeight = containerHeight; // 高さは画面高さに合わせる
 
   const scrollWrapper = document.createElement("div");
   scrollWrapper.id = "scroll-wrapper";
@@ -179,12 +222,12 @@ document.addEventListener("DOMContentLoaded", () => {
       const div = bgElements[i];
       let currentX = parseFloat(div.style.left);
 
-      // 右方向へスクロール
+      // 右方向へスクロール (x座標を増やす)
       let newX = currentX + scrollSpeed;
       div.style.left = `${newX}px`;
     }
 
-    // 左端にあるdiv（画面左側、一番左の画像）
+    // 一番左の画像のx位置を取得
     const leftmostDiv = bgElements[0];
     const leftmostX = parseFloat(leftmostDiv.style.left);
 
@@ -196,12 +239,13 @@ document.addEventListener("DOMContentLoaded", () => {
       }
     }
 
-    // 右端にあるdiv（一番右の画像）
+    // 一番右の画像のx位置を取得
     const rightmostDiv = bgElements[bgElements.length - 1];
     const rightmostX = parseFloat(rightmostDiv.style.left);
 
-    // 右端の画像の右端が画面の右端を超えたら左側に新しい画像を追加
+    // 右端の画像の右端が画面の右端を超えたら左端に新しい画像を追加
     if (rightmostX + bgImageWidth <= containerWidth) {
+      // 右に流れてるから新しい画像は左端より左に追加
       const newDiv = createBgDiv(rightmostX - bgImageWidth);
       scrollWrapper.appendChild(newDiv);
       bgElements.push(newDiv);
@@ -214,6 +258,7 @@ document.addEventListener("DOMContentLoaded", () => {
     backgroundOverlay.style.display = "none";
     document.body.appendChild(scrollWrapper);
 
+    // 初期に2枚設置。1枚目は画面左端(0)、2枚目は左にマイナスの位置に設置
     bgElements.push(createBgDiv(0));
     bgElements.push(createBgDiv(-bgImageWidth));
     bgElements.forEach(div => scrollWrapper.appendChild(div));
@@ -221,6 +266,7 @@ document.addEventListener("DOMContentLoaded", () => {
     animateScrollingBackground();
   }
 
+  // 初期状態の設定（ロゴ非表示など）
   logos.forEach(logo => {
     logo.style.display = "none";
     logo.style.opacity = "0";
@@ -230,6 +276,7 @@ document.addEventListener("DOMContentLoaded", () => {
   pressKeyText.style.display = "none";
   pressKeyText.style.opacity = "0";
 
+  // 画面中央のテキストクリックで開始
   centerText.addEventListener("click", () => {
     if (started) return;
     started = true;
