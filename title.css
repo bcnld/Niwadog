@@ -13,7 +13,7 @@ body, html {
   position: fixed;
   top: 0; left: 0;
   width: 100vw; height: 100vh;
-  background-image: url('images/bg.jpg');
+  background-image: url('title/bg.jpg');
   background-size: cover;
   background-position: center;
   filter: blur(8px);
