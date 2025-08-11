@@ -8,7 +8,6 @@ body, html {
   overflow: hidden;
 }
 
-/* 背景画像 */
 #background {
   position: fixed;
   top: 0; left: 0;
@@ -16,38 +15,11 @@ body, html {
   background-image: url('press/bg.jpg');
   background-size: cover;
   background-position: center;
-  filter: blur(8px);
-  transform: scale(1.2);
-  transform-origin: center center;
-  transition: transform 3s ease-out, filter 3s ease-out;
-  z-index: -1;
+  filter: none;
+  transform: scale(1);
+  z-index: 100;
 }
 
-/* 企業ロゴ共通 */
-#company-logos {
-  position: fixed;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%);
-  text-align: center;
-}
-
-.company-logo {
-  opacity: 0;
-  transition: opacity 1s ease;
-}
-
-.company-logo img {
-  max-width: 300px;
-  max-height: 150px;
-  margin-bottom: 20px;
-}
-
-.company-logo div {
-  font-size: 32px;
-}
-
-/* Press Any Key */
 #press-any-key {
   position: fixed;
   bottom: 10vh;
@@ -55,50 +27,7 @@ body, html {
   text-align: center;
   font-size: 24px;
   color: white;
-  opacity: 0;
-  transition: opacity 1s ease-in-out;
-  pointer-events: none;
-}
-
-/* オーバーレイ背景 */
-#question-overlay {
-  position: fixed;
-  top: 0; left: 0;
-  width: 100vw;
-  height: 100vh;
-  background-color: rgba(0,0,0,0.8); /* 黒く半透明 */
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  z-index: 10000;
-  color: white;
-  font-size: 28px;
+  opacity: 1;
   user-select: none;
-}
-
-/* モーダル内の質問ボックス */
-#question-box {
-  background-color: #111;
-  border-radius: 12px;
-  padding: 30px 40px;
-  box-shadow: 0 0 20px black;
-  text-align: center;
-  min-width: 300px;
-}
-
-/* 「はい」ボタン */
-#question-yes-btn {
-  margin-top: 20px;
-  padding: 12px 40px;
-  font-size: 22px;
-  font-weight: bold;
-  border-radius: 8px;
-  border: none;
-  cursor: pointer;
-  background-color: #2196F3;
-  color: white;
-  transition: background-color 0.3s ease;
-}
-#question-yes-btn:hover {
-  background-color: #1976d2;
+  pointer-events: none;
 }
