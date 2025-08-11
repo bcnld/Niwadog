@@ -4,36 +4,44 @@ document.addEventListener("DOMContentLoaded", () => {
   const background = document.getElementById("background");
   const bgm = document.getElementById("bgm");
 
-  // 全ロゴ非表示スタート
+  // 最初に全部のロゴは非表示かつ透明
   logos.forEach(logo => {
     logo.style.opacity = 0;
     logo.style.display = "none";
   });
 
+  // 初期状態: 背景はぼかし＆拡大したまま
+  background.style.filter = "blur(8px)";
+  background.style.transform = "scale(1.2)";
+
   let index = 0;
 
   function showNextLogo() {
     if (index >= logos.length) {
-      // 3つ全部終わったら背景ぼかし外して拡大縮小リセット
+      // 企業ロゴ全部表示終わったら背景を戻す
+      background.style.transition = "transform 3s ease-out, filter 3s ease-out";
       background.style.filter = "blur(0px)";
       background.style.transform = "scale(1)";
 
-      // BGM再生（必要なら）
+      // BGM再生
       if (bgm) bgm.play();
 
-      // Press Any Key 表示開始
+      // 3秒後にPress Any Key表示＆点滅開始
       setTimeout(() => {
         pressAnyKey.style.opacity = 1;
         blinkPressText();
-      }, 1500);
+      }, 3000);
       return;
     }
 
     const logo = logos[index];
     logo.style.display = "block";
 
+    // フェードイン
     fadeIn(logo, 1000, () => {
+      // 2秒表示保持
       setTimeout(() => {
+        // フェードアウト
         fadeOut(logo, 1000, () => {
           logo.style.display = "none";
           index++;
@@ -89,5 +97,6 @@ document.addEventListener("DOMContentLoaded", () => {
     }, 800);
   }
 
+  // 開始
   showNextLogo();
 });
