@@ -37,7 +37,6 @@ body, html {
   pointer-events: none;
 }
 
-/* 表示中はpointer-eventsを有効にしてクリックを受け付ける */
 .company-logo.active {
   display: block;
   opacity: 1;
