@@ -109,42 +109,20 @@ document.addEventListener("DOMContentLoaded", () => {
       window.removeEventListener("keydown", onInput);
       window.removeEventListener("touchstart", onInput);
 
-      // 背景フェード切り替え演出など
-      fadeInBackgroundOverlayThenMenu();
+      // 背景切り替え＆スクロール開始
+      fadeOut(pressKeyText, 800).then(() => {
+        fadeOut(titleImg2, 800);
+        fadeOut(backgroundOverlay, 800).then(() => {
+          startBackgroundScroll();
+          // メインメニュー表示などの処理をここに追加可能
+          console.log("メインメニュー開始");
+        });
+      });
     }
     // PCキーボード
     window.addEventListener("keydown", onInput);
     // スマホタップ
     window.addEventListener("touchstart", onInput);
-  }
-
-  // 背景フェード→メインメニュー表示（ここにゲームのメインメニュー処理などを追加可能）
-  async function fadeInBackgroundOverlayThenMenu() {
-    // Press any keyテキストをフェードアウト
-    await fadeOut(pressKeyText, 800);
-
-    // 背景のフェードイン・アウト演出
-    backgroundOverlay.style.transition = "none";
-    backgroundOverlay.style.backgroundColor = "black";
-    backgroundOverlay.style.opacity = 0;
-    backgroundOverlay.style.display = "block";
-
-    await new Promise(requestAnimationFrame);
-
-    backgroundOverlay.style.transition = "opacity 1.5s ease";
-    backgroundOverlay.style.opacity = 1;
-
-    await new Promise(resolve => setTimeout(resolve, 1500));
-
-    backgroundOverlay.style.transition = "opacity 1.5s ease";
-    backgroundOverlay.style.opacity = 0;
-
-    await new Promise(resolve => setTimeout(resolve, 1500));
-
-    backgroundOverlay.style.display = "none";
-
-    // ここでメインメニューのUI表示や処理を開始できます
-    console.log("メインメニューを表示する処理をここに実装してください");
   }
 
   // 企業ロゴを順に表示
@@ -179,6 +157,47 @@ document.addEventListener("DOMContentLoaded", () => {
 
     currentIndex++;
     showNextLogo();
+  }
+
+  // スクロール背景用要素＆処理
+  let bgPosX = 0;
+  const scrollSpeed = 1;
+  let scrollingBg = null;
+
+  function animateScrollingBackground() {
+    bgPosX -= scrollSpeed;
+    if (bgPosX <= -window.innerWidth) {
+      bgPosX = 0;
+    }
+    if (scrollingBg) {
+      scrollingBg.style.backgroundPosition = `${bgPosX}px 0, ${bgPosX + window.innerWidth}px 0`;
+      requestAnimationFrame(animateScrollingBackground);
+    }
+  }
+
+  function startBackgroundScroll() {
+    // 背景オーバーレイを非表示にして
+    backgroundOverlay.style.display = "none";
+
+    // スクロール背景divを作成
+    scrollingBg = document.createElement("div");
+    scrollingBg.id = "scrolling-background";
+    scrollingBg.style.position = "fixed";
+    scrollingBg.style.top = "0";
+    scrollingBg.style.left = "0";
+    scrollingBg.style.width = "200vw"; // 画面幅の2倍
+    scrollingBg.style.height = "100vh";
+    scrollingBg.style.backgroundImage = "url('images/menu.png'), url('images/menu.png')";
+    scrollingBg.style.backgroundRepeat = "repeat-x";
+    scrollingBg.style.backgroundPosition = "0 0, 100% 0";
+    scrollingBg.style.backgroundSize = "cover";
+    scrollingBg.style.zIndex = "1";
+    scrollingBg.style.pointerEvents = "none";
+    scrollingBg.style.willChange = "background-position";
+
+    document.body.appendChild(scrollingBg);
+
+    animateScrollingBackground();
   }
 
   centerText.addEventListener("click", () => {
