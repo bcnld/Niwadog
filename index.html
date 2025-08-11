@@ -5,6 +5,27 @@
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>企業ロゴ表示デモ</title>
   <link rel="stylesheet" href="title.css" />
+  <style>
+    /* 全画面切替ボタンのスタイル */
+    #fullscreen-toggle {
+      position: fixed;
+      top: 10px;
+      right: 10px;
+      background: rgba(50, 50, 50, 0.8);
+      color: white;
+      border: none;
+      padding: 8px 14px;
+      font-size: 14px;
+      cursor: pointer;
+      border-radius: 5px;
+      z-index: 10000;
+      user-select: none;
+      transition: background 0.3s ease;
+    }
+    #fullscreen-toggle:hover {
+      background: rgba(80, 80, 80, 1);
+    }
+  </style>
 </head>
 <body>
 
@@ -24,6 +45,36 @@
   <!-- BGM再生用オーディオ -->
   <audio id="bgm" src="Sounds/title.mp3" preload="auto"></audio>
 
+  <!-- 右上の全画面切替ボタン -->
+  <button id="fullscreen-toggle">全画面切替</button>
+
+  <script>
+    // 全画面切替ボタンのJS処理
+    document.addEventListener("DOMContentLoaded", () => {
+      const btn = document.getElementById("fullscreen-toggle");
+
+      btn.addEventListener("click", () => {
+        if (!document.fullscreenElement) {
+          document.documentElement.requestFullscreen().catch((err) => {
+            alert(`全画面にできませんでした: ${err.message}`);
+          });
+        } else {
+          document.exitFullscreen();
+        }
+      });
+
+      document.addEventListener("fullscreenchange", () => {
+        if (document.fullscreenElement) {
+          btn.textContent = "全画面解除";
+        } else {
+          btn.textContent = "全画面切替";
+        }
+      });
+    });
+  </script>
+
   <script src="title.js"></script>
+  <script src="script.js"></script>
+
 </body>
 </html>
