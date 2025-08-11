@@ -4,9 +4,10 @@ document.addEventListener("DOMContentLoaded", () => {
   const backgroundOverlay = document.getElementById("background-overlay");
   const bgm = document.getElementById("bgm");
 
+  // 修正済みID
   const titleImg1 = document.getElementById("title-img1");
   const titleImg2 = document.getElementById("title-img2");
-  const pressKeyText = document.getElementById("press-key-text");
+  const pressKeyText = document.getElementById("press-any-key");
 
   let currentIndex = 0;
   let started = false;
@@ -195,7 +196,7 @@ document.addEventListener("DOMContentLoaded", () => {
   // 初期状態の設定（ロゴ非表示など）
   logos.forEach(logo => {
     logo.style.display = "none";
-    logo.style.opacity = 0;
+    logo.style.opacity = "0";
   });
   titleImg1.style.display = "none";
   titleImg2.style.display = "none";
