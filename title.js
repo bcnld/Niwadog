@@ -1,28 +1,36 @@
 window.addEventListener('load', () => {
-  const companyName = document.getElementById('company-name');
-  const pressAnyKey = document.getElementById('press-any-key');
+  const companyLogos = document.querySelectorAll('.company-logo');
   const background = document.getElementById('background');
+  const pressAnyKey = document.getElementById('press-any-key');
   const bgm = document.getElementById('bgm');
 
-  // 企業ロゴフェードイン
-  setTimeout(() => {
-    companyName.style.opacity = '1';
-  }, 500);
+  let delay = 500; // 最初のロゴ表示までの遅延
 
-  // 3秒後フェードアウト
-  setTimeout(() => {
-    companyName.style.opacity = '0';
-  }, 3500);
+  companyLogos.forEach((logo, index) => {
+    setTimeout(() => {
+      // フェードイン
+      logo.style.opacity = '1';
 
-  // 背景ズームアウト + BGM再生
+      // 表示時間 2秒後にフェードアウト
+      setTimeout(() => {
+        logo.style.opacity = '0';
+      }, 2000);
+
+    }, delay);
+
+    // 次のロゴ開始までの遅延更新（フェードイン1s + 表示2s + フェードアウト1s）
+    delay += 4000;
+  });
+
+  // 全ロゴ表示後に背景ズームアウト
   setTimeout(() => {
     background.style.transform = 'scale(1.0)';
     background.style.filter = 'blur(0px)';
     bgm.play().catch(err => console.log("BGM自動再生ブロック:", err));
-  }, 4500);
+  }, delay);
 
   // Press Any Key表示
   setTimeout(() => {
     pressAnyKey.style.opacity = '1';
-  }, 6000);
+  }, delay + 1500);
 });
