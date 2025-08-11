@@ -1,18 +1,162 @@
 document.addEventListener("DOMContentLoaded", () => {
-  const scrollSpeed = 1;
+  const centerText = document.getElementById("center-text");
+  const logos = document.querySelectorAll(".company-logo");
+  const backgroundOverlay = document.getElementById("background-overlay");
+  const bgm = document.getElementById("bgm");
 
-  let containerWidth = window.innerWidth;
-  let containerHeight = window.innerHeight;
+  const titleImg1 = document.getElementById("title-img1");
+  const titleImg2 = document.getElementById("title-img2");
+  const pressKeyText = document.getElementById("press-any-key");
 
-  function calcBgSize() {
-    containerWidth = window.innerWidth;
-    containerHeight = window.innerHeight;
+  let currentIndex = 0;
+  let started = false;
+
+  // 初期状態でpressKeyTextを完全非表示に
+  pressKeyText.style.display = "none";
+  pressKeyText.style.opacity = "0";
+
+  // フェードイン関数
+  function fadeIn(element, duration = 1000) {
+    element.style.display = "block";
+    element.style.opacity = 0;
+    let start = null;
+    return new Promise(resolve => {
+      function step(timestamp) {
+        if (!start) start = timestamp;
+        const progress = Math.min((timestamp - start) / duration, 1);
+        element.style.opacity = progress;
+        if (progress < 1) {
+          requestAnimationFrame(step);
+        } else {
+          resolve();
+        }
+      }
+      requestAnimationFrame(step);
+    });
   }
 
-  calcBgSize();
+  // フェードアウト関数
+  function fadeOut(element, duration = 1000) {
+    element.style.opacity = 1;
+    let start = null;
+    return new Promise(resolve => {
+      function step(timestamp) {
+        if (!start) start = timestamp;
+        const progress = Math.min((timestamp - start) / duration, 1);
+        element.style.opacity = 1 - progress;
+        if (progress < 1) {
+          requestAnimationFrame(step);
+        } else {
+          element.style.display = "none";
+          resolve();
+        }
+      }
+      requestAnimationFrame(step);
+    });
+  }
 
-  const bgImageHeight = containerHeight;
-  const bgImageWidth = bgImageHeight * 4;
+  // 背景画像フェードイン＋ぼかし・拡大解除演出
+  async function fadeInBackgroundImage() {
+    backgroundOverlay.style.backgroundImage = "url('images/press_bg.png')";
+    backgroundOverlay.style.backgroundSize = "cover";
+    backgroundOverlay.style.backgroundPosition = "center center";
+    backgroundOverlay.style.backgroundRepeat = "no-repeat";
+
+    backgroundOverlay.style.transition = "none";
+    backgroundOverlay.style.opacity = 0;
+    backgroundOverlay.style.filter = "blur(5px)";
+    backgroundOverlay.style.transform = "scale(1.2)";
+    backgroundOverlay.style.display = "block";
+
+    await new Promise(requestAnimationFrame);
+    backgroundOverlay.style.transition = "opacity 2s ease, filter 2s ease, transform 2s ease";
+    backgroundOverlay.style.opacity = 1;
+    backgroundOverlay.style.filter = "blur(0)";
+    backgroundOverlay.style.transform = "scale(1)";
+
+    // BGMループ再生
+    bgm.loop = true;
+    bgm.play();
+
+    await new Promise(resolve => setTimeout(resolve, 2100));
+  }
+
+  // タイトル画像表示シーケンス
+  async function showTitleImages() {
+    titleImg1.style.display = "block";
+    titleImg1.style.opacity = 0;
+    titleImg1.style.filter = "drop-shadow(0 0 20px white)";
+    await fadeIn(titleImg1, 1000);
+    await new Promise(r => setTimeout(r, 3000));
+    await fadeOut(titleImg1, 1000);
+    titleImg1.style.filter = "none";
+
+    titleImg2.style.display = "block";
+    titleImg2.style.opacity = 0;
+    titleImg2.style.transform = "translate(-50%, -60%) scale(1.5)"; // 拡大1.5倍に修正
+    titleImg2.style.transition = "transform 1s ease";
+    await fadeIn(titleImg2, 1000);
+
+    pressKeyText.style.display = "block";
+    requestAnimationFrame(() => {
+      pressKeyText.style.opacity = "1";
+    });
+
+    waitForPressKey();
+  }
+
+  // 「Press any key」待ちイベント設定
+  function waitForPressKey() {
+    function onInput() {
+      fadeOut(pressKeyText, 800).then(() => {
+        fadeOut(titleImg2, 800);
+        fadeOut(backgroundOverlay, 800).then(() => {
+          startBackgroundScroll();
+          console.log("メインメニュー開始");
+        });
+      });
+    }
+    window.addEventListener("keydown", onInput, { once: true, capture: true });
+    window.addEventListener("touchstart", onInput, { once: true, capture: true });
+  }
+
+  // 企業ロゴを順に表示
+  async function showNextLogo() {
+    if (currentIndex >= logos.length) {
+      await fadeInBackgroundImage();
+      await showTitleImages();
+      return;
+    }
+
+    if (currentIndex > 0) {
+      backgroundOverlay.style.transition = "none";
+      backgroundOverlay.style.backgroundImage = "";
+      backgroundOverlay.style.backgroundColor = "rgba(255,255,255,0.8)";
+      backgroundOverlay.style.opacity = 1;
+      setTimeout(() => {
+        backgroundOverlay.style.transition = "opacity 1s ease";
+      }, 10);
+    } else {
+      backgroundOverlay.style.backgroundColor = "transparent";
+      backgroundOverlay.style.opacity = 1;
+    }
+
+    const logo = logos[currentIndex];
+    await fadeIn(logo, 1000);
+    await new Promise(r => setTimeout(r, 2000));
+    await fadeOut(logo, 1000);
+
+    currentIndex++;
+    showNextLogo();
+  }
+
+  // ----------- スクロール背景関連 ------------
+
+  const scrollSpeed = 1;
+  const containerHeight = window.innerHeight;
+  const containerWidth = window.innerWidth;
+  const bgImageWidth = 3600;  // 900px × 4枚の横長画像幅
+  const bgImageHeight = containerHeight; // 高さは画面高さに合わせる
 
   const scrollWrapper = document.createElement("div");
   scrollWrapper.id = "scroll-wrapper";
@@ -35,9 +179,9 @@ document.addEventListener("DOMContentLoaded", () => {
     div.style.width = `${bgImageWidth}px`;
     div.style.height = `${bgImageHeight}px`;
     div.style.backgroundImage = "url('images/menu.png')";
+    div.style.backgroundSize = "cover";
     div.style.backgroundRepeat = "no-repeat";
-    div.style.backgroundSize = `${bgImageWidth}px ${bgImageHeight}px`;
-    div.style.backgroundPosition = "left top";
+    div.style.backgroundPosition = "center center";
     return div;
   }
 
@@ -45,38 +189,44 @@ document.addEventListener("DOMContentLoaded", () => {
     for (let i = 0; i < bgElements.length; i++) {
       const div = bgElements[i];
       let currentX = parseFloat(div.style.left);
-      let newX = currentX + scrollSpeed; // ← 左→右なので増やす
+
+      // 右方向へスクロール
+      let newX = currentX + scrollSpeed;
       div.style.left = `${newX}px`;
     }
 
+    // 左端にあるdiv（画面左側、一番左の画像）
     const leftmostDiv = bgElements[0];
     const leftmostX = parseFloat(leftmostDiv.style.left);
 
-    // 画面左端まで左端が来たら左側に追加
-    if (leftmostX >= 0) {
-      const newDiv = createBgDiv(leftmostX - bgImageWidth);
-      scrollWrapper.appendChild(newDiv);
-      bgElements.unshift(newDiv); // 配列の先頭に追加
-    }
-
-    const rightmostDiv = bgElements[bgElements.length - 1];
-    const rightmostX = parseFloat(rightmostDiv.style.left);
-
-    // 右端が画面右端を超えたら削除
-    if (rightmostX >= containerWidth) {
-      const removed = bgElements.pop();
+    // 画像が完全に画面右端を超えたら削除
+    if (leftmostX >= containerWidth) {
+      const removed = bgElements.shift();
       if (removed && removed.parentNode) {
         removed.parentNode.removeChild(removed);
       }
+    }
+
+    // 右端にあるdiv（一番右の画像）
+    const rightmostDiv = bgElements[bgElements.length - 1];
+    const rightmostX = parseFloat(rightmostDiv.style.left);
+
+    // 右端の画像の右端が画面の右端を超えたら左側に新しい画像を追加
+    // (右方向スクロールなので、画像を左に追加してつなげる)
+    if (rightmostX + bgImageWidth <= containerWidth) {
+      const newDiv = createBgDiv(rightmostX - bgImageWidth);
+      scrollWrapper.appendChild(newDiv);
+      bgElements.push(newDiv);
     }
 
     requestAnimationFrame(animateScrollingBackground);
   }
 
   function startBackgroundScroll() {
+    backgroundOverlay.style.display = "none";
     document.body.appendChild(scrollWrapper);
 
-    // 初期に2枚設置（左端とその左隣）
+    // 初期に2枚設置。1枚目は画面左端(0)、2枚目は左にマイナスの位置に設置
     bgElements.push(createBgDiv(0));
     bgElements.push(createBgDiv(-bgImageWidth));
     bgElements.forEach(div => scrollWrapper.appendChild(div));
@@ -84,34 +234,22 @@ document.addEventListener("DOMContentLoaded", () => {
     animateScrollingBackground();
   }
 
-  // クリックで開始の例（必要に応じて変更してください）
-  const centerText = document.getElementById("center-text");
-  let started = false;
+  // 初期状態の設定（ロゴ非表示など）
+  logos.forEach(logo => {
+    logo.style.display = "none";
+    logo.style.opacity = "0";
+  });
+  titleImg1.style.display = "none";
+  titleImg2.style.display = "none";
+  pressKeyText.style.display = "none";
+  pressKeyText.style.opacity = "0";
 
+  // 画面中央のテキストクリックで開始
   centerText.addEventListener("click", () => {
     if (started) return;
     started = true;
-    centerText.style.transition = "opacity 0.5s ease";
-    centerText.style.opacity = "0";
-    setTimeout(() => {
-      centerText.style.display = "none";
-      startBackgroundScroll();
-    }, 500);
-  });
-
-  // リサイズ対応（必要に応じて）
-  window.addEventListener("resize", () => {
-    while(bgElements.length) {
-      const div = bgElements.pop();
-      if (div.parentNode) div.parentNode.removeChild(div);
-    }
-    if (scrollWrapper.parentNode) scrollWrapper.parentNode.removeChild(scrollWrapper);
-
-    calcBgSize();
-
-    scrollWrapper.style.width = `${containerWidth}px`;
-    scrollWrapper.style.height = `${containerHeight}px`;
-
-    startBackgroundScroll();
+    fadeOut(centerText, 500).then(() => {
+      showNextLogo();
+    });
   });
 });
