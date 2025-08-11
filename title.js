@@ -3,15 +3,19 @@ document.addEventListener("DOMContentLoaded", () => {
   const logos = document.querySelectorAll(".company-logo");
   const backgroundOverlay = document.getElementById("background-overlay");
   const bgm = document.getElementById("bgm");
+  const sfx = document.getElementById("sfx"); // 追加: 3枚目後の音用
 
   const titleImg1 = document.getElementById("title-img1");
   const titleImg2 = document.getElementById("title-img2");
   const pressKeyText = document.getElementById("press-any-key");
 
+  const transitionImg = document.getElementById("transition-img"); // 追加: フェードアウト用画像
+  const mainMenu = document.getElementById("main-menu"); // 追加: メニュー要素
+
   let currentIndex = 0;
   let started = false;
 
-  // フェードイン関数
+  // フェードイン
   function fadeIn(element, duration = 1000) {
     element.style.display = "block";
     element.style.opacity = 0;
@@ -21,17 +25,14 @@ document.addEventListener("DOMContentLoaded", () => {
         if (!start) start = timestamp;
         const progress = Math.min((timestamp - start) / duration, 1);
         element.style.opacity = progress;
-        if (progress < 1) {
-          requestAnimationFrame(step);
-        } else {
-          resolve();
-        }
+        if (progress < 1) requestAnimationFrame(step);
+        else resolve();
       }
       requestAnimationFrame(step);
     });
   }
 
-  // フェードアウト関数
+  // フェードアウト
   function fadeOut(element, duration = 1000) {
     element.style.opacity = 1;
     let start = null;
@@ -40,9 +41,8 @@ document.addEventListener("DOMContentLoaded", () => {
         if (!start) start = timestamp;
         const progress = Math.min((timestamp - start) / duration, 1);
         element.style.opacity = 1 - progress;
-        if (progress < 1) {
-          requestAnimationFrame(step);
-        } else {
+        if (progress < 1) requestAnimationFrame(step);
+        else {
           element.style.display = "none";
           resolve();
         }
@@ -51,13 +51,12 @@ document.addEventListener("DOMContentLoaded", () => {
     });
   }
 
-  // 背景フェードイン演出（トランジション画像無し）
+  // 背景フェードイン
   async function fadeInBackgroundImage() {
     backgroundOverlay.style.backgroundImage = "url('images/press_bg.png')";
     backgroundOverlay.style.backgroundSize = "cover";
     backgroundOverlay.style.backgroundPosition = "center center";
     backgroundOverlay.style.backgroundRepeat = "no-repeat";
-
     backgroundOverlay.style.transition = "none";
     backgroundOverlay.style.opacity = 0;
     backgroundOverlay.style.filter = "blur(5px)";
@@ -76,7 +75,7 @@ document.addEventListener("DOMContentLoaded", () => {
     await new Promise(resolve => setTimeout(resolve, 2100));
   }
 
-  // タイトル画像表示シーケンス（titleImg2は大きめ表示）
+  // タイトル画像
   async function showTitleImages() {
     titleImg1.style.display = "block";
     titleImg1.style.opacity = 0;
@@ -100,13 +99,20 @@ document.addEventListener("DOMContentLoaded", () => {
     waitForPressKey();
   }
 
-  // 「Press any key」待ちイベント設定（押したら背景切替演出）
+  // Press any key 待機
   function waitForPressKey() {
     function onInput() {
       fadeOut(titleImg2, 800).then(() => {
-        fadeInBackgroundImage().then(() => {
-          startBackgroundScroll();
-          console.log("メインメニュー開始");
+        // Press any key 消す
+        fadeOut(pressKeyText, 500).then(() => {
+          fadeInBackgroundImage().then(() => {
+            startBackgroundScroll();
+            if (mainMenu) {
+              mainMenu.style.display = "block";
+              mainMenu.style.opacity = "1";
+            }
+            console.log("メインメニュー開始");
+          });
         });
       });
       window.removeEventListener("keydown", onInput, true);
@@ -116,7 +122,7 @@ document.addEventListener("DOMContentLoaded", () => {
     window.addEventListener("touchstart", onInput, { capture: true });
   }
 
-  // 企業ロゴを順に表示
+  // 企業ロゴ表示
   async function showNextLogo() {
     if (currentIndex >= logos.length) {
       await fadeInBackgroundImage();
@@ -124,17 +130,16 @@ document.addEventListener("DOMContentLoaded", () => {
       return;
     }
 
-    if (currentIndex > 0) {
-      backgroundOverlay.style.transition = "none";
-      backgroundOverlay.style.backgroundImage = "";
-      backgroundOverlay.style.backgroundColor = "rgba(255,255,255,0.8)";
-      backgroundOverlay.style.opacity = 1;
-      setTimeout(() => {
-        backgroundOverlay.style.transition = "opacity 1s ease";
-      }, 10);
-    } else {
-      backgroundOverlay.style.backgroundColor = "transparent";
-      backgroundOverlay.style.opacity = 1;
+    // 3枚目（インデックス2）の後
+    if (currentIndex === 2) {
+      if (sfx) sfx.play();
+      if (transitionImg) {
+        transitionImg.style.display = "block";
+        transitionImg.style.opacity = "1";
+        setTimeout(() => {
+          fadeOut(transitionImg, 2000);
+        }, 1000);
+      }
     }
 
     const logo = logos[currentIndex];
@@ -146,13 +151,12 @@ document.addEventListener("DOMContentLoaded", () => {
     showNextLogo();
   }
 
-  // ----------- スクロール背景関連 ------------
-
+  // ===== スクロール背景 =====
   const scrollSpeed = 1;
   const containerHeight = window.innerHeight;
   const containerWidth = window.innerWidth;
-  const bgImageWidth = 3600;  // 900px × 4枚の横長画像幅
-  const bgImageHeight = containerHeight; // 高さは画面高さに合わせる
+  const bgImageWidth = 3600;
+  const bgImageHeight = containerHeight;
 
   const scrollWrapper = document.createElement("div");
   scrollWrapper.id = "scroll-wrapper";
@@ -185,34 +189,25 @@ document.addEventListener("DOMContentLoaded", () => {
     for (let i = 0; i < bgElements.length; i++) {
       const div = bgElements[i];
       let currentX = parseFloat(div.style.left);
-
-      // 右方向へスクロール (x座標を増やす)
-      let newX = currentX + scrollSpeed;
+      let newX = currentX + scrollSpeed; // 右方向
       div.style.left = `${newX}px`;
     }
 
-    // 一番左の画像のx位置を取得
-    const leftmostDiv = bgElements[0];
-    const leftmostX = parseFloat(leftmostDiv.style.left);
-
-    // 画像が完全に画面右端を超えたら削除
-    if (leftmostX >= containerWidth) {
-      const removed = bgElements.shift();
-      if (removed && removed.parentNode) {
-        removed.parentNode.removeChild(removed);
-      }
-    }
-
-    // 一番右の画像のx位置を取得
     const rightmostDiv = bgElements[bgElements.length - 1];
     const rightmostX = parseFloat(rightmostDiv.style.left);
 
-    // 右端の画像の右端が画面の右端を超えたら左端に新しい画像を追加
-    if (rightmostX + bgImageWidth <= containerWidth) {
-      // 右に流れてるから新しい画像は左端より左に追加
-      const newDiv = createBgDiv(rightmostX - bgImageWidth);
+    if (rightmostX >= containerWidth) {
+      const removed = bgElements.shift();
+      removed?.parentNode?.removeChild(removed);
+    }
+
+    const leftmostDiv = bgElements[0];
+    const leftmostX = parseFloat(leftmostDiv.style.left);
+
+    if (leftmostX >= 0) {
+      const newDiv = createBgDiv(leftmostX - bgImageWidth);
       scrollWrapper.appendChild(newDiv);
-      bgElements.push(newDiv);
+      bgElements.unshift(newDiv);
     }
 
     requestAnimationFrame(animateScrollingBackground);
@@ -221,26 +216,25 @@ document.addEventListener("DOMContentLoaded", () => {
   function startBackgroundScroll() {
     backgroundOverlay.style.display = "none";
     document.body.appendChild(scrollWrapper);
-
-    // 初期に2枚設置。1枚目は画面左端(0)、2枚目は左にマイナスの位置に設置
     bgElements.push(createBgDiv(0));
     bgElements.push(createBgDiv(-bgImageWidth));
     bgElements.forEach(div => scrollWrapper.appendChild(div));
-
     animateScrollingBackground();
   }
 
-  // 初期状態の設定（ロゴ非表示など）
+  // 初期非表示設定
   logos.forEach(logo => {
     logo.style.display = "none";
     logo.style.opacity = "0";
   });
-  titleImg1.style.display = "none";
-  titleImg2.style.display = "none";
-  pressKeyText.style.display = "none";
-  pressKeyText.style.opacity = "0";
+  [titleImg1, titleImg2, pressKeyText, mainMenu, transitionImg].forEach(el => {
+    if (el) {
+      el.style.display = "none";
+      el.style.opacity = "0";
+    }
+  });
 
-  // 画面中央のテキストクリックで開始
+  // 中央クリックで開始
   centerText.addEventListener("click", () => {
     if (started) return;
     started = true;
