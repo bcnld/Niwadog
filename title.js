@@ -130,6 +130,7 @@ document.addEventListener("DOMContentLoaded", () => {
     await fadeIn(titleImg2, 1000);
 
     pressKeyText.style.display = "block";
+    pressKeyText.style.opacity = "0";
     requestAnimationFrame(() => {
       pressKeyText.style.opacity = "1";
     });
@@ -139,15 +140,14 @@ document.addEventListener("DOMContentLoaded", () => {
 
   // 「Press any key」待ちイベント設定
   function waitForPressKey() {
-    function onInput() {
-      fadeOut(pressKeyText, 800).then(() => {
-        // 背景画像フェードアウトしつつスクロール開始などの処理はここで可能
-        // 今回は省略（必要あれば追加してください）
-        window.removeEventListener("keydown", onInput, true);
-        window.removeEventListener("touchstart", onInput, true);
-      });
+    async function onInput() {
       window.removeEventListener("keydown", onInput, true);
       window.removeEventListener("touchstart", onInput, true);
+
+      await fadeOut(pressKeyText, 800);
+      await fadeOut(backgroundOverlay, 1500);
+
+      startBackgroundScroll();
     }
     window.addEventListener("keydown", onInput, { capture: true });
     window.addEventListener("touchstart", onInput, { capture: true });
@@ -226,7 +226,8 @@ document.addEventListener("DOMContentLoaded", () => {
     for (let i = 0; i < bgElements.length; i++) {
       const div = bgElements[i];
       let currentX = parseFloat(div.style.left);
-      // 右スクロールにしたいなら x座標を増やす方向でOK
+
+      // 右方向にスクロール (x座標を増やす)
       let newX = currentX + scrollSpeed;
       div.style.left = `${newX}px`;
     }
