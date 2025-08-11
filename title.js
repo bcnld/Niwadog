@@ -1,40 +1,15 @@
 class TitleScreen {
   constructor() {
-    // 背景div取得または生成
+    // 要素取得
     this.bgDiv = document.getElementById("background");
-    if (!this.bgDiv) {
-      this.bgDiv = document.createElement("div");
-      this.bgDiv.id = "background";
-      Object.assign(this.bgDiv.style, {
-        position: "fixed",
-        top: "0",
-        left: "0",
-        width: "100vw",
-        height: "100vh",
-        backgroundSize: "cover",
-        backgroundPosition: "center",
-        zIndex: "-1",
-        filter: "blur(8px)",
-        transformOrigin: "center center",
-        transform: "scale(1.2)",
-        transition: "transform 3s ease-out, filter 3s ease-out"
-      });
-      document.body.appendChild(this.bgDiv);
-    }
-
-    // 企業情報要素
     this.companyNameDiv = document.getElementById("company-name");
     this.companyLogoImg = document.getElementById("company-logo");
     this.companyTextDiv = document.getElementById("company-text");
-
-    // タイトル要素
     this.gameTitleDiv = document.getElementById("game-title");
     this.pressAnyKeyDiv = document.getElementById("press-any-key");
-
-    // BGM audio要素
     this.bgm = document.getElementById("bgm");
 
-    // 企業リスト
+    // 企業リスト（画像はimagesフォルダに置く想定）
     this.companyList = [
       { name: "Mdm", logo: "images/mdm_logo.png" },
       { name: "Sus Dog", logo: "images/Sus_logo.png" },
@@ -48,25 +23,30 @@ class TitleScreen {
     this.fadeIn = true;
     this.holdTimer = 0;
 
-    // Press Any Key用フェード用
+    // Press Any Key点滅制御用
     this.pressKeyAlpha = 0;
     this.pressKeyFadeIn = true;
 
-    // 背景画像パス
-    this.pressBgImage = "images/press_bg.png";  // Press Any Key 背景
-    this.menuBgImage = "images/title_bg.png";   // メインメニュー背景
+    // 背景画像パス（適宜差し替えてください）
+    this.pressBgImage = "images/press_bg.png";
+    this.menuBgImage = "images/title_bg.png";
 
-    // 最初は会社ロゴ表示、背景は初期ズーム＆ぼかしのまま
+    // 初期背景は空
     this.bgDiv.style.backgroundImage = "";
 
-    // Press Any Key 非表示（CSSで display:none にしているなら必要なし）
+    // 初期設定：企業名は非表示(透明)、ゲームタイトル非表示、Press Any Key非表示
+    this.companyNameDiv.style.opacity = 0;
+    this.companyNameDiv.style.display = "flex";  // 表示は残して透明に
+    this.gameTitleDiv.style.opacity = 0;
+    this.gameTitleDiv.style.display = "none";
     this.pressAnyKeyDiv.style.opacity = 0;
     this.pressAnyKeyDiv.style.display = "none";
 
     // イベント登録
-    window.addEventListener("keydown", (e) => this.onAnyKey(e));
-    window.addEventListener("touchstart", (e) => this.onAnyKey(e));
+    window.addEventListener("keydown", () => this.onAnyKey());
+    window.addEventListener("touchstart", () => this.onAnyKey());
 
+    // ループ開始
     this.loop();
   }
 
@@ -82,6 +62,7 @@ class TitleScreen {
         this.waitKeyLoop();
         break;
       case "mainMenu":
+        // ここでメインメニュー開始など処理追加
         break;
     }
     requestAnimationFrame(() => this.loop());
@@ -94,7 +75,7 @@ class TitleScreen {
       if (this.opacity >= 1) {
         this.opacity = 1;
         this.fadeIn = false;
-        this.holdTimer = 60;
+        this.holdTimer = 60; // 1秒保持 (60fps)
       }
     } else {
       if (this.holdTimer > 0) {
@@ -105,6 +86,7 @@ class TitleScreen {
           this.opacity = 0;
           this.currentCompanyIndex++;
           if (this.currentCompanyIndex >= this.companyList.length) {
+            // 企業表示終了、タイトル表示へ
             this.state = "showTitle";
 
             this.companyNameDiv.style.opacity = 0;
@@ -114,14 +96,13 @@ class TitleScreen {
             this.opacity = 0;
             this.fadeIn = true;
 
-            // BGM再生（ユーザー操作済みならOK）
+            // BGM再生（再生制限回避はcatchで）
             this.bgm.play().catch(() => {});
 
-            // 背景を Press Any Key 用に切り替え & ズームアウト・ぼかし解除開始
+            // 背景をPress Any Key用に切り替え、ズーム＆ぼかし解除
             this.bgDiv.style.backgroundImage = `url('${this.pressBgImage}')`;
             this.bgDiv.style.transform = "scale(1)";
             this.bgDiv.style.filter = "blur(0px)";
-
             return;
           }
           this.fadeIn = true;
@@ -145,7 +126,6 @@ class TitleScreen {
         this.pressKeyAlpha = 0;
         this.pressKeyFadeIn = true;
 
-        // Press Any Key 表示
         this.pressAnyKeyDiv.style.display = "block";
       }
       this.gameTitleDiv.style.opacity = this.opacity.toFixed(2);
@@ -172,6 +152,7 @@ class TitleScreen {
   onAnyKey() {
     if (this.state === "waitKey") {
       this.state = "mainMenu";
+
       this.pressAnyKeyDiv.style.opacity = 0;
       this.pressAnyKeyDiv.style.display = "none";
 
@@ -184,13 +165,15 @@ class TitleScreen {
   }
 }
 
-// ページロード後の初期化
+// 質問「はい」ボタン押したらタイトル開始
 window.addEventListener("load", () => {
   const questionOverlay = document.getElementById("question-overlay");
   const yesBtn = document.getElementById("question-yes-btn");
 
   yesBtn.addEventListener("click", () => {
     questionOverlay.classList.remove("active");
+    questionOverlay.style.display = "none";
+
     new TitleScreen();
   });
 });
