@@ -96,6 +96,55 @@ document.addEventListener("DOMContentLoaded", () => {
 
     // ★ タイトル2が出たタイミングでPress any keyテキスト表示
     pressKeyText.style.display = "block";
+    pressKeyText.style.opacity = "1";
+
+    // 「Press any key」からの入力待ちをセット
+    waitForPressKey();
+  }
+
+  // 「Press any key」待ちイベント設定
+  function waitForPressKey() {
+    function onInput() {
+      // イベント解除
+      window.removeEventListener("keydown", onInput);
+      window.removeEventListener("touchstart", onInput);
+
+      // 背景フェード切り替え演出など
+      fadeInBackgroundOverlayThenMenu();
+    }
+    // PCキーボード
+    window.addEventListener("keydown", onInput);
+    // スマホタップ
+    window.addEventListener("touchstart", onInput);
+  }
+
+  // 背景フェード→メインメニュー表示（ここにゲームのメインメニュー処理などを追加可能）
+  async function fadeInBackgroundOverlayThenMenu() {
+    // Press any keyテキストをフェードアウト
+    await fadeOut(pressKeyText, 800);
+
+    // 背景のフェードイン・アウト演出
+    backgroundOverlay.style.transition = "none";
+    backgroundOverlay.style.backgroundColor = "black";
+    backgroundOverlay.style.opacity = 0;
+    backgroundOverlay.style.display = "block";
+
+    await new Promise(requestAnimationFrame);
+
+    backgroundOverlay.style.transition = "opacity 1.5s ease";
+    backgroundOverlay.style.opacity = 1;
+
+    await new Promise(resolve => setTimeout(resolve, 1500));
+
+    backgroundOverlay.style.transition = "opacity 1.5s ease";
+    backgroundOverlay.style.opacity = 0;
+
+    await new Promise(resolve => setTimeout(resolve, 1500));
+
+    backgroundOverlay.style.display = "none";
+
+    // ここでメインメニューのUI表示や処理を開始できます
+    console.log("メインメニューを表示する処理をここに実装してください");
   }
 
   // 企業ロゴを順に表示
