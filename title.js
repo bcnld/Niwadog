@@ -11,9 +11,9 @@ class TitleScreen {
 
     // 企業リスト（画像はimagesフォルダに置く想定）
     this.companyList = [
-      { name: "Mdm", logo: "images/mdm_logo.png" },
-      { name: "Sus Dog", logo: "images/Sus_logo.png" },
-      { name: "Homo iranai", logo: "images/homo_logo.png" }
+      { name: "Mdm", logo: "images/press_bg.png" },
+      { name: "Sus Dog", logo: "images/press_bg.png" },
+      { name: "Homo iranai", logo: "images/press_bg.png" }
     ];
     this.currentCompanyIndex = 0;
 
