@@ -1,47 +1,26 @@
 <!DOCTYPE html>
 <html lang="ja">
 <head>
-<meta charset="UTF-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1.0" />
-<title>背景テスト</title>
-<style>
-  html, body {
-    margin: 0;
-    padding: 0;
-    height: 100%;
-    overflow: hidden;
-  }
-
-  /* 背景 */
-  #background {
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100vw;
-    height: 100vh;
-    background-image: url('images/press_bg.png'); /* ← ここに背景画像パス */
-    background-size: cover;
-    background-position: center;
-    z-index: 0;
-  }
-
-  /* 前面テキスト */
-  #foreground {
-    position: relative;
-    z-index: 1;
-    color: white;
-    font-size: 48px;
-    text-align: center;
-    margin-top: 40vh;
-    text-shadow: 0 0 8px black;
-  }
-</style>
+<meta charset="UTF-8">
+<title>起動画面デモ</title>
+<link rel="stylesheet" href="style.css">
 </head>
 <body>
 
+<!-- 背景 -->
 <div id="background"></div>
 
-<div id="foreground">背景テスト表示</div>
+<!-- 企業ロゴ -->
+<div id="company-name">
+  <img id="company-logo" src="images/company.png" alt="Company Logo">
+  <div>Homo Something Inc.</div>
+</div>
 
+<!-- Press Any Key -->
+<div id="press-any-key">Press Any Key</div>
+
+<audio id="bgm" src="title.mp3" loop></audio>
+
+<script src="title.js"></script>
 </body>
 </html>
