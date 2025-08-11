@@ -2,6 +2,8 @@ document.addEventListener("DOMContentLoaded", () => {
   const centerText = document.getElementById("center-text");
   const logos = document.querySelectorAll(".company-logo");
   const backgroundOverlay = document.getElementById("background-overlay");
+  const bgm = document.getElementById("bgm");
+
   let currentIndex = 0;
   let started = false;
 
@@ -45,33 +47,66 @@ document.addEventListener("DOMContentLoaded", () => {
     });
   }
 
-  // 会社ロゴを順番に表示
+  // 背景画像フェードイン＋ぼかし・拡大解除演出
+  async function fadeInBackgroundImage() {
+    backgroundOverlay.style.backgroundImage = "url('images/press_bg.png')";
+    backgroundOverlay.style.backgroundSize = "cover";
+    backgroundOverlay.style.backgroundPosition = "center center";
+
+    // 初期状態
+    backgroundOverlay.style.opacity = 0;
+    backgroundOverlay.style.filter = "blur(5px)";
+    backgroundOverlay.style.transform = "scale(1.2)";
+    backgroundOverlay.style.display = "block";
+
+    // トランジション設定（opacity, filter, transform）
+    backgroundOverlay.style.transition = "opacity 1.5s ease, filter 1.5s ease, transform 1.5s ease";
+
+    // 1フレーム後にトランジション開始（opacityを1に、filterとtransformを元に戻す）
+    await new Promise(requestAnimationFrame);
+    backgroundOverlay.style.opacity = 1;
+    backgroundOverlay.style.filter = "blur(0)";
+    backgroundOverlay.style.transform = "scale(1)";
+
+    // トランジション完了まで待つ
+    await new Promise(resolve => setTimeout(resolve, 1600));
+  }
+
   async function showNextLogo() {
     if (currentIndex >= logos.length) {
-      // 背景画像をフェードで切り替え
-      // フェードアウト
-      backgroundOverlay.style.transition = "opacity 1s ease";
-      backgroundOverlay.style.opacity = 0;
-      await new Promise(r => setTimeout(r, 1000));
-      // 背景画像変更
-      backgroundOverlay.style.backgroundImage = "url('images/press_bg.png')";
-      backgroundOverlay.style.backgroundSize = "cover";
-      backgroundOverlay.style.backgroundPosition = "center center";
-      // フェードイン
-      backgroundOverlay.style.opacity = 1;
+      // 3枚すべて表示終わったあと背景画像フェードイン→BGM再生
+      await fadeInBackgroundImage();
+      bgm.loop = true;
+      bgm.play();
       return;
+    }
+
+    // 背景を白く（半透明）に戻すのは1回目以降のロゴ表示の直前
+    if (currentIndex > 0) {
+      backgroundOverlay.style.transition = "none";
+      backgroundOverlay.style.backgroundImage = "";
+      backgroundOverlay.style.backgroundColor = "rgba(255,255,255,0.8)";
+      backgroundOverlay.style.opacity = 1;
+
+      // すぐにトランジションを戻す（次回切り替え用）
+      setTimeout(() => {
+        backgroundOverlay.style.transition = "opacity 1s ease";
+      }, 10);
+    } else {
+      // 最初は透明背景にしておく
+      backgroundOverlay.style.backgroundColor = "transparent";
+      backgroundOverlay.style.opacity = 1;
     }
 
     const logo = logos[currentIndex];
     await fadeIn(logo, 1000);
-    await new Promise(r => setTimeout(r, 2000)); // 2秒表示キープ
+    await new Promise(r => setTimeout(r, 2000));
     await fadeOut(logo, 1000);
 
     currentIndex++;
     showNextLogo();
   }
 
-  // 最初のクリックテキスト処理開始
   centerText.addEventListener("click", () => {
     if (started) return;
     started = true;
@@ -80,14 +115,9 @@ document.addEventListener("DOMContentLoaded", () => {
     });
   });
 
-  // ページ読み込み時に会社ロゴは全部非表示に設定
+  // 初期状態ロゴ非表示
   logos.forEach(logo => {
     logo.style.display = "none";
     logo.style.opacity = 0;
   });
-
-  // 背景オーバーレイ初期設定
-  backgroundOverlay.style.backgroundColor = "transparent";
-  backgroundOverlay.style.opacity = 1;
-  backgroundOverlay.style.backgroundImage = "";
 });
