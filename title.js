@@ -4,6 +4,12 @@ document.addEventListener("DOMContentLoaded", () => {
   let currentIndex = 0;
   let started = false;
 
+  // BGM準備（フォルダ変更）
+  const bgm = new Audio("Sounds/title.mp3");
+  bgm.loop = false; // 必要なら true
+  bgm.volume = 1.0;
+
+  // 初期状態で非表示
   logos.forEach(logo => {
     logo.style.display = "none";
     logo.style.opacity = 0;
@@ -52,6 +58,7 @@ document.addEventListener("DOMContentLoaded", () => {
   async function showNextLogo() {
     if (currentIndex >= logos.length) {
       console.log("すべてのロゴ表示完了");
+      bgm.play().catch(err => console.warn("BGM再生エラー:", err));
       return;
     }
     const logo = logos[currentIndex];
@@ -59,7 +66,7 @@ document.addEventListener("DOMContentLoaded", () => {
     await new Promise(r => setTimeout(r, 2000));
     await fadeOut(logo, 1000);
     currentIndex++;
-    await showNextLogo();  // ここを await に修正
+    showNextLogo();
   }
 
   centerText.addEventListener("click", () => {
