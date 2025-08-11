@@ -7,7 +7,7 @@ document.addEventListener("DOMContentLoaded", () => {
   let currentIndex = 0;
   let started = false;
 
-  // 画像フェード用関数
+  // フェードイン関数
   function fadeIn(element, duration = 1000) {
     element.style.display = "block";
     element.style.opacity = 0;
@@ -27,6 +27,7 @@ document.addEventListener("DOMContentLoaded", () => {
     });
   }
 
+  // フェードアウト関数
   function fadeOut(element, duration = 1000) {
     element.style.opacity = 1;
     let start = null;
@@ -46,10 +47,10 @@ document.addEventListener("DOMContentLoaded", () => {
     });
   }
 
-  // 会社ロゴを順に表示
+  // 会社ロゴを順番に表示
   async function showNextLogo() {
     if (currentIndex >= logos.length) {
-      // ロゴ全部終わったらPress any key表示
+      // ロゴ全部表示終わったらPress any key表示
       showPressAnyKey();
       return;
     }
@@ -63,11 +64,11 @@ document.addEventListener("DOMContentLoaded", () => {
     showNextLogo();
   }
 
-  // Press any key の背景とテキスト表示
+  // Press any key 背景とテキスト表示
   function showPressAnyKey() {
     pressBgContainer.style.display = "block";
 
-    // 1フレーム遅らせてぼかし・拡大を解除（フェードイン）
+    // 1フレーム遅らせてぼかし・拡大解除のフェードイン開始
     requestAnimationFrame(() => {
       pressBgImage.style.filter = "blur(0)";
       pressBgImage.style.transform = "scale(1)";
@@ -75,7 +76,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
     pressAnyKey.style.display = "block";
 
-    // キー押しで非表示にして次へ
+    // キー押しで非表示にして次の処理へ
     window.addEventListener("keydown", () => {
       hidePressAnyKey();
       // ここに次の処理を追加可能
@@ -93,7 +94,7 @@ document.addEventListener("DOMContentLoaded", () => {
     }, 1000);
   }
 
-  // 初回クリックテキスト処理開始
+  // 最初のクリックテキスト処理開始
   centerText.addEventListener("click", () => {
     if (started) return;
     started = true;
@@ -102,7 +103,7 @@ document.addEventListener("DOMContentLoaded", () => {
     });
   });
 
-  // 初期状態ロゴ非表示
+  // ページ読み込み時に会社ロゴは全部非表示に設定
   logos.forEach(logo => {
     logo.style.display = "none";
     logo.style.opacity = 0;
