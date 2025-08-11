@@ -3,14 +3,14 @@ document.addEventListener("DOMContentLoaded", () => {
   const logos = document.querySelectorAll(".company-logo");
   const backgroundOverlay = document.getElementById("background-overlay");
   const bgm = document.getElementById("bgm");
-  const sfx = document.getElementById("sfx"); // 追加: 3枚目後の音用
+  const sfx = document.getElementById("sfx");
 
   const titleImg1 = document.getElementById("title-img1");
   const titleImg2 = document.getElementById("title-img2");
   const pressKeyText = document.getElementById("press-any-key");
 
-  const transitionImg = document.getElementById("transition-img"); // 追加: フェードアウト用画像
-  const mainMenu = document.getElementById("main-menu"); // 追加: メニュー要素
+  const transitionImg = document.getElementById("transition-img");
+  const mainMenu = document.getElementById("main-menu");
 
   let currentIndex = 0;
   let started = false;
@@ -103,7 +103,6 @@ document.addEventListener("DOMContentLoaded", () => {
   function waitForPressKey() {
     function onInput() {
       fadeOut(titleImg2, 800).then(() => {
-        // Press any key 消す
         fadeOut(pressKeyText, 500).then(() => {
           fadeInBackgroundImage().then(() => {
             startBackgroundScroll();
@@ -111,7 +110,6 @@ document.addEventListener("DOMContentLoaded", () => {
               mainMenu.style.display = "block";
               mainMenu.style.opacity = "1";
             }
-            console.log("メインメニュー開始");
           });
         });
       });
@@ -151,7 +149,7 @@ document.addEventListener("DOMContentLoaded", () => {
     showNextLogo();
   }
 
-  // ===== スクロール背景 =====
+  // ===== スクロール背景（右方向に見えるように調整） =====
   const scrollSpeed = 1;
   const containerHeight = window.innerHeight;
   const containerWidth = window.innerWidth;
@@ -186,28 +184,26 @@ document.addEventListener("DOMContentLoaded", () => {
   }
 
   function animateScrollingBackground() {
+    // 背景を左に流す（見た目は右に進んでいるように見える）
     for (let i = 0; i < bgElements.length; i++) {
       const div = bgElements[i];
       let currentX = parseFloat(div.style.left);
-      let newX = currentX + scrollSpeed; // 右方向
+      let newX = currentX - scrollSpeed;
       div.style.left = `${newX}px`;
     }
 
-    const rightmostDiv = bgElements[bgElements.length - 1];
-    const rightmostX = parseFloat(rightmostDiv.style.left);
-
-    if (rightmostX >= containerWidth) {
+    // 左端が画面外に出たら削除
+    if (parseFloat(bgElements[0].style.left) + bgImageWidth < 0) {
       const removed = bgElements.shift();
       removed?.parentNode?.removeChild(removed);
     }
 
-    const leftmostDiv = bgElements[0];
-    const leftmostX = parseFloat(leftmostDiv.style.left);
-
-    if (leftmostX >= 0) {
-      const newDiv = createBgDiv(leftmostX - bgImageWidth);
+    // 右端が画面に入ったら右に新しい背景を追加
+    const rightmostDiv = bgElements[bgElements.length - 1];
+    if (parseFloat(rightmostDiv.style.left) + bgImageWidth <= containerWidth) {
+      const newDiv = createBgDiv(parseFloat(rightmostDiv.style.left) + bgImageWidth);
       scrollWrapper.appendChild(newDiv);
-      bgElements.unshift(newDiv);
+      bgElements.push(newDiv);
     }
 
     requestAnimationFrame(animateScrollingBackground);
@@ -217,7 +213,7 @@ document.addEventListener("DOMContentLoaded", () => {
     backgroundOverlay.style.display = "none";
     document.body.appendChild(scrollWrapper);
     bgElements.push(createBgDiv(0));
-    bgElements.push(createBgDiv(-bgImageWidth));
+    bgElements.push(createBgDiv(bgImageWidth));
     bgElements.forEach(div => scrollWrapper.appendChild(div));
     animateScrollingBackground();
   }
