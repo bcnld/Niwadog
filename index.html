@@ -25,6 +25,30 @@
     #fullscreen-toggle:hover {
       background: rgba(80, 80, 80, 1);
     }
+
+    /* ゲームタイトル画像コンテナ */
+    #title-images {
+      position: fixed;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      z-index: 30; /* 中央テキストやロゴより上に */
+      pointer-events: none; /* クリック無効 */
+      width: 100vw;
+      height: 100vh;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      flex-direction: column;
+      gap: 20px;
+    }
+    #title-images img {
+      max-width: 80vw;
+      max-height: 40vh;
+      display: none; /* 初期は非表示 */
+      user-select: none;
+      pointer-events: none;
+    }
   </style>
 </head>
 <body>
@@ -40,6 +64,12 @@
     <div class="company-logo"><img src="images/mdm_logo.png" alt="Mdm" /></div>
     <div class="company-logo"><img src="images/Sus_logo.png" alt="Sus Dog" /></div>
     <div class="company-logo"><img src="images/homo_logo.png" alt="Homo iranai" /></div>
+  </div>
+
+  <!-- ゲームタイトル画像 -->
+  <div id="title-images">
+    <img id="title-img1" src="images/title1.png" alt="Title 1" />
+    <img id="title-img2" src="images/title2.png" alt="Title 2" />
   </div>
 
   <!-- BGM再生用オーディオ -->
