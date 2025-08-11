@@ -10,12 +10,12 @@ class TitleScreen {
 
     this.companyList = [
       { name: "Mdm", logo: "images/mdm_logo.png" },
-      { name: "Sus Dog", logo: "images/Sus_logo.png" },
+      { name: "Sus Dog", logo: "images/dog.gif" },
       { name: "Homo iranai", logo: "images/homo_logo.png" }
     ];
     this.currentCompanyIndex = 0;
 
-    this.state = "showCompany"; // 状態管理
+    this.state = "showCompany";
     this.opacity = 0;
     this.fadeIn = true;
     this.holdTimer = 0;
@@ -23,23 +23,22 @@ class TitleScreen {
     this.pressKeyAlpha = 0;
     this.pressKeyFadeIn = true;
 
-    // 背景画像は先にセット（ただし初期はscale(1.2) & blur(8px)）
-    this.pressBgImage = "images/press_bg.png";
-    this.menuBgImage = "images/title_bg.png";
-
-    this.bgDiv.style.backgroundImage = `url('${this.pressBgImage}')`;
-    this.bgDiv.style.transform = "scale(1.2)";
+    // 事前に背景画像セットしてぼかし＆拡大をかける
+    this.bgDiv.style.backgroundImage = `url('images/press_bg.png')`;
     this.bgDiv.style.filter = "blur(8px)";
+    this.bgDiv.style.transform = "scale(1.2)";
+    this.bgDiv.style.transition = "transform 3s ease-out, filter 3s ease-out";
 
-    // 会社ロゴ・テキスト初期設定
+    // 初期状態セット
     this.companyNameDiv.style.opacity = 0;
     this.companyNameDiv.style.display = "flex";
 
     this.gameTitleDiv.style.display = "none";
+    this.gameTitleDiv.style.opacity = 0;
+
     this.pressAnyKeyDiv.style.opacity = 0;
     this.pressAnyKeyDiv.style.display = "none";
 
-    // イベント登録
     window.addEventListener("keydown", (e) => this.onAnyKey(e));
     window.addEventListener("touchstart", (e) => this.onAnyKey(e));
 
@@ -81,23 +80,23 @@ class TitleScreen {
           this.opacity = 0;
           this.currentCompanyIndex++;
           if (this.currentCompanyIndex >= this.companyList.length) {
-            // 会社表示終了したら背景をズームアウトしながら表示へ切り替え
+            // 企業ロゴ表示終わり
             this.state = "showTitle";
 
             this.companyNameDiv.style.opacity = 0;
             this.companyNameDiv.style.display = "none";
 
-            // ズームアウト・ぼかし解除開始
-            this.bgDiv.style.transition = "transform 3s ease-out, filter 3s ease-out";
+            // 背景のぼかし＆拡大を解除（ズームアウト＆ぼかし解除）
             this.bgDiv.style.transform = "scale(1)";
             this.bgDiv.style.filter = "blur(0px)";
 
+            // BGM再生
+            this.bgm.play().catch(() => {});
+
+            // タイトル表示初期化＆表示
             this.gameTitleDiv.style.display = "flex";
             this.opacity = 0;
             this.fadeIn = true;
-
-            // BGM再生（ユーザー操作済みなら）
-            this.bgm.play().catch(() => {});
 
             return;
           }
@@ -105,7 +104,6 @@ class TitleScreen {
         }
       }
     }
-
     this.companyTextDiv.textContent = current.name;
     this.companyLogoImg.src = current.logo;
     this.companyNameDiv.style.opacity = this.opacity.toFixed(2);
@@ -150,7 +148,7 @@ class TitleScreen {
       this.pressAnyKeyDiv.style.opacity = 0;
       this.pressAnyKeyDiv.style.display = "none";
 
-      this.bgDiv.style.backgroundImage = `url('${this.menuBgImage}')`;
+      this.bgDiv.style.backgroundImage = `url('images/title_bg.png')`;
       this.bgDiv.style.transform = "scale(1)";
       this.bgDiv.style.filter = "blur(0px)";
 
