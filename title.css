@@ -1,63 +1,67 @@
 body, html {  
-  margin: 0;  
-  padding: 0;  
-  height: 100%;  
-  background-color: black;  
-  color: white;  
-  font-family: 'Arial Black', sans-serif;  
-  user-select: none;  
-  overflow: hidden;  
-}  
+  margin: 0;
+  padding: 0;
+  height: 100%;
+  background-color: black;
+  color: white;
+  font-family: 'Arial Black', sans-serif;
+  user-select: none;
+  overflow: hidden;
+}
 
-#center-text {  
-  position: fixed;  
-  top: 50%;  
-  left: 50%;  
-  transform: translate(-50%, -50%);  
-  font-size: 48px;  
-  font-weight: bold;  
-  color: white;  
-  text-align: center;  
-  cursor: pointer;  
-  user-select: none;  
-  max-width: 90vw;  
-  padding: 20px;  
-  z-index: 10000;  
-}  
+/* 背景フェード用レイヤー */
+#background-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: black;
+  transition: background-color 1s ease;
+  z-index: 0;
+}
 
-.company-logo {  
-  position: fixed;  
-  top: 50%;  
-  left: 50%;  
-  transform: translate(-50%, -50%);  
-  display: none;  
-  opacity: 0;  
-  max-width: 80vw;  
-  max-height: 80vh;  
-  z-index: 9999;  
-}  
+/* 中央テキスト */
+#center-text {
+  position: fixed;
+  top: 50%; 
+  left: 50%;
+  transform: translate(-50%, -50%);
+  font-size: 48px;
+  font-weight: bold;
+  color: white;
+  text-align: center;
+  cursor: pointer;
+  max-width: 90vw;
+  padding: 20px;
+  z-index: 2;
+}
 
-.company-logo img {  
-  display: block;  
-  max-width: 100%;  
-  max-height: 100%;  
-}  
+/* 会社ロゴ共通設定 */
+.company-logo {
+  display: none;
+  opacity: 0;
+  position: fixed;
+  top: 50%; 
+  left: 50%;
+  transform: translate(-50%, -50%);
+  z-index: 2;
+}
 
-.company-logo.active {  
-  display: block;  
-  opacity: 1;  
-  pointer-events: auto;  
-}  
+.company-logo img {
+  max-width: 80vw;
+  max-height: 80vh;
+}
 
-/* スマホ対応 */  
-@media (max-width: 600px) {  
-  #center-text {  
-    font-size: 28px;  
-    padding: 15px;  
-  }  
+/* スマホ対応 */
+@media (max-width: 600px) {
+  #center-text {
+    font-size: 28px;
+    padding: 15px;
+  }
 
-  .company-logo {  
-    max-width: 90vw;  
-    max-height: 50vh;  
-  }  
+  .company-logo img {
+    max-width: 90vw;
+    max-height: 50vh;
+  }
 }
