@@ -1,29 +1,29 @@
 <!DOCTYPE html>
 <html lang="ja">
 <head>
-<meta charset="UTF-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1" />
-<title>Press Any Key Example</title>
-<link rel="stylesheet" href="style.css" />
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>企業ロゴ表示デモ</title>
+  <link rel="stylesheet" href="title.css" />
 </head>
 <body>
 
-<!-- 既存コンテンツ例 -->
-<div id="center-text">あなたは日本人ですか？</div>
-<div id="company-logos">
-  <div class="company-logo"><img src="images/mdm_logo.png" alt="Mdm" /></div>
-  <div class="company-logo"><img src="images/Sus_logo.png" alt="Sus Dog" /></div>
-  <div class="company-logo"><img src="images/homo_logo.png" alt="Homo iranai" /></div>
-</div>
+  <!-- 最初の中央テキスト -->
+  <div id="center-text">あなたは日本人ですか？</div>
 
-<!-- Press any key 背景画像コンテナ -->
-<div id="press-bg-container">
-  <img src="images/press_bg.png" alt="Press Background" id="press-bg-image" />
-</div>
+  <!-- 背景オーバーレイ -->
+  <div id="background-overlay"></div>
 
-<!-- Press any key テキスト -->
-<div id="press-any-key">Press any key</div>
+  <!-- 企業ロゴ群 -->
+  <div id="company-logos">
+    <div class="company-logo"><img src="images/mdm_logo.png" alt="Mdm" /></div>
+    <div class="company-logo"><img src="images/Sus_logo.png" alt="Sus Dog" /></div>
+    <div class="company-logo"><img src="images/homo_logo.png" alt="Homo iranai" /></div>
+  </div>
 
-<script src="title.js"></script>
+  <!-- BGM再生用オーディオ -->
+  <audio id="bgm" src="Sounds/title.mp3" preload="auto"></audio>
+
+  <script src="title.js"></script>
 </body>
 </html>
