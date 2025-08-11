@@ -1,5 +1,7 @@
 body, html {  
-  margin: 0; padding: 0; height: 100%;  
+  margin: 0;  
+  padding: 0;  
+  height: 100%;  
   background-color: black;  
   color: white;  
   font-family: 'Arial Black', sans-serif;  
@@ -9,7 +11,8 @@ body, html {
 
 #center-text {  
   position: fixed;  
-  top: 50%; left: 50%;  
+  top: 50%;  
+  left: 50%;  
   transform: translate(-50%, -50%);  
   font-size: 48px;  
   font-weight: bold;  
@@ -22,7 +25,6 @@ body, html {
   z-index: 10000;  
 }  
 
-/* 会社ロゴ共通 */  
 .company-logo {  
   position: fixed;  
   top: 50%;  
@@ -36,9 +38,9 @@ body, html {
 }  
 
 .company-logo img {  
+  display: block;  
   max-width: 100%;  
   max-height: 100%;  
-  display: block;  
 }  
 
 .company-logo.active {  
