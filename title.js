@@ -4,13 +4,12 @@ document.addEventListener("DOMContentLoaded", () => {
   const background = document.getElementById("background");
   const bgm = document.getElementById("bgm");
 
-  // 最初に全部のロゴは非表示かつ透明
   logos.forEach(logo => {
     logo.style.opacity = 0;
     logo.style.display = "none";
+    // 中央に表示されるようにCSSで設定している前提
   });
 
-  // 初期状態: 背景はぼかし＆拡大したまま
   background.style.filter = "blur(8px)";
   background.style.transform = "scale(1.2)";
 
@@ -18,30 +17,30 @@ document.addEventListener("DOMContentLoaded", () => {
 
   function showNextLogo() {
     if (index >= logos.length) {
-      // 企業ロゴ全部表示終わったら背景を戻す
+      // 3つの会社画像が全部終わった瞬間にBGM再生
+      if (bgm && bgm.paused) {
+        bgm.play();
+      }
+
+      // 背景のぼかしと拡大を元に戻す（ゆっくり）
       background.style.transition = "transform 3s ease-out, filter 3s ease-out";
       background.style.filter = "blur(0px)";
       background.style.transform = "scale(1)";
 
-      // BGM再生
-      if (bgm) bgm.play();
-
-      // 3秒後にPress Any Key表示＆点滅開始
+      // 少し待ってからPress Any Key表示＆点滅開始
       setTimeout(() => {
         pressAnyKey.style.opacity = 1;
         blinkPressText();
       }, 3000);
+
       return;
     }
 
     const logo = logos[index];
     logo.style.display = "block";
 
-    // フェードイン
     fadeIn(logo, 1000, () => {
-      // 2秒表示保持
       setTimeout(() => {
-        // フェードアウト
         fadeOut(logo, 1000, () => {
           logo.style.display = "none";
           index++;
@@ -57,7 +56,6 @@ document.addEventListener("DOMContentLoaded", () => {
     element.style.display = "block";
     const interval = 50;
     const increment = interval / duration;
-
     function step() {
       opacity += increment;
       if (opacity >= 1) {
@@ -76,7 +74,6 @@ document.addEventListener("DOMContentLoaded", () => {
     let opacity = 1;
     const interval = 50;
     const decrement = interval / duration;
-
     function step() {
       opacity -= decrement;
       if (opacity <= 0) {
@@ -97,6 +94,5 @@ document.addEventListener("DOMContentLoaded", () => {
     }, 800);
   }
 
-  // 開始
   showNextLogo();
 });
