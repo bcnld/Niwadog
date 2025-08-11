@@ -1,45 +1,21 @@
 class TitleScreen {
   constructor() {
     this.bgDiv = document.getElementById("background");
-    if (!this.bgDiv) {
-      this.bgDiv = document.createElement("div");
-      this.bgDiv.id = "background";
-      Object.assign(this.bgDiv.style, {
-        position: "fixed",
-        top: "0",
-        left: "0",
-        width: "100vw",
-        height: "100vh",
-        backgroundSize: "cover",
-        backgroundPosition: "center",
-        zIndex: "-1",
-        filter: "blur(8px)",
-        transformOrigin: "center center",
-        transform: "scale(1.2)",
-        transition: "transform 3s ease-out, filter 3s ease-out",
-        backgroundRepeat: "no-repeat",
-        backgroundColor: "transparent",
-      });
-      document.body.appendChild(this.bgDiv);
-    }
-
     this.companyNameDiv = document.getElementById("company-name");
     this.companyLogoImg = document.getElementById("company-logo");
     this.companyTextDiv = document.getElementById("company-text");
-
     this.gameTitleDiv = document.getElementById("game-title");
     this.pressAnyKeyDiv = document.getElementById("press-any-key");
-
     this.bgm = document.getElementById("bgm");
 
     this.companyList = [
       { name: "Mdm", logo: "images/mdm_logo.png" },
-      { name: "Sus Dog", logo: "images/dog.gif" },
+      { name: "Sus Dog", logo: "images/Sus_logo.png" },
       { name: "Homo iranai", logo: "images/homo_logo.png" }
     ];
     this.currentCompanyIndex = 0;
 
-    this.state = "showCompany"; // showCompany -> showTitle -> waitKey -> mainMenu
+    this.state = "showCompany"; // 状態管理
     this.opacity = 0;
     this.fadeIn = true;
     this.holdTimer = 0;
@@ -47,13 +23,23 @@ class TitleScreen {
     this.pressKeyAlpha = 0;
     this.pressKeyFadeIn = true;
 
+    // 背景画像は先にセット（ただし初期はscale(1.2) & blur(8px)）
     this.pressBgImage = "images/press_bg.png";
     this.menuBgImage = "images/title_bg.png";
 
-    this.bgDiv.style.backgroundImage = "";
+    this.bgDiv.style.backgroundImage = `url('${this.pressBgImage}')`;
+    this.bgDiv.style.transform = "scale(1.2)";
+    this.bgDiv.style.filter = "blur(8px)";
+
+    // 会社ロゴ・テキスト初期設定
+    this.companyNameDiv.style.opacity = 0;
+    this.companyNameDiv.style.display = "flex";
+
+    this.gameTitleDiv.style.display = "none";
     this.pressAnyKeyDiv.style.opacity = 0;
     this.pressAnyKeyDiv.style.display = "none";
 
+    // イベント登録
     window.addEventListener("keydown", (e) => this.onAnyKey(e));
     window.addEventListener("touchstart", (e) => this.onAnyKey(e));
 
@@ -94,24 +80,23 @@ class TitleScreen {
         if (this.opacity <= 0) {
           this.opacity = 0;
           this.currentCompanyIndex++;
-
           if (this.currentCompanyIndex >= this.companyList.length) {
-            // ここで背景画像を表示し、背景をズームアウト＆ぼかし解除
-            this.bgDiv.style.backgroundImage = `url('${this.pressBgImage}')`;
-            this.bgDiv.style.transform = "scale(1)";
-            this.bgDiv.style.filter = "blur(0px)";
+            // 会社表示終了したら背景をズームアウトしながら表示へ切り替え
+            this.state = "showTitle";
 
-            // 会社ロゴを非表示
             this.companyNameDiv.style.opacity = 0;
             this.companyNameDiv.style.display = "none";
 
-            // タイトル表示開始
-            this.state = "showTitle";
+            // ズームアウト・ぼかし解除開始
+            this.bgDiv.style.transition = "transform 3s ease-out, filter 3s ease-out";
+            this.bgDiv.style.transform = "scale(1)";
+            this.bgDiv.style.filter = "blur(0px)";
+
             this.gameTitleDiv.style.display = "flex";
             this.opacity = 0;
             this.fadeIn = true;
 
-            // BGM再生（ユーザー操作済みならOK）
+            // BGM再生（ユーザー操作済みなら）
             this.bgm.play().catch(() => {});
 
             return;
@@ -136,7 +121,6 @@ class TitleScreen {
         this.state = "waitKey";
         this.pressKeyAlpha = 0;
         this.pressKeyFadeIn = true;
-
         this.pressAnyKeyDiv.style.display = "block";
       }
       this.gameTitleDiv.style.opacity = this.opacity.toFixed(2);
@@ -175,6 +159,7 @@ class TitleScreen {
   }
 }
 
+// 初期化
 window.addEventListener("load", () => {
   const questionOverlay = document.getElementById("question-overlay");
   const yesBtn = document.getElementById("question-yes-btn");
