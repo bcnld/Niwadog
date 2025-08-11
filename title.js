@@ -1,10 +1,10 @@
+// 完全版JS（質問モーダル制御）
 document.addEventListener("DOMContentLoaded", () => {
-  const questionOverlay = document.getElementById("question-overlay");
+  const overlay = document.getElementById("question-overlay");
   const yesBtn = document.getElementById("question-yes-btn");
 
   yesBtn.addEventListener("click", () => {
-    questionOverlay.classList.remove("active");
-    // ここで次の処理を入れてもOK
-    console.log("質問モーダルを閉じました");
+    // モーダル非表示にする
+    overlay.classList.remove("active");
   });
 });
