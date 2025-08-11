@@ -7,71 +7,24 @@ body, html {
   overflow: hidden;
 }
 
-.overlay {
+#center-text {
   position: fixed;
-  top: 0; left: 0;
-  width: 100vw; height: 100vh;
-  background-color: rgba(0,0,0,0.9);
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  z-index: 10000;
-}
-
-.overlay:not(.active) {
-  display: none;
-}
-
-#question-box {
-  background-color: #111;
-  padding: 30px 40px;
-  border-radius: 12px;
-  max-width: 90vw;
-  width: 600px;          /* 最大幅600px */
-  
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  align-items: center;
-  box-sizing: border-box;
-}
-
-#question-box p {
+  top: 50%; left: 50%;
+  transform: translate(-50%, -50%);
   font-size: 48px;
   font-weight: bold;
-  margin: 0;
   color: white;
   text-align: center;
-}
-
-/* スマホ用 */
-@media (max-width: 600px) {
-  #question-box {
-    width: 90vw;
-    padding: 20px 25px;
-  }
-  #question-box p {
-    font-size: 28px;
-  }
-  #question-yes-btn {
-    font-size: 18px;
-    padding: 10px 30px;
-  }
-}
-
-#question-yes-btn {
-  margin-top: 20px;
-  padding: 12px 36px;
-  font-size: 22px;
-  font-weight: bold;
-  border-radius: 8px;
-  border: none;
   cursor: pointer;
-  background-color: #2196F3;
-  color: white;
-  transition: background-color 0.3s ease;
+  user-select: none;
+  max-width: 90vw;
+  padding: 20px;
 }
 
-#question-yes-btn:hover {
-  background-color: #1976d2;
+/* スマホ対応 */
+@media (max-width: 600px) {
+  #center-text {
+    font-size: 28px;
+    padding: 15px;
+  }
 }
