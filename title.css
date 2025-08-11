@@ -1,7 +1,7 @@
 /* --- 共通リセット・ベース --- */
 body, html {
   margin: 0; padding: 0; height: 100%;
-  background-color: black;
+  background-color: transparent; /* 背景透明 */
   color: white;
   font-family: 'Arial Black', sans-serif;
   user-select: none;
@@ -14,6 +14,7 @@ body, html {
   top: 0; left: 0;
   width: 100vw;
   height: 100vh;
+  background-color: rgba(0,0,0,0.85); /* 半透明黒 */
   display: flex;
   justify-content: center;
   align-items: center;
@@ -27,12 +28,6 @@ body, html {
 /* モーダル非表示時は display:none */
 .overlay:not(.active) {
   display: none;
-}
-
-/* 質問オーバーレイ */
-.overlay {
-  background: rgba(0,0,0,0.85);
-  /* flex設定は上で記載済み */
 }
 
 /* 「はい」ボタン */
@@ -53,33 +48,15 @@ body, html {
   background-color: #1976d2;
 }
 
-/* --- タイトル画面全体 --- */
-#title-screen {
-  position: fixed;
-  top: 0; left: 0;
-  width: 100vw;
-  height: 100vh;
-  background-color: black;
-  color: white;
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  align-items: center;
-  user-select: none;
-  z-index: 2000;
-}
-
 /* 企業名とロゴ */
 #company-name {
   position: fixed;
   top: 50%;
   left: 50%;
   transform: translate(-50%, -50%);
-  
   display: flex;
   flex-direction: column;
   align-items: center;
-  
   opacity: 0;
   transition: opacity 1s ease;
   font-size: 48px;
@@ -102,12 +79,10 @@ body, html {
   top: 50%;
   left: 50%;
   transform: translate(-50%, -50%);
-  
   flex-direction: column;
   align-items: center;
   opacity: 0;
   transition: opacity 1s ease;
-  
   user-select: none;
   z-index: 1000;
 }
@@ -147,18 +122,10 @@ body, html {
   background-size: cover;
   background-position: center;
   z-index: -1;
-
-  /* 初期は大きくしてぼかしをつける */
   filter: blur(8px);
   transform-origin: center center;
   transform: scale(1.2);
   transition: transform 3s ease-out, filter 3s ease-out;
-}
-
-/* 画面全体に使うクラス（必要に応じて追加） */
-.flex-center-column {
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  align-items: center;
+  background-repeat: no-repeat;
+  background-color: transparent;
 }
