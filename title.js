@@ -11,6 +11,10 @@ document.addEventListener("DOMContentLoaded", () => {
   let currentIndex = 0;
   let started = false;
 
+  // 初期状態でpressKeyTextを完全非表示に
+  pressKeyText.style.display = "none";
+  pressKeyText.style.opacity = "0";
+
   // フェードイン関数
   function fadeIn(element, duration = 1000) {
     element.style.display = "block";
@@ -70,7 +74,7 @@ document.addEventListener("DOMContentLoaded", () => {
     backgroundOverlay.style.filter = "blur(0)";
     backgroundOverlay.style.transform = "scale(1)";
 
-    // BGMループ再生をここで早めに開始
+    // BGMループ再生
     bgm.loop = true;
     bgm.play();
 
@@ -82,7 +86,7 @@ document.addEventListener("DOMContentLoaded", () => {
     // 1枚目タイトル表示（中央・光る演出）
     titleImg1.style.display = "block";
     titleImg1.style.opacity = 0;
-    titleImg1.style.filter = "drop-shadow(0 0 20px white)"; // 光らせる
+    titleImg1.style.filter = "drop-shadow(0 0 20px white)";
     await fadeIn(titleImg1, 1000);
     await new Promise(r => setTimeout(r, 3000));
     await fadeOut(titleImg1, 1000);
@@ -91,27 +95,22 @@ document.addEventListener("DOMContentLoaded", () => {
     // 2枚目タイトル表示（中央より少し上）
     titleImg2.style.display = "block";
     titleImg2.style.opacity = 0;
-    titleImg2.style.transform = "translate(-50%, -60%)"; // 少し上に移動
+    titleImg2.style.transform = "translate(-50%, -60%)";
     await fadeIn(titleImg2, 1000);
 
-    // ★ タイトル2が出たタイミングでPress any keyテキスト表示
+    // タイトル2表示時にPress any key表示
     pressKeyText.style.display = "block";
-    // フェードインさせるため次フレームでopacityを1に
     requestAnimationFrame(() => {
       pressKeyText.style.opacity = "1";
     });
 
-    // 「Press any key」からの入力待ちをセット
     waitForPressKey();
   }
 
   // 「Press any key」待ちイベント設定
   function waitForPressKey() {
     function onInput() {
-      window.removeEventListener("keydown", onInput);
-      window.removeEventListener("touchstart", onInput);
-
-      // Press any key フェードアウト＋タイトル2・背景オーバーレイもフェードアウト後にスクロール背景開始
+      // イベントはonce:trueで自動解除なのでremove不要
       fadeOut(pressKeyText, 800).then(() => {
         fadeOut(titleImg2, 800);
         fadeOut(backgroundOverlay, 800).then(() => {
@@ -120,8 +119,8 @@ document.addEventListener("DOMContentLoaded", () => {
         });
       });
     }
-    window.addEventListener("keydown", onInput);
-    window.addEventListener("touchstart", onInput);
+    window.addEventListener("keydown", onInput, { once: true, capture: true });
+    window.addEventListener("touchstart", onInput, { once: true, capture: true });
   }
 
   // 企業ロゴを順に表示
@@ -154,7 +153,7 @@ document.addEventListener("DOMContentLoaded", () => {
     showNextLogo();
   }
 
-  // スクロール背景用変数・関数
+  // スクロール背景用変数と関数
   let bgPosX = 0;
   const scrollSpeed = 1;
   let scrollingBg = null;
@@ -171,24 +170,44 @@ document.addEventListener("DOMContentLoaded", () => {
   }
 
   function startBackgroundScroll() {
-  backgroundOverlay.style.display = "none";
+    backgroundOverlay.style.display = "none";
 
-  scrollingBg = document.createElement("div");
-  scrollingBg.id = "scrolling-background";
-  scrollingBg.style.position = "fixed";
-  scrollingBg.style.top = "0";
-  scrollingBg.style.left = "0";
-  scrollingBg.style.width = "200vw";
-  scrollingBg.style.height = "100vh";
-  scrollingBg.style.backgroundImage = "url('images/menu.png'), url('images/menu.png')";
-  scrollingBg.style.backgroundRepeat = "repeat-x, repeat-x";
-  scrollingBg.style.backgroundPosition = "0 0, 100% 0";
-  scrollingBg.style.backgroundSize = "cover, cover";
-  scrollingBg.style.zIndex = "1";
-  scrollingBg.style.pointerEvents = "none";
-  scrollingBg.style.willChange = "background-position";
+    scrollingBg = document.createElement("div");
+    scrollingBg.id = "scrolling-background";
+    scrollingBg.style.position = "fixed";
+    scrollingBg.style.top = "0";
+    scrollingBg.style.left = "0";
+    scrollingBg.style.width = "200vw";
+    scrollingBg.style.height = "100vh";
+    scrollingBg.style.backgroundImage = "url('images/menu.png'), url('images/menu.png')";
+    scrollingBg.style.backgroundRepeat = "repeat-x, repeat-x";
+    scrollingBg.style.backgroundPosition = "0 0, 100% 0";
+    scrollingBg.style.backgroundSize = "cover, cover";
+    scrollingBg.style.zIndex = "1";
+    scrollingBg.style.pointerEvents = "none";
+    scrollingBg.style.willChange = "background-position";
 
-  document.body.appendChild(scrollingBg);
+    document.body.appendChild(scrollingBg);
 
-  animateScrollingBackground();
-}
+    animateScrollingBackground();
+  }
+
+  // 初期状態の設定（ロゴ非表示など）
+  logos.forEach(logo => {
+    logo.style.display = "none";
+    logo.style.opacity = 0;
+  });
+  titleImg1.style.display = "none";
+  titleImg2.style.display = "none";
+  pressKeyText.style.display = "none";
+  pressKeyText.style.opacity = "0";
+
+  // 画面中央のテキストクリックで開始
+  centerText.addEventListener("click", () => {
+    if (started) return;
+    started = true;
+    fadeOut(centerText, 500).then(() => {
+      showNextLogo();
+    });
+  });
+});
