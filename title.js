@@ -34,7 +34,7 @@ class TitleScreen {
 
     this.companyList = [
       { name: "Mdm", logo: "images/mdm_logo.png" },
-      { name: "Sus Dog", logo: "images/Sus_logo.png" },
+      { name: "Sus Dog", logo: "images/dog.gif" },
       { name: "Homo iranai", logo: "images/homo_logo.png" }
     ];
     this.currentCompanyIndex = 0;
@@ -94,21 +94,25 @@ class TitleScreen {
         if (this.opacity <= 0) {
           this.opacity = 0;
           this.currentCompanyIndex++;
-          if (this.currentCompanyIndex >= this.companyList.length) {
-            this.state = "showTitle";
 
+          if (this.currentCompanyIndex >= this.companyList.length) {
+            // ここで背景画像を表示し、背景をズームアウト＆ぼかし解除
+            this.bgDiv.style.backgroundImage = `url('${this.pressBgImage}')`;
+            this.bgDiv.style.transform = "scale(1)";
+            this.bgDiv.style.filter = "blur(0px)";
+
+            // 会社ロゴを非表示
             this.companyNameDiv.style.opacity = 0;
             this.companyNameDiv.style.display = "none";
 
+            // タイトル表示開始
+            this.state = "showTitle";
             this.gameTitleDiv.style.display = "flex";
             this.opacity = 0;
             this.fadeIn = true;
 
+            // BGM再生（ユーザー操作済みならOK）
             this.bgm.play().catch(() => {});
-
-            this.bgDiv.style.backgroundImage = `url('${this.pressBgImage}')`;
-            this.bgDiv.style.transform = "scale(1)";
-            this.bgDiv.style.filter = "blur(0px)";
 
             return;
           }
