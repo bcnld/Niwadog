@@ -16,28 +16,37 @@
   </div>
 </div>
 
-<!-- 背景（JSで操作） -->
+<!-- 背景用DIV（JSで背景画像やぼかしを操作） -->
 <div id="background"></div>
 
-<!-- 企業表示 -->
-<div id="company-name" style="display:flex; flex-direction: column; align-items:center;">
+<!-- 企業ロゴと名前表示 -->
+<div id="company-name" style="display: flex; flex-direction: column; align-items: center;">
   <img id="company-logo" src="" alt="Company Logo" />
   <div id="company-text"></div>
 </div>
 
-<!-- タイトル表示 -->
-<div id="game-title" style="display:none; flex-direction: column; align-items: center;">
+<!-- ゲームタイトル -->
+<div id="game-title" style="display: none; flex-direction: column; align-items: center;">
   <img src="images/game_title.png" alt="Game Title" />
-  <div>BIOHAZARD 4</div>
+  <div>ゲームタイトルのテキスト</div>
 </div>
 
 <!-- Press Any Key -->
-<div id="press-any-key">Press Any Key</div>
+<div id="press-any-key" style="opacity: 0; display: none;">Press Any Key</div>
 
-<!-- BGM -->
+<!-- 最初にゲーム開始を聞く質問のオーバーレイ -->
+<div id="question-overlay" class="active">
+  <div id="question-box">
+    <p>ゲームを開始しますか？</p>
+    <button id="question-yes-btn">はい</button>
+  </div>
+</div>
+
+<!-- BGM用 -->
 <audio id="bgm" src="Sounds/title.mp3" loop></audio>
 
 <script src="title.js"></script>
 </body>
 </html>
+
 
