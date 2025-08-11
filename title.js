@@ -11,11 +11,9 @@ document.addEventListener("DOMContentLoaded", () => {
   let currentIndex = 0;
   let started = false;
 
-  // 初期状態でpressKeyTextを完全非表示に
   pressKeyText.style.display = "none";
   pressKeyText.style.opacity = "0";
 
-  // フェードイン関数
   function fadeIn(element, duration = 1000) {
     element.style.display = "block";
     element.style.opacity = 0;
@@ -35,7 +33,6 @@ document.addEventListener("DOMContentLoaded", () => {
     });
   }
 
-  // フェードアウト関数
   function fadeOut(element, duration = 1000) {
     element.style.opacity = 1;
     let start = null;
@@ -55,7 +52,6 @@ document.addEventListener("DOMContentLoaded", () => {
     });
   }
 
-  // 背景画像フェードイン＋ぼかし・拡大解除演出
   async function fadeInBackgroundImage() {
     backgroundOverlay.style.backgroundImage = "url('images/press_bg.png')";
     backgroundOverlay.style.backgroundSize = "cover";
@@ -74,14 +70,12 @@ document.addEventListener("DOMContentLoaded", () => {
     backgroundOverlay.style.filter = "blur(0)";
     backgroundOverlay.style.transform = "scale(1)";
 
-    // BGMループ再生
     bgm.loop = true;
     bgm.play();
 
     await new Promise(resolve => setTimeout(resolve, 2100));
   }
 
-  // タイトル画像表示シーケンス
   async function showTitleImages() {
     titleImg1.style.display = "block";
     titleImg1.style.opacity = 0;
@@ -93,7 +87,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
     titleImg2.style.display = "block";
     titleImg2.style.opacity = 0;
-    titleImg2.style.transform = "translate(-50%, -60%) scale(1.5)"; // 拡大1.5倍に修正
+    titleImg2.style.transform = "translate(-50%, -60%) scale(1.5)";
     titleImg2.style.transition = "transform 1s ease";
     await fadeIn(titleImg2, 1000);
 
@@ -105,22 +99,19 @@ document.addEventListener("DOMContentLoaded", () => {
     waitForPressKey();
   }
 
-  // 「Press any key」待ちイベント設定
+  // 「Press any key」押したらPress any keyだけ消して、タイトル2は残し背景スクロール開始
   function waitForPressKey() {
     function onInput() {
       fadeOut(pressKeyText, 800).then(() => {
-        fadeOut(titleImg2, 800);
-        fadeOut(backgroundOverlay, 800).then(() => {
-          startBackgroundScroll();
-          console.log("メインメニュー開始");
-        });
+        backgroundOverlay.style.display = "none";
+        startBackgroundScroll();
+        console.log("メインメニュー開始");
       });
     }
     window.addEventListener("keydown", onInput, { once: true, capture: true });
     window.addEventListener("touchstart", onInput, { once: true, capture: true });
   }
 
-  // 企業ロゴを順に表示
   async function showNextLogo() {
     if (currentIndex >= logos.length) {
       await fadeInBackgroundImage();
@@ -150,13 +141,11 @@ document.addEventListener("DOMContentLoaded", () => {
     showNextLogo();
   }
 
-  // ----------- スクロール背景関連 ------------
-
   const scrollSpeed = 1;
   const containerHeight = window.innerHeight;
   const containerWidth = window.innerWidth;
-  const bgImageWidth = 3600;  // 900px × 4枚の横長画像幅
-  const bgImageHeight = containerHeight; // 高さは画面高さに合わせる
+  const bgImageWidth = 3600;
+  const bgImageHeight = containerHeight;
 
   const scrollWrapper = document.createElement("div");
   scrollWrapper.id = "scroll-wrapper";
@@ -186,46 +175,45 @@ document.addEventListener("DOMContentLoaded", () => {
   }
 
   function animateScrollingBackground() {
-  for (let i = 0; i < bgElements.length; i++) {
-    const div = bgElements[i];
-    let currentX = parseFloat(div.style.left);
+    for (let i = 0; i < bgElements.length; i++) {
+      const div = bgElements[i];
+      let currentX = parseFloat(div.style.left);
 
-    // 右方向へスクロール
-    let newX = currentX + scrollSpeed;
-    div.style.left = `${newX}px`;
-  }
-
-  // 左端にあるdiv（画面左側、一番左の画像）
-  const leftmostDiv = bgElements[0];
-  const leftmostX = parseFloat(leftmostDiv.style.left);
-
-  // 画像が完全に画面右端を超えたら削除
-  if (leftmostX >= containerWidth) {
-    const removed = bgElements.shift();
-    if (removed && removed.parentNode) {
-      removed.parentNode.removeChild(removed);
+      // 右方向へスクロール
+      let newX = currentX + scrollSpeed;
+      div.style.left = `${newX}px`;
     }
+
+    // 左端にあるdiv（画面左側、一番左の画像）
+    const leftmostDiv = bgElements[0];
+    const leftmostX = parseFloat(leftmostDiv.style.left);
+
+    // 画像が完全に画面右端を超えたら削除
+    if (leftmostX >= containerWidth) {
+      const removed = bgElements.shift();
+      if (removed && removed.parentNode) {
+        removed.parentNode.removeChild(removed);
+      }
+    }
+
+    // 右端にあるdiv（一番右の画像）
+    const rightmostDiv = bgElements[bgElements.length - 1];
+    const rightmostX = parseFloat(rightmostDiv.style.left);
+
+    // 右端の画像の右端が画面の右端を超えたら左側に新しい画像を追加
+    if (rightmostX + bgImageWidth <= containerWidth) {
+      const newDiv = createBgDiv(rightmostX - bgImageWidth);
+      scrollWrapper.appendChild(newDiv);
+      bgElements.push(newDiv);
+    }
+
+    requestAnimationFrame(animateScrollingBackground);
   }
-
-  // 右端にあるdiv（一番右の画像）
-  const rightmostDiv = bgElements[bgElements.length - 1];
-  const rightmostX = parseFloat(rightmostDiv.style.left);
-
-  // 右端の画像の右端が画面の右端より小さい場合、新しい画像を右側に追加
-  if (rightmostX + bgImageWidth <= containerWidth) {
-    const newDiv = createBgDiv(rightmostX + bgImageWidth);  // ←ここを修正
-    scrollWrapper.appendChild(newDiv);
-    bgElements.push(newDiv);
-  }
-
-  requestAnimationFrame(animateScrollingBackground);
-}
 
   function startBackgroundScroll() {
     backgroundOverlay.style.display = "none";
     document.body.appendChild(scrollWrapper);
 
-    // 初期に2枚設置。1枚目は画面左端(0)、2枚目は左にマイナスの位置に設置
     bgElements.push(createBgDiv(0));
     bgElements.push(createBgDiv(-bgImageWidth));
     bgElements.forEach(div => scrollWrapper.appendChild(div));
@@ -233,7 +221,6 @@ document.addEventListener("DOMContentLoaded", () => {
     animateScrollingBackground();
   }
 
-  // 初期状態の設定（ロゴ非表示など）
   logos.forEach(logo => {
     logo.style.display = "none";
     logo.style.opacity = "0";
@@ -243,7 +230,6 @@ document.addEventListener("DOMContentLoaded", () => {
   pressKeyText.style.display = "none";
   pressKeyText.style.opacity = "0";
 
-  // 画面中央のテキストクリックで開始
   centerText.addEventListener("click", () => {
     if (started) return;
     started = true;
