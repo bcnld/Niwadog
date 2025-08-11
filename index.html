@@ -2,51 +2,46 @@
 <html lang="ja">
 <head>
 <meta charset="UTF-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1" />
-<title>タイトル画面サンプル</title>
-<link rel="stylesheet" href="style.css" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>背景テスト</title>
+<style>
+  html, body {
+    margin: 0;
+    padding: 0;
+    height: 100%;
+    overflow: hidden;
+  }
+
+  /* 背景 */
+  #background {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    background-image: url('images/press_bg.png'); /* ← ここに背景画像パス */
+    background-size: cover;
+    background-position: center;
+    z-index: 0;
+  }
+
+  /* 前面テキスト */
+  #foreground {
+    position: relative;
+    z-index: 1;
+    color: white;
+    font-size: 48px;
+    text-align: center;
+    margin-top: 40vh;
+    text-shadow: 0 0 8px black;
+  }
+</style>
 </head>
 <body>
 
-<!-- 最初に表示される質問オーバーレイ -->
-<div id="question-overlay" class="active">
-  <div id="question-box">
-    <p>ゲームを開始しますか？</p>
-    <button id="question-yes-btn">はい</button>
-  </div>
-</div>
-
-<!-- 背景用DIV（JSで背景画像やぼかしを操作） -->
 <div id="background"></div>
 
-<!-- 企業ロゴと名前表示 -->
-<div id="company-name" style="display: flex; flex-direction: column; align-items: center;">
-  <img id="company-logo" src="" alt="Company Logo" />
-  <div id="company-text"></div>
-</div>
+<div id="foreground">背景テスト表示</div>
 
-<!-- ゲームタイトル -->
-<div id="game-title" style="display: none; flex-direction: column; align-items: center;">
-  <img src="images/game_title.png" alt="Game Title" />
-  <div>ゲームタイトルのテキスト</div>
-</div>
-
-<!-- Press Any Key -->
-<div id="press-any-key" style="opacity: 0; display: none;">Press Any Key</div>
-
-<!-- 最初にゲーム開始を聞く質問のオーバーレイ -->
-<div id="question-overlay" class="active">
-  <div id="question-box">
-    <p>ゲームを開始しますか？</p>
-    <button id="question-yes-btn">はい</button>
-  </div>
-</div>
-
-<!-- BGM用 -->
-<audio id="bgm" src="Sounds/title.mp3" loop></audio>
-
-<script src="title.js"></script>
 </body>
 </html>
-
-
