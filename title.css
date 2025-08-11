@@ -49,39 +49,4 @@ body, html {
   height: 100vh;
   pointer-events: none; /* クリック無効にするなら */
   display: flex;
-  justify-content: center;
-  align-items: center;
-}
-
-/* 各企業ロゴ */
-.company-logo {
-  display: none;
-  opacity: 0;
-  position: fixed; /* fixedのままに */
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%);
-  max-width: 80vw;
-  max-height: 80vh;
-  transition: opacity 1s ease;
-}
-
-/* 画像のサイズ調整 */
-.company-logo img {
-  width: 100%;
-  height: auto;
-  object-fit: contain; /* アスペクト比維持 */
-}
-
-/* スマホ対応 */
-@media (max-width: 600px) {
-  #center-text {
-    font-size: 28px;
-    padding: 15px;
-  }
-
-  .company-logo {
-    max-width: 90vw;
-    max-height: 50vh;
-  }
-}
+  justify
