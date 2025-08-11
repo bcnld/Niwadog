@@ -49,33 +49,33 @@ document.addEventListener("DOMContentLoaded", () => {
 
   // 背景画像フェードイン＋ぼかし・拡大解除演出
   async function fadeInBackgroundImage() {
-    backgroundOverlay.style.backgroundImage = "url('images/press_bg.png')";
-    backgroundOverlay.style.backgroundSize = "cover";
-    backgroundOverlay.style.backgroundPosition = "center center";
-    backgroundOverlay.style.backgroundRepeat = "no-repeat";
+  backgroundOverlay.style.backgroundImage = "url('images/press_bg.png')";
+  backgroundOverlay.style.backgroundSize = "cover";
+  backgroundOverlay.style.backgroundPosition = "center center";
+  backgroundOverlay.style.backgroundRepeat = "no-repeat";
 
-    // 初期状態セット（非表示・ぼかし・拡大）
-    backgroundOverlay.style.transition = "none";
-    backgroundOverlay.style.opacity = 0;
-    backgroundOverlay.style.filter = "blur(5px)";
-    backgroundOverlay.style.transform = "scale(1.2)";
-    backgroundOverlay.style.display = "block";
+  // 初期状態セット（非表示・ぼかし・拡大）
+  backgroundOverlay.style.transition = "none";
+  backgroundOverlay.style.opacity = 0;
+  backgroundOverlay.style.filter = "blur(5px)";
+  backgroundOverlay.style.transform = "scale(1.2)";
+  backgroundOverlay.style.display = "block";
 
-    // 次のフレームでトランジション設定と状態を戻す
-    await new Promise(requestAnimationFrame);
-    backgroundOverlay.style.transition = "opacity 1.5s ease, filter 1.5s ease, transform 1.5s ease";
-    backgroundOverlay.style.opacity = 1;
-    backgroundOverlay.style.filter = "blur(0)";
-    backgroundOverlay.style.transform = "scale(1)";
+  // 次のフレームでトランジション設定と状態を戻す
+  await new Promise(requestAnimationFrame);
+  backgroundOverlay.style.transition = "opacity 2s ease, filter 2s ease, transform 2s ease";
+  backgroundOverlay.style.opacity = 1;
+  backgroundOverlay.style.filter = "blur(0)";
+  backgroundOverlay.style.transform = "scale(1)";
 
-    // BGMループ再生をここで早めに開始
-    bgm.loop = true;
-    bgm.play();
+  // BGMループ再生をここで早めに開始
+  bgm.loop = true;
+  bgm.play();
 
-    // トランジション完了まで待つ
-    await new Promise(resolve => setTimeout(resolve, 1600));
-  }
-
+  // トランジション完了まで待つ
+  await new Promise(resolve => setTimeout(resolve, 2100));
+}
+  
   async function showNextLogo() {
     if (currentIndex >= logos.length) {
       // 3枚すべて表示終わったあと背景画像フェードイン＋BGM再生
