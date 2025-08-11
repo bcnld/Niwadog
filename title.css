@@ -118,6 +118,15 @@ body, html {
   pointer-events: none;
   transition: opacity 1s ease;
   z-index: 40;
+
+  /* 黒縁取り（多方向のテキストシャドウで対応） */
+  -webkit-text-stroke: 1px black; /* Safari用 */
+  text-stroke: 1px black; /* 標準用 */
+  text-shadow:
+    -1px -1px 0 black,
+    1px -1px 0 black,
+    -1px 1px 0 black,
+    1px 1px 0 black;
 }
 
 /* 全画面切替ボタン */
