@@ -56,11 +56,16 @@ body, html {
 .company-logo {
   position: absolute;
   opacity: 0;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  transition: opacity 1s ease;
 }
 
 .company-logo img {
   max-width: 40vw;
   max-height: 40vh;
+  object-fit: contain;
 }
 
 /* ===== タイトル画像 ===== */
@@ -84,6 +89,7 @@ body, html {
   max-width: 95vw; /* 大きく変更 */
   max-height: 95vh; /* 大きく変更 */
   filter: drop-shadow(0 0 20px rgba(255,255,255,0.8));
+  transition: opacity 1s ease;
 }
 
 /* タイトル2（少し上） */
@@ -95,6 +101,23 @@ body, html {
   opacity: 0;
   max-width: 90vw; /* 大きく変更 */
   max-height: 90vh; /* 大きく変更 */
+  transition: opacity 1s ease;
+}
+
+/* Press any key テキスト */
+#press-key-text {
+  position: fixed;
+  top: 85%; /* かなり下に配置 */
+  left: 50%;
+  transform: translateX(-50%);
+  color: white;
+  font-size: 24px;
+  font-weight: bold;
+  opacity: 0;
+  user-select: none;
+  pointer-events: none;
+  transition: opacity 1s ease;
+  z-index: 40;
 }
 
 /* 全画面切替ボタン */
@@ -116,4 +139,32 @@ body, html {
 
 #fullscreen-toggle:hover {
   background: rgba(80, 80, 80, 1);
+}
+
+/* スマホ対応 */
+@media (max-width: 600px) {
+  #center-text {
+    font-size: 28px;
+    padding: 15px;
+  }
+
+  .company-logo img {
+    max-width: 90vw;
+    max-height: 50vh;
+  }
+
+  #title-img1 {
+    max-width: 95vw;
+    max-height: 80vh;
+  }
+
+  #title-img2 {
+    max-width: 90vw;
+    max-height: 75vh;
+  }
+
+  #press-key-text {
+    font-size: 18px;
+    top: 90%;
+  }
 }
