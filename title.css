@@ -22,12 +22,18 @@ body, html {
 }
 
 /* 会社ロゴ共通 */
-#company-logos {
-  position: fixed;    /* 画面に固定 */
+.company-logo {
+  display: none;        /* 最初は非表示に */
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 1s ease;
+  position: fixed;      /* ここ追加 */
   top: 50%;
   left: 50%;
   transform: translate(-50%, -50%);
-  z-index: 9999;     /* 高めに */
+  max-width: 300px;
+  max-height: 150px;
+  z-index: 9999;        /* 確実に上に出るように */
 }
 
 .company-logo.active {
