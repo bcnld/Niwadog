@@ -52,10 +52,10 @@ function startFadeOutAndPlayMovie() {
   fadeOverlay.style.pointerEvents = "auto";
   fadeOverlay.style.opacity = "1";
 
-  // BGMフェードアウト用関数
+  // BGMフェードアウト用
   function fadeOutAudio(audio, duration = 1000) {
     return new Promise((resolve) => {
-      const stepTime = 50; // 50msごとに減らす
+      const stepTime = 50;
       const steps = duration / stepTime;
       let currentStep = 0;
       const initialVolume = audio.volume || 1;
@@ -73,18 +73,16 @@ function startFadeOutAndPlayMovie() {
     });
   }
 
-  // 4秒フェード後、1秒暗転キープ、BGMを1秒かけてフェードアウト、その後ムービー開始
+  // 4秒フェードイン暗転後、1秒待ち、BGMを1秒フェードアウトしてから動画再生開始
   setTimeout(() => {
     setTimeout(() => {
       if (titleBgm) {
         fadeOutAudio(titleBgm, 1000).then(() => {
-          // さらに1秒待ってムービー開始
           setTimeout(() => {
             playIntroMovie();
           }, 1000);
         });
       } else {
-        // BGMないなら即ムービー
         setTimeout(() => {
           playIntroMovie();
         }, 1000);
@@ -98,7 +96,7 @@ function playIntroMovie() {
   if (!video) {
     video = document.createElement("video");
     video.id = "intro-movie";
-    video.src = "movie/intro.mp4"; // ムービーのパス確認
+    video.src = "movie/intro.mp4"; // 動画パスを確認してください
     video.style.position = "fixed";
     video.style.top = "50%";
     video.style.left = "50%";
@@ -117,7 +115,7 @@ function playIntroMovie() {
   if (playPromise !== undefined) {
     playPromise.catch(error => {
       console.warn("動画再生失敗:", error);
-      // 失敗したらユーザー操作待ちなどを入れるか再生試みる
+      // ユーザー操作待ちなどで再生を試みる処理を入れてもよい
     });
   }
 
@@ -134,17 +132,18 @@ function playIntroMovie() {
 
 function startGameMain() {
   document.getElementById("menu-wrapper")?.remove();
-  document.getElementById("title-images")?.style.setProperty("display", "none");
-  document.getElementById("press-any-key")?.style.setProperty("display", "none");
-  document.getElementById("background-overlay")?.style.setProperty("display", "none");
+  document.getElementById("title-images")?.style.display = "none";
+  document.getElementById("press-any-key")?.style.display = "none";
+  document.getElementById("background-overlay")?.style.display = "none";
   document.querySelectorAll(".company-logo").forEach(el => el.style.display = "none");
-  document.getElementById("center-text")?.style.setProperty("display", "none");
+  document.getElementById("center-text")?.style.display = "none";
 
   const gameScreen = document.getElementById("game-screen");
-  if (gameScreen) gameScreen.style.display = "block";
+  if (gameScreen) {
+    gameScreen.style.display = "block";
+  }
 
   if (typeof spawnDogs === "function") {
     spawnDogs();
   }
 }
-
