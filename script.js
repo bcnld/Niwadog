@@ -1,19 +1,17 @@
 document.addEventListener("DOMContentLoaded", () => {
+  // --- 既存コード ---
   const btn = document.getElementById("fullscreen-toggle");
 
   btn.addEventListener("click", () => {
     if (!document.fullscreenElement) {
-      // 全画面でなければ全画面に切り替え
       document.documentElement.requestFullscreen().catch((err) => {
         alert(`全画面にできませんでした: ${err.message}`);
       });
     } else {
-      // 全画面中なら解除
       document.exitFullscreen();
     }
   });
 
-  // 全画面状態が変わったらボタンテキストを更新
   document.addEventListener("fullscreenchange", () => {
     if (document.fullscreenElement) {
       btn.textContent = "全画面解除";
@@ -21,36 +19,74 @@ document.addEventListener("DOMContentLoaded", () => {
       btn.textContent = "全画面切替";
     }
   });
+
+  // New Gameボタン処理を追加
+  const newGameBtn = document.getElementById("newgame-btn");
+  if(newGameBtn){
+    newGameBtn.addEventListener("click", () => {
+      startFadeOutAndPlayMovie();
+    });
+  }
 });
 
-function startGameMain() {
-  // タイトル画面系のUIを非表示
-  document.getElementById("menu-wrapper")?.remove();
-  const titleImages = document.getElementById("title-images");
-  if (titleImages) titleImages.style.display = "none";
-  const pressAnyKey = document.getElementById("press-any-key");
-  if (pressAnyKey) pressAnyKey.style.display = "none";
-  const backgroundOverlay = document.getElementById("background-overlay");
-  if (backgroundOverlay) backgroundOverlay.style.display = "none";
-  document.querySelectorAll(".company-logo").forEach(el => el.style.display = "none");
-  const centerText = document.getElementById("center-text");
-  if (centerText) centerText.style.display = "none";
-
-  // ゲーム画面を表示
-  const gameScreen = document.getElementById("game-screen");
-  if (gameScreen) gameScreen.style.display = "block";
-
-  // タイトルBGM停止
-  const titleBgm = document.getElementById("bgm");
-  if (titleBgm) {
-    titleBgm.pause();
-    titleBgm.currentTime = 0;
+// フェードアウト→ムービー→ゲーム開始の関数
+function startFadeOutAndPlayMovie(){
+  // フェードアウト用オーバーレイ作成または取得
+  let fadeOverlay = document.getElementById("fade-overlay");
+  if(!fadeOverlay){
+    fadeOverlay = document.createElement("div");
+    fadeOverlay.id = "fade-overlay";
+    Object.assign(fadeOverlay.style, {
+      position: "fixed",
+      top: "0", left: "0",
+      width: "100vw",
+      height: "100vh",
+      backgroundColor: "black",
+      opacity: "0",
+      transition: "opacity 4s ease",
+      zIndex: "5000",
+      pointerEvents: "none",
+    });
+    document.body.appendChild(fadeOverlay);
   }
 
-  // ここからゲーム本編の初期化処理を開始する例
-  // 例：犬を水中エリアに表示する処理呼び出し
-  if (typeof spawnDogs === "function") {
-    spawnDogs();
-  }
-  // 例：他にゲーム開始時に必要な処理があればここに書く
+  // フェードアウト開始（4秒かけてopacity 0→1）
+  fadeOverlay.style.pointerEvents = "auto"; // 操作ブロック
+  fadeOverlay.style.opacity = "1";
+
+  // 4秒後に1秒真っ黒をキープしてムービー再生
+  setTimeout(() => {
+    // ムービー再生用video要素を作るか既存要素を取得
+    let video = document.getElementById("intro-movie");
+    if(!video){
+      video = document.createElement("video");
+      video.id = "intro-movie";
+      video.src = "movie/intro.mp4"; // ここにムービーファイルのパス
+      video.style.position = "fixed";
+      video.style.top = "50%";
+      video.style.left = "50%";
+      video.style.transform = "translate(-50%, -50%)";
+      video.style.width = "80vw";
+      video.style.height = "auto";
+      video.style.zIndex = "6000";
+      document.body.appendChild(video);
+    }
+
+    // 1秒の真っ黒キープ後にムービー再生開始
+    setTimeout(() => {
+      video.style.display = "block";
+      video.play();
+
+      // ムービー終わったらゲーム画面開始＆フェードアウト解除
+      video.onended = () => {
+        video.style.display = "none";
+        fadeOverlay.style.opacity = "0";
+        fadeOverlay.style.pointerEvents = "none";
+
+        // ゲーム開始関数呼び出し
+        startGameMain();
+      };
+    }, 1000);
+
+  }, 4000);
 }
