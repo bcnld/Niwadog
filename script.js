@@ -78,8 +78,6 @@ function startFadeOutAndPlayMovie() {
   fadeOverlay.style.pointerEvents = "auto";
   fadeOverlay.style.opacity = "1";
 
-  // BGMフェードアウト用はそのまま
-
   // 4秒フェードイン暗転後 → 1秒待ち → BGMを1秒フェードアウト → 1秒待ち → 動画再生開始
   setTimeout(() => {
     setTimeout(() => {
@@ -99,12 +97,12 @@ function startFadeOutAndPlayMovie() {
   }, 4000);
 }
   
-function playIntroMovie() {
+async function playIntroMovie() {
   let video = document.getElementById("intro-movie");
   if (!video) {
     video = document.createElement("video");
     video.id = "intro-movie";
-    video.src = "movie/intro.mp4"; // 動画パスを確認してください
+    video.src = "movie/intro.mp4";
     video.style.position = "fixed";
     video.style.top = "50%";
     video.style.left = "50%";
@@ -118,13 +116,15 @@ function playIntroMovie() {
   }
 
   video.style.display = "block";
+  video.style.visibility = "visible";
+  video.style.pointerEvents = "auto";
 
-  const playPromise = video.play();
-  if (playPromise !== undefined) {
-    playPromise.catch(error => {
-      console.warn("動画再生失敗:", error);
-      // ユーザー操作待ちなどで再生を試みる処理を入れてもよい
-    });
+  video.muted = true; // 自動再生許可のためにミュート
+  try {
+    await video.play();
+    video.muted = false; // ここで音戻したければ戻す
+  } catch (error) {
+    console.warn("動画自動再生失敗:", error);
   }
 
   video.onended = () => {
@@ -165,4 +165,5 @@ function startGameMain() {
     spawnDogs();
   }
 }
+
 
