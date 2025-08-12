@@ -53,31 +53,39 @@ function startFadeOutAndPlayMovie() {
   fadeOverlay.style.opacity = "1";
 
   // BGMフェードアウト用
-  function fadeOutAudio(audio, duration = 1000) {
-    return new Promise((resolve) => {
-      const stepTime = 50;
-      const steps = duration / stepTime;
-      let currentStep = 0;
-      const initialVolume = audio.volume || 1;
-      const fadeInterval = setInterval(() => {
-        currentStep++;
-        audio.volume = initialVolume * (1 - currentStep / steps);
-        if (currentStep >= steps) {
-          clearInterval(fadeInterval);
-          audio.volume = 0;
-          audio.pause();
-          audio.currentTime = 0;
-          resolve();
-        }
-      }, stepTime);
+  function startFadeOutAndPlayMovie() {
+  const titleBgm = document.getElementById("bgm");
+
+  let fadeOverlay = document.getElementById("fade-overlay");
+  if (!fadeOverlay) {
+    fadeOverlay = document.createElement("div");
+    fadeOverlay.id = "fade-overlay";
+    Object.assign(fadeOverlay.style, {
+      position: "fixed",
+      top: "0",
+      left: "0",
+      width: "100vw",
+      height: "100vh",
+      backgroundColor: "black",
+      opacity: "0",
+      transition: "opacity 4s ease",
+      zIndex: "5000",
+      pointerEvents: "none",
     });
+    document.body.appendChild(fadeOverlay);
   }
 
-  // 4秒フェードイン暗転後、1秒待ち、BGMを1秒フェードアウトしてから動画再生開始
+  fadeOverlay.style.pointerEvents = "auto";
+  fadeOverlay.style.opacity = "1";
+
+  // BGMフェードアウト用はそのまま
+
+  // 4秒フェードイン暗転後 → 1秒待ち → BGMを1秒フェードアウト → 1秒待ち → 動画再生開始
   setTimeout(() => {
     setTimeout(() => {
       if (titleBgm) {
         fadeOutAudio(titleBgm, 1000).then(() => {
+          // ここに1秒の遅延追加
           setTimeout(() => {
             playIntroMovie();
           }, 1000);
@@ -90,7 +98,7 @@ function startFadeOutAndPlayMovie() {
     }, 1000);
   }, 4000);
 }
-
+  
 function playIntroMovie() {
   let video = document.getElementById("intro-movie");
   if (!video) {
@@ -157,3 +165,4 @@ function startGameMain() {
     spawnDogs();
   }
 }
+
