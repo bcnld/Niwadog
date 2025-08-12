@@ -8,9 +8,7 @@ document.addEventListener("DOMContentLoaded", () => {
   const titleImg2 = document.getElementById("title-img2");
   const pressKeyText = document.getElementById("press-any-key");
 
-  // 全画面演出用要素
   const fullscreenEffect = document.getElementById("fullscreen-effect");
-  // 効果音
   const effectSfx = document.getElementById("effect-sfx");
 
   let currentIndex = 0;
@@ -22,7 +20,7 @@ document.addEventListener("DOMContentLoaded", () => {
     logo.style.top = "50%";
     logo.style.left = "50%";
     logo.style.transform = "translate(-50%, -50%)";
-    logo.style.zIndex = "9998"; // fullscreenEffectの手前
+    logo.style.zIndex = "9998";
   });
 
   // フェードイン関数
@@ -65,20 +63,17 @@ document.addEventListener("DOMContentLoaded", () => {
     });
   }
 
-  // 全画面演出表示（2秒表示、ゆっくりフェードアウト）
   async function showFullscreenEffect() {
     if (!fullscreenEffect) return;
     if (effectSfx) {
       try {
         effectSfx.currentTime = 0;
         await effectSfx.play();
-      } catch {
-        // 再生できない場合は無視
-      }
+      } catch {}
     }
     fullscreenEffect.style.display = "block";
     fullscreenEffect.style.opacity = "0";
-    fullscreenEffect.style.transform = "translate(-50%, -50%) scale(2)"; // 拡大して全画面埋める
+    fullscreenEffect.style.transform = "translate(-50%, -50%) scale(2)";
     fullscreenEffect.style.transition = "none";
 
     await new Promise(requestAnimationFrame);
@@ -86,16 +81,15 @@ document.addEventListener("DOMContentLoaded", () => {
     fullscreenEffect.style.opacity = "1";
     fullscreenEffect.style.transform = "translate(-50%, -50%) scale(1)";
 
-    await new Promise(resolve => setTimeout(resolve, 2000));
+    await new Promise(r => setTimeout(r, 2000));
 
     fullscreenEffect.style.transition = "opacity 1.5s ease";
     fullscreenEffect.style.opacity = "0";
 
-    await new Promise(resolve => setTimeout(resolve, 1500));
+    await new Promise(r => setTimeout(r, 1500));
     fullscreenEffect.style.display = "none";
   }
 
-  // 背景フェードイン演出
   async function fadeInBackgroundImage() {
     backgroundOverlay.style.backgroundImage = "url('images/press_bg.png')";
     backgroundOverlay.style.backgroundSize = "cover";
@@ -117,10 +111,9 @@ document.addEventListener("DOMContentLoaded", () => {
     bgm.loop = true;
     bgm.play();
 
-    await new Promise(resolve => setTimeout(resolve, 2100));
+    await new Promise(r => setTimeout(r, 2100));
   }
 
-  // タイトル画像表示シーケンス
   async function showTitleImages() {
     titleImg1.style.display = "block";
     titleImg1.style.opacity = 0;
@@ -145,7 +138,6 @@ document.addEventListener("DOMContentLoaded", () => {
     waitForPressKey();
   }
 
-  // 「Press any key」待ちイベント設定
   function waitForPressKey() {
     async function onInput() {
       window.removeEventListener("keydown", onInput, true);
@@ -160,7 +152,6 @@ document.addEventListener("DOMContentLoaded", () => {
     window.addEventListener("touchstart", onInput, { capture: true });
   }
 
-  // 企業ロゴを順に表示（3枚まで）
   async function showNextLogo() {
     if (currentIndex >= logos.length) {
       await Promise.all([
@@ -195,11 +186,11 @@ document.addEventListener("DOMContentLoaded", () => {
 
   // ----------- スクロール背景関連 ------------
 
-  const scrollSpeed = 1; // 左スクロール速度
-  const containerHeight = window.innerHeight;
-  const containerWidth = window.innerWidth;
-  const bgImageWidth = 3600;
-  const bgImageHeight = containerHeight;
+  let scrollSpeed = 1; // 左スクロール速度
+  let containerHeight = window.innerHeight;
+  let containerWidth = window.innerWidth;
+  let bgImageWidth = containerWidth;  // 画面幅に合わせて背景画像幅を調整
+  let bgImageHeight = containerHeight;
 
   const scrollWrapper = document.createElement("div");
   scrollWrapper.id = "scroll-wrapper";
@@ -233,19 +224,19 @@ document.addEventListener("DOMContentLoaded", () => {
       const div = bgElements[i];
       let currentX = parseFloat(div.style.left);
 
-      // 左方向にスクロール (x座標を減らす)
+      // 左方向にスクロール
       let newX = currentX - scrollSpeed;
       div.style.left = `${newX}px`;
     }
 
-    // 画面左端より完全に左外に出た画像を削除
+    // 左端より完全に画面外の背景削除
     const firstDiv = bgElements[0];
     if (parseFloat(firstDiv.style.left) + bgImageWidth <= 0) {
       const removed = bgElements.shift();
       if (removed.parentNode) removed.parentNode.removeChild(removed);
     }
 
-    // 右端の画像の右端が画面右端に届いていなければ、右端に新しい画像を追加
+    // 右端の背景の右端が画面右端より小さければ右端に追加
     const lastDiv = bgElements[bgElements.length - 1];
     const lastRight = parseFloat(lastDiv.style.left) + bgImageWidth;
     if (lastRight <= containerWidth) {
@@ -261,12 +252,37 @@ document.addEventListener("DOMContentLoaded", () => {
     backgroundOverlay.style.display = "none";
     document.body.appendChild(scrollWrapper);
 
+    // 初期は2枚の背景を横並びに配置
     bgElements.push(createBgDiv(0));
     bgElements.push(createBgDiv(bgImageWidth));
     bgElements.forEach(div => scrollWrapper.appendChild(div));
 
     animateScrollingBackground();
   }
+
+  // リサイズ対応（画面サイズ変化時に背景画像サイズを調整してリセット）
+  window.addEventListener("resize", () => {
+    // 一旦背景スクロール停止してDOMから消す
+    bgElements.forEach(div => {
+      if (div.parentNode) div.parentNode.removeChild(div);
+    });
+    bgElements = [];
+
+    containerHeight = window.innerHeight;
+    containerWidth = window.innerWidth;
+    bgImageWidth = containerWidth;
+    bgImageHeight = containerHeight;
+
+    scrollWrapper.style.width = `${containerWidth}px`;
+    scrollWrapper.style.height = `${containerHeight}px`;
+
+    // 再配置
+    if (started) {
+      bgElements.push(createBgDiv(0));
+      bgElements.push(createBgDiv(bgImageWidth));
+      bgElements.forEach(div => scrollWrapper.appendChild(div));
+    }
+  });
 
   // 初期非表示セット
   logos.forEach(logo => {
@@ -283,7 +299,6 @@ document.addEventListener("DOMContentLoaded", () => {
     fullscreenEffect.style.opacity = "0";
   }
 
-  // 中央テキストクリックで開始
   centerText.addEventListener("click", () => {
     if (started) return;
     started = true;
