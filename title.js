@@ -439,9 +439,27 @@ document.addEventListener("DOMContentLoaded", () => {
   if (menuWrapper) {
     menuWrapper.style.display = "none";
   }
-  if (scrollWrapper) {
-    await fadeOut(scrollWrapper, 2000);
-  }
+
+  // title-img2 のフェードアウト処理を追加（scrollWrapperと同時にフェードアウト）
+  const fadeTitleImg2 = new Promise(resolve => {
+    const titleImg2 = document.getElementById("title-img2");
+    if (titleImg2) {
+      titleImg2.style.transition = "opacity 2s ease";
+      titleImg2.style.opacity = "0";
+      setTimeout(() => {
+        titleImg2.style.display = "none";
+        resolve();
+      }, 2000);
+    } else {
+      resolve();
+    }
+  });
+
+  // scrollWrapperのフェードアウト
+  const fadeScrollWrapper = fadeOut(scrollWrapper, 2000);
+
+  // 両方のフェードアウトを同時に待つ
+  await Promise.all([fadeTitleImg2, fadeScrollWrapper]);
 
   if (bgm && !bgm.paused) {
     const fadeDuration = 2000;
