@@ -6,7 +6,7 @@
   <title>Niwatori Crackudos</title>
   <link rel="stylesheet" href="title.css" />
   <style>
-    /* 全画面切替ボタンのスタイル */
+    /* --- タイトル画面用スタイル --- */
     #fullscreen-toggle {
       position: fixed;
       top: 10px;
@@ -25,15 +25,13 @@
     #fullscreen-toggle:hover {
       background: rgba(80, 80, 80, 1);
     }
-
-    /* ゲームタイトル画像コンテナ */
     #title-images {
       position: fixed;
       top: 50%;
       left: 50%;
       transform: translate(-50%, -50%);
-      z-index: 30; /* 中央テキストやロゴより上に */
-      pointer-events: none; /* クリック無効 */
+      z-index: 30;
+      pointer-events: none;
       width: 100vw;
       height: 100vh;
       display: flex;
@@ -45,105 +43,74 @@
     #title-images img {
       max-width: 80vw;
       max-height: 40vh;
-      display: none; /* 初期は非表示 */
+      display: none;
       user-select: none;
       pointer-events: none;
+    }
+    /* ゲーム画面の例 */
+    #game-screen {
+      display: none;
+      width: 100vw;
+      height: 100vh;
+      background-color: #a0d8f7;
+      position: relative;
+      overflow: hidden;
+    }
+    /* 簡単にゲームの水エリアだけ配置 */
+    #water-area {
+      width: 100%;
+      height: 100%;
+      background: linear-gradient(to bottom, #4ec6ff, #0059b3);
     }
   </style>
 </head>
 <body>
 
-  <!-- 最初の中央テキスト -->
   <div id="center-text">あなたは日本人ですか？</div>
-
-  <!-- 背景オーバーレイ -->
   <div id="background-overlay"></div>
 
-  <!-- 企業ロゴはこんな感じに3つ -->
-<img class="company-logo" src="images/mdm_logo.png" alt="Logo 1" />
-<img class="company-logo" src="images/Sus_logo.png" alt="Logo 2" />
-<img class="company-logo" src="images/homo_logo.png" alt="Logo 3" />
+  <!-- 企業ロゴ -->
+  <img class="company-logo" src="images/mdm_logo.png" alt="Logo 1" />
+  <img class="company-logo" src="images/Sus_logo.png" alt="Logo 2" />
+  <img class="company-logo" src="images/homo_logo.png" alt="Logo 3" />
 
-<!-- 全画面演出用画像（初期は非表示、中央に固定配置） -->
-<img id="fullscreen-effect" src="images/fullscreen_effect.png" alt="Effect" style="display:none; position:fixed; top:50%; left:50%; transform: translate(-50%, -50%) scale(1.2); opacity:0; z-index:9999; pointer-events:none;" />
-  
-  <!-- ゲームタイトル画像 -->
+  <!-- 全画面演出用画像 -->
+  <img id="fullscreen-effect" src="images/fullscreen_effect.png" alt="Effect" style="display:none; position:fixed; top:50%; left:50%; transform: translate(-50%, -50%) scale(1.2); opacity:0; z-index:9999; pointer-events:none;" />
+
+  <!-- タイトル画像 -->
   <div id="title-images">
     <img id="title-img1" src="images/title1.png" alt="Title 1" />
     <img id="title-img2" src="images/title2.png" alt="Title 2" />
   </div>
-  
-  <!-- Press any key の表示 -->
-<div id="press-any-key" style="
-  position: fixed;
-  bottom: 50px;
-  width: 100%;
-  text-align: center;
-  color: white;
-  font-size: 24px;
-  user-select: none;
-  cursor: default;
-  z-index: 50;
-">
-  PRESS ANY KEY
-</div>
 
-  <div id="main-menu" style="display:none;">
-  <ul>
-    <li>NEW GAME</li>
-    <li>LOAD</li>
-    <li>LEADERBOARD</li>
-    <li>HELP &amp; OPTION</li>
-    <li>EXTRAS</li>
-    <li>CREDITS</li>
-    <li>QUIT</li>
-  </ul>
-</div>
+  <div id="press-any-key" style="
+    position: fixed;
+    bottom: 50px;
+    width: 100%;
+    text-align: center;
+    color: white;
+    font-size: 24px;
+    user-select: none;
+    cursor: default;
+    z-index: 50;
+  ">PRESS ANY KEY</div>
 
-  <!-- BGM再生用オーディオ -->
-  <audio id="bgm" src="Sounds/title.mp3" preload="auto"></audio>
-  <audio id="effect-sfx" src="Sounds/effect.mp3"></audio>
-  <audio id="select-sfx" src="Sounds/select.mp3" preload="auto"></audio>
-                                                                  
   <!-- 右上の全画面切替ボタン -->
   <button id="fullscreen-toggle">全画面切替</button>
 
-  <script>
-    // 全画面切替ボタンのJS処理
-    document.addEventListener("DOMContentLoaded", () => {
-      const btn = document.getElementById("fullscreen-toggle");
+  <!-- ゲーム本編画面 -->
+  <div id="game-screen">
+    <div id="water-area"></div>
+    <!-- 他のゲームUIをここに追加 -->
+  </div>
 
-      btn.addEventListener("click", () => {
-        if (!document.fullscreenElement) {
-          document.documentElement.requestFullscreen().catch((err) => {
-            alert(`全画面にできませんでした: ${err.message}`);
-          });
-        } else {
-          document.exitFullscreen();
-        }
-      });
-
-      document.addEventListener("fullscreenchange", () => {
-        if (document.fullscreenElement) {
-          btn.textContent = "全画面解除";
-        } else {
-          btn.textContent = "全画面切替";
-        }
-      });
-    });
-  </script>
+  <!-- BGM・効果音 -->
+  <audio id="bgm" src="Sounds/title.mp3" preload="auto"></audio>
+  <audio id="effect-sfx" src="Sounds/effect.mp3"></audio>
+  <audio id="select-sfx" src="Sounds/select.mp3" preload="auto"></audio>
 
   <script src="title.js"></script>
   <script src="script.js"></script>
 
 </body>
 </html>
-
-
-
-
-
-
-
-
-
