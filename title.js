@@ -110,6 +110,7 @@ document.addEventListener("DOMContentLoaded", () => {
     backgroundOverlay.style.transform = "scale(1)";
 
     bgm.loop = true;
+    bgm.volume = 1;
     bgm.play();
 
     await new Promise(resolve => setTimeout(resolve, 2100));
@@ -190,8 +191,7 @@ document.addEventListener("DOMContentLoaded", () => {
     showNextLogo();
   }
 
-  // --- 背景スクロール処理 ---
-
+  // 背景スクロール処理
   const scrollSpeed = 1;
   const containerHeight = window.innerHeight;
   const containerWidth = window.innerWidth;
@@ -200,28 +200,32 @@ document.addEventListener("DOMContentLoaded", () => {
 
   const scrollWrapper = document.createElement("div");
   scrollWrapper.id = "scroll-wrapper";
-  scrollWrapper.style.position = "fixed";
-  scrollWrapper.style.top = "0";
-  scrollWrapper.style.left = "0";
-  scrollWrapper.style.width = `${containerWidth}px`;
-  scrollWrapper.style.height = `${containerHeight}px`;
-  scrollWrapper.style.overflow = "hidden";
-  scrollWrapper.style.zIndex = "1";
-  scrollWrapper.style.pointerEvents = "none";
+  Object.assign(scrollWrapper.style, {
+    position: "fixed",
+    top: "0",
+    left: "0",
+    width: `${containerWidth}px`,
+    height: `${containerHeight}px`,
+    overflow: "hidden",
+    zIndex: "1",
+    pointerEvents: "none",
+  });
 
   let bgElements = [];
 
   function createBgDiv(x) {
     const div = document.createElement("div");
-    div.style.position = "absolute";
-    div.style.top = "0";
-    div.style.left = `${x}px`;
-    div.style.width = `${bgImageWidth}px`;
-    div.style.height = `${bgImageHeight}px`;
-    div.style.backgroundImage = "url('images/menu.png')";
-    div.style.backgroundSize = "cover";
-    div.style.backgroundRepeat = "no-repeat";
-    div.style.backgroundPosition = "center center";
+    Object.assign(div.style, {
+      position: "absolute",
+      top: "0",
+      left: `${x}px`,
+      width: `${bgImageWidth}px`,
+      height: `${bgImageHeight}px`,
+      backgroundImage: "url('images/menu.png')",
+      backgroundSize: "cover",
+      backgroundRepeat: "no-repeat",
+      backgroundPosition: "center center",
+    });
     return div;
   }
 
@@ -261,8 +265,7 @@ document.addEventListener("DOMContentLoaded", () => {
     animateScrollingBackground();
   }
 
-  // --- メニュー作成と選択処理 ---
-
+  // メニュー作成と選択処理
   const menuItems = ["New Game", "Load", "Settings"];
   let selectedIndex = 0;
   let isInputMode = false;
@@ -279,25 +282,28 @@ document.addEventListener("DOMContentLoaded", () => {
     menuWrapper.style.left = "50%";
     menuWrapper.style.transform = "translateX(-50%)";
 
-    menuWrapper.style.zIndex = "10000";
-    menuWrapper.style.display = "flex";
-    menuWrapper.style.flexDirection = "column";
-    menuWrapper.style.gap = "12px";
-    menuWrapper.style.fontSize = "24px";
-    menuWrapper.style.fontWeight = "bold";
-    menuWrapper.style.color = "#fff";
-    menuWrapper.style.textShadow = "0 0 5px black";
+    Object.assign(menuWrapper.style, {
+      zIndex: "10000",
+      display: "flex",
+      flexDirection: "column",
+      gap: "12px",
+      fontSize: "24px",
+      fontWeight: "bold",
+      color: "#fff",
+      textShadow: "0 0 5px black",
+    });
 
     menuItems.forEach((text, i) => {
       const item = document.createElement("div");
       item.textContent = text;
-      item.style.cursor = "pointer";
-      item.style.padding = "10px 20px";
-      item.style.borderRadius = "8px";
-      item.style.userSelect = "none";
+      Object.assign(item.style, {
+        cursor: "pointer",
+        padding: "10px 20px",
+        borderRadius: "8px",
+        userSelect: "none",
+        transition: "background-color 0.3s ease, color 0.3s ease",
+      });
       item.dataset.index = i;
-
-      item.style.transition = "background-color 0.3s ease, color 0.3s ease";
 
       item.addEventListener("click", () => {
         if (selectedIndex === i && isInputMode) {
@@ -407,45 +413,102 @@ document.addEventListener("DOMContentLoaded", () => {
     }
   }
 
-  // New Game選択時の処理
+  // 音量フェードアウト関数（Promiseで待機可能）
+  function fadeOutAudio(audio, duration = 1000) {
+    return new Promise(resolve => {
+      const startVolume = audio.volume;
+      const startTime = performance.now();
+
+      function step(time) {
+        const elapsed = time - startTime;
+        const progress = Math.min(elapsed / duration, 1);
+        audio.volume = startVolume * (1 - progress);
+        if (progress < 1) {
+          requestAnimationFrame(step);
+        } else {
+          audio.volume = 0;
+          resolve();
+        }
+      }
+      requestAnimationFrame(step);
+    });
+  }
+
+  // New Game選択時の処理（完全版）
   async function onNewGameClicked() {
-    // 黒いオーバーレイを作成
     let blackOverlay = document.getElementById("black-overlay");
     if (!blackOverlay) {
       blackOverlay = document.createElement("div");
       blackOverlay.id = "black-overlay";
-      blackOverlay.style.position = "fixed";
-      blackOverlay.style.top = "0";
-      blackOverlay.style.left = "0";
-      blackOverlay.style.width = "100%";
-      blackOverlay.style.height = "100%";
-      blackOverlay.style.backgroundColor = "black";
-      blackOverlay.style.opacity = "0";
-      blackOverlay.style.zIndex = "20000";
-      blackOverlay.style.pointerEvents = "none";
+      Object.assign(blackOverlay.style, {
+        position: "fixed", top: "0", left: "0", width: "100%", height: "100%",
+        backgroundColor: "black", opacity: "0", zIndex: "20000", pointerEvents: "auto"
+      });
       document.body.appendChild(blackOverlay);
     }
 
-    // フェードインで徐々に黒くする
-    await fadeIn(blackOverlay, 2000);
+    // 黒オーバーレイフェードイン4秒
+    await new Promise(resolve => {
+      blackOverlay.style.transition = "opacity 4s ease";
+      blackOverlay.style.opacity = "1";
+      blackOverlay.addEventListener("transitionend", function te() {
+        blackOverlay.removeEventListener("transitionend", te);
+        resolve();
+      });
+    });
 
-    // BGM停止
+    // BGMフェードアウト1秒
     if (bgm && !bgm.paused) {
+      await fadeOutAudio(bgm, 1000);
       bgm.pause();
       bgm.currentTime = 0;
     }
 
-    // 数秒待つ（例: 3秒）
-    await new Promise(resolve => setTimeout(resolve, 3000));
+    // 1秒真っ黒キープ
+    await new Promise(resolve => setTimeout(resolve, 1000));
 
-    // ゲーム本編開始関数呼び出し
-    if (typeof startGameMain === "function") {
-      startGameMain();
-    } else {
-      alert("ゲーム開始関数がありません");
+    // ムービー要素作成
+    let video = document.getElementById("intro-movie");
+    if (!video) {
+      video = document.createElement("video");
+      video.id = "intro-movie";
+      video.src = "movie/intro.mp4";  // パス調整
+      Object.assign(video.style, {
+        position: "fixed",
+        top: "50%", left: "50%",
+        transform: "translate(-50%, -50%)",
+        width: "80vw",
+        height: "auto",
+        zIndex: "21000",
+        backgroundColor: "black",
+        display: "none",
+      });
+      document.body.appendChild(video);
     }
 
-    // ここでは黒オーバーレイはフェードアウトさせずに残します（真っ黒画面のまま）
+    video.style.display = "block";
+
+    // 再生開始（Promise対応）
+    await video.play().catch(() => {
+      // 自動再生制限などで再生失敗した場合も処理継続
+    });
+
+    // ムービー終了時処理
+    video.onended = () => {
+      video.style.display = "none";
+
+      // 黒オーバーレイをフェードアウト
+      blackOverlay.style.transition = "opacity 1s ease";
+      blackOverlay.style.opacity = "0";
+      blackOverlay.style.pointerEvents = "none";
+
+      blackOverlay.addEventListener("transitionend", () => {
+        // ゲーム本編開始
+        if (typeof startGameMain === "function") {
+          startGameMain();
+        }
+      }, { once: true });
+    };
   }
 
   // 初期非表示設定
