@@ -62,35 +62,35 @@ document.addEventListener("DOMContentLoaded", () => {
   }
 
   async function showFullscreenEffect() {
-  if (!fullscreenEffect) return;
-  if (effectSfx) {
-    try {
-      effectSfx.currentTime = 0;
-      await effectSfx.play();
-    } catch {}
+    if (!fullscreenEffect) return;
+    if (effectSfx) {
+      try {
+        effectSfx.currentTime = 0;
+        await effectSfx.play();
+      } catch {}
+    }
+    fullscreenEffect.style.display = "block";
+    fullscreenEffect.style.opacity = "0";
+    fullscreenEffect.style.transform = "translate(-50%, -50%) scale(2)";
+    fullscreenEffect.style.transition = "none";
+
+    await new Promise(requestAnimationFrame);
+    // フェードインをゆっくり3秒に変更
+    fullscreenEffect.style.transition = "opacity 3s ease, transform 3s ease";
+    fullscreenEffect.style.opacity = "1";
+    fullscreenEffect.style.transform = "translate(-50%, -50%) scale(1)";
+
+    // 表示時間はそのまま2秒待機
+    await new Promise(resolve => setTimeout(resolve, 2000));
+
+    // フェードアウトも3秒かけてゆっくり消える
+    fullscreenEffect.style.transition = "opacity 3s ease";
+    fullscreenEffect.style.opacity = "0";
+
+    await new Promise(resolve => setTimeout(resolve, 3000));
+    fullscreenEffect.style.display = "none";
   }
-  fullscreenEffect.style.display = "block";
-  fullscreenEffect.style.opacity = "0";
-  fullscreenEffect.style.transform = "translate(-50%, -50%) scale(2)";
-  fullscreenEffect.style.transition = "none";
 
-  await new Promise(requestAnimationFrame);
-  // フェードインをゆっくり3秒に変更
-  fullscreenEffect.style.transition = "opacity 3s ease, transform 3s ease";
-  fullscreenEffect.style.opacity = "1";
-  fullscreenEffect.style.transform = "translate(-50%, -50%) scale(1)";
-
-  // 表示時間はそのまま2秒待機
-  await new Promise(resolve => setTimeout(resolve, 2000));
-
-  // フェードアウトも3秒かけてゆっくり消える
-  fullscreenEffect.style.transition = "opacity 3s ease";
-  fullscreenEffect.style.opacity = "0";
-
-  await new Promise(resolve => setTimeout(resolve, 3000));
-  fullscreenEffect.style.display = "none";
-}
-  
   async function fadeInBackgroundImage() {
     backgroundOverlay.style.backgroundImage = "url('images/press_bg.png')";
     backgroundOverlay.style.backgroundSize = "cover";
