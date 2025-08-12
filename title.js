@@ -302,11 +302,7 @@ document.addEventListener("DOMContentLoaded", () => {
       item.addEventListener("click", () => {
         if (selectedIndex === i && isInputMode) {
           if (menuItems[i] === "New Game") {
-            if (typeof startGameMain === "function") {
-              startGameMain();
-            } else {
-              alert("ゲーム開始関数がありません");
-            }
+            onNewGameClicked();
           } else {
             alert(`"${menuItems[i]}" が選択されました！`);
           }
@@ -392,11 +388,7 @@ document.addEventListener("DOMContentLoaded", () => {
       if (selectedIndex >= 0 && selectedIndex < menuItems.length) {
         if (isInputMode) {
           if (menuItems[selectedIndex] === "New Game") {
-            if (typeof startGameMain === "function") {
-              startGameMain();
-            } else {
-              alert("ゲーム開始関数がありません");
-            }
+            onNewGameClicked();
           } else {
             alert(`"${menuItems[selectedIndex]}" が選択されました！`);
           }
@@ -413,6 +405,47 @@ document.addEventListener("DOMContentLoaded", () => {
         updateMenuHighlight();
       }
     }
+  }
+
+  // New Game選択時の処理
+  async function onNewGameClicked() {
+    // 黒いオーバーレイを作成
+    let blackOverlay = document.getElementById("black-overlay");
+    if (!blackOverlay) {
+      blackOverlay = document.createElement("div");
+      blackOverlay.id = "black-overlay";
+      blackOverlay.style.position = "fixed";
+      blackOverlay.style.top = "0";
+      blackOverlay.style.left = "0";
+      blackOverlay.style.width = "100%";
+      blackOverlay.style.height = "100%";
+      blackOverlay.style.backgroundColor = "black";
+      blackOverlay.style.opacity = "0";
+      blackOverlay.style.zIndex = "20000";
+      blackOverlay.style.pointerEvents = "none";
+      document.body.appendChild(blackOverlay);
+    }
+
+    // フェードインで徐々に黒くする
+    await fadeIn(blackOverlay, 2000);
+
+    // BGM停止
+    if (bgm && !bgm.paused) {
+      bgm.pause();
+      bgm.currentTime = 0;
+    }
+
+    // 数秒待つ（例: 3秒）
+    await new Promise(resolve => setTimeout(resolve, 3000));
+
+    // ゲーム本編開始関数呼び出し
+    if (typeof startGameMain === "function") {
+      startGameMain();
+    } else {
+      alert("ゲーム開始関数がありません");
+    }
+
+    // ここでは黒オーバーレイはフェードアウトさせずに残します（真っ黒画面のまま）
   }
 
   // 初期非表示設定
