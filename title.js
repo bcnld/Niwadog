@@ -436,80 +436,34 @@ document.addEventListener("DOMContentLoaded", () => {
 
   // New Game選択時の処理（完全版）
   async function onNewGameClicked() {
-    let blackOverlay = document.getElementById("black-overlay");
-    if (!blackOverlay) {
-      blackOverlay = document.createElement("div");
-      blackOverlay.id = "black-overlay";
-      Object.assign(blackOverlay.style, {
-        position: "fixed", top: "0", left: "0", width: "100%", height: "100%",
-        backgroundColor: "black", opacity: "0", zIndex: "20000", pointerEvents: "auto"
-      });
-      document.body.appendChild(blackOverlay);
-    }
-
-    // 黒オーバーレイフェードイン4秒
-    await new Promise(resolve => {
-      blackOverlay.style.transition = "opacity 4s ease";
-      blackOverlay.style.opacity = "1";
-      blackOverlay.addEventListener("transitionend", function te() {
-        blackOverlay.removeEventListener("transitionend", te);
-        resolve();
-      });
-    });
-
-    // BGMフェードアウト1秒
-    if (bgm && !bgm.paused) {
-      await fadeOutAudio(bgm, 1000);
-      bgm.pause();
-      bgm.currentTime = 0;
-    }
-
-    // 1秒真っ黒キープ
-    await new Promise(resolve => setTimeout(resolve, 1000));
-
-    // ムービー要素作成
-    let video = document.getElementById("intro-movie");
-    if (!video) {
-      video = document.createElement("video");
-      video.id = "intro-movie";
-      video.src = "movie/intro.mp4";  // パス調整
-      Object.assign(video.style, {
-        position: "fixed",
-        top: "50%", left: "50%",
-        transform: "translate(-50%, -50%)",
-        width: "80vw",
-        height: "auto",
-        zIndex: "21000",
-        backgroundColor: "black",
-        display: "none",
-      });
-      document.body.appendChild(video);
-    }
-
-    video.style.display = "block";
-
-    // 再生開始（Promise対応）
-    await video.play().catch(() => {
-      // 自動再生制限などで再生失敗した場合も処理継続
-    });
-
-    // ムービー終了時処理
-    video.onended = () => {
-      video.style.display = "none";
-
-      // 黒オーバーレイをフェードアウト
-      blackOverlay.style.transition = "opacity 1s ease";
-      blackOverlay.style.opacity = "0";
-      blackOverlay.style.pointerEvents = "none";
-
-      blackOverlay.addEventListener("transitionend", () => {
-        // ゲーム本編開始
-        if (typeof startGameMain === "function") {
-          startGameMain();
-        }
-      }, { once: true });
-    };
+  if (menuWrapper) {
+    menuWrapper.style.display = "none";
   }
+  if (scrollWrapper) {
+    await fadeOut(scrollWrapper, 2000);
+  }
+
+  if (bgm && !bgm.paused) {
+    const fadeDuration = 2000;
+    const steps = 20;
+    const stepTime = fadeDuration / steps;
+    for (let i = 0; i < steps; i++) {
+      await new Promise(r => setTimeout(r, stepTime));
+      bgm.volume = Math.max(0, bgm.volume - 1 / steps);
+    }
+    bgm.pause();
+    bgm.currentTime = 0;
+    bgm.volume = 1;
+  }
+
+  await new Promise(r => setTimeout(r, 1000));
+
+  if (typeof startIntroSequence === "function") {
+    startIntroSequence();
+  } else {
+    console.error("startIntroSequence 関数がありません (Script.js側を確認してください)");
+  }
+}
 
   // 初期非表示設定
   logos.forEach(logo => {
