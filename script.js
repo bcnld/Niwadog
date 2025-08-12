@@ -26,11 +26,15 @@ document.addEventListener("DOMContentLoaded", () => {
 function startGameMain() {
   // タイトル画面系のUIを非表示
   document.getElementById("menu-wrapper")?.remove();
-  document.getElementById("title-images").style.display = "none";
-  document.getElementById("press-any-key").style.display = "none";
-  document.getElementById("background-overlay").style.display = "none";
+  const titleImages = document.getElementById("title-images");
+  if (titleImages) titleImages.style.display = "none";
+  const pressAnyKey = document.getElementById("press-any-key");
+  if (pressAnyKey) pressAnyKey.style.display = "none";
+  const backgroundOverlay = document.getElementById("background-overlay");
+  if (backgroundOverlay) backgroundOverlay.style.display = "none";
   document.querySelectorAll(".company-logo").forEach(el => el.style.display = "none");
-  document.getElementById("center-text").style.display = "none";
+  const centerText = document.getElementById("center-text");
+  if (centerText) centerText.style.display = "none";
 
   // ゲーム画面を表示
   const gameScreen = document.getElementById("game-screen");
@@ -38,4 +42,15 @@ function startGameMain() {
 
   // タイトルBGM停止
   const titleBgm = document.getElementById("bgm");
+  if (titleBgm) {
+    titleBgm.pause();
+    titleBgm.currentTime = 0;
+  }
 
+  // ここからゲーム本編の初期化処理を開始する例
+  // 例：犬を水中エリアに表示する処理呼び出し
+  if (typeof spawnDogs === "function") {
+    spawnDogs();
+  }
+  // 例：他にゲーム開始時に必要な処理があればここに書く
+}
