@@ -21,6 +21,7 @@ document.addEventListener("DOMContentLoaded", () => {
     logo.style.zIndex = "9998";
   });
 
+  // フェードイン
   function fadeIn(element, duration = 1000) {
     element.style.display = "block";
     element.style.opacity = 0;
@@ -40,6 +41,7 @@ document.addEventListener("DOMContentLoaded", () => {
     });
   }
 
+  // フェードアウト
   function fadeOut(element, duration = 1000) {
     element.style.opacity = 1;
     let start = null;
@@ -59,6 +61,7 @@ document.addEventListener("DOMContentLoaded", () => {
     });
   }
 
+  // 全画面効果（音付き）
   async function showFullscreenEffect() {
     if (!fullscreenEffect) return;
     if (effectSfx) {
@@ -87,6 +90,7 @@ document.addEventListener("DOMContentLoaded", () => {
     fullscreenEffect.style.display = "none";
   }
 
+  // 背景画像フェードイン
   async function fadeInBackgroundImage() {
     backgroundOverlay.style.backgroundImage = "url('images/press_bg.png')";
     backgroundOverlay.style.backgroundSize = "cover";
@@ -111,6 +115,7 @@ document.addEventListener("DOMContentLoaded", () => {
     await new Promise(resolve => setTimeout(resolve, 2100));
   }
 
+  // タイトル画像表示
   async function showTitleImages() {
     titleImg1.style.display = "block";
     titleImg1.style.opacity = 0;
@@ -135,6 +140,7 @@ document.addEventListener("DOMContentLoaded", () => {
     waitForPressKey();
   }
 
+  // キーまたはタッチ待ち
   function waitForPressKey() {
     async function onInput() {
       window.removeEventListener("keydown", onInput, true);
@@ -145,11 +151,13 @@ document.addEventListener("DOMContentLoaded", () => {
 
       startBackgroundScroll();
       createMenu();
+      attachMenuKeyboardListeners();
     }
     window.addEventListener("keydown", onInput, { capture: true });
     window.addEventListener("touchstart", onInput, { capture: true });
   }
 
+  // ロゴを順に表示
   async function showNextLogo() {
     if (currentIndex >= logos.length) {
       await Promise.all([
@@ -182,7 +190,7 @@ document.addEventListener("DOMContentLoaded", () => {
     showNextLogo();
   }
 
-  // --- スクロール背景 ---
+  // --- 背景スクロール処理 ---
 
   const scrollSpeed = 1;
   const containerHeight = window.innerHeight;
@@ -256,7 +264,7 @@ document.addEventListener("DOMContentLoaded", () => {
   // --- メニュー作成と選択処理 ---
 
   const menuItems = ["New Game", "Load", "Settings"];
-  let selectedIndex = null;
+  let selectedIndex = 0;
   let isInputMode = false;
   let menuWrapper;
 
@@ -322,9 +330,10 @@ document.addEventListener("DOMContentLoaded", () => {
 
     document.body.appendChild(menuWrapper);
 
+    // 画面外クリックで選択解除
     window.addEventListener("click", (e) => {
       if (!menuWrapper.contains(e.target)) {
-        selectedIndex = null;
+        selectedIndex = -1;
         isInputMode = false;
         updateMenuHighlight();
       }
@@ -361,6 +370,52 @@ document.addEventListener("DOMContentLoaded", () => {
     }
   }
 
+  // キーボード操作の処理をメニューに付与
+  function attachMenuKeyboardListeners() {
+    window.addEventListener("keydown", onMenuKeyDown);
+  }
+
+  function onMenuKeyDown(e) {
+    if (!menuWrapper) return;
+
+    if (e.key === "ArrowDown") {
+      selectedIndex = (selectedIndex + 1) % menuItems.length;
+      isInputMode = false;
+      updateMenuHighlight();
+      e.preventDefault();
+    } else if (e.key === "ArrowUp") {
+      selectedIndex = (selectedIndex - 1 + menuItems.length) % menuItems.length;
+      isInputMode = false;
+      updateMenuHighlight();
+      e.preventDefault();
+    } else if (e.key === "Enter") {
+      if (selectedIndex >= 0 && selectedIndex < menuItems.length) {
+        if (isInputMode) {
+          if (menuItems[selectedIndex] === "New Game") {
+            if (typeof startGameMain === "function") {
+              startGameMain();
+            } else {
+              alert("ゲーム開始関数がありません");
+            }
+          } else {
+            alert(`"${menuItems[selectedIndex]}" が選択されました！`);
+          }
+        } else {
+          isInputMode = true;
+          updateMenuHighlight();
+        }
+      }
+      e.preventDefault();
+    } else if (e.key === "Escape") {
+      // 入力モード解除
+      if (isInputMode) {
+        isInputMode = false;
+        updateMenuHighlight();
+      }
+    }
+  }
+
+  // 初期非表示設定
   logos.forEach(logo => {
     logo.style.display = "none";
     logo.style.opacity = "0";
@@ -375,6 +430,7 @@ document.addEventListener("DOMContentLoaded", () => {
     fullscreenEffect.style.opacity = "0";
   }
 
+  // センターテキストクリックで開始
   centerText.addEventListener("click", () => {
     if (started) return;
     started = true;
