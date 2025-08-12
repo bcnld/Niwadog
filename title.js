@@ -23,7 +23,6 @@ document.addEventListener("DOMContentLoaded", () => {
     logo.style.zIndex = "9998";
   });
 
-  // フェードイン関数
   function fadeIn(element, duration = 1000) {
     element.style.display = "block";
     element.style.opacity = 0;
@@ -43,7 +42,6 @@ document.addEventListener("DOMContentLoaded", () => {
     });
   }
 
-  // フェードアウト関数
   function fadeOut(element, duration = 1000) {
     element.style.opacity = 1;
     let start = null;
@@ -81,12 +79,12 @@ document.addEventListener("DOMContentLoaded", () => {
     fullscreenEffect.style.opacity = "1";
     fullscreenEffect.style.transform = "translate(-50%, -50%) scale(1)";
 
-    await new Promise(r => setTimeout(r, 2000));
+    await new Promise(resolve => setTimeout(resolve, 2000));
 
     fullscreenEffect.style.transition = "opacity 1.5s ease";
     fullscreenEffect.style.opacity = "0";
 
-    await new Promise(r => setTimeout(r, 1500));
+    await new Promise(resolve => setTimeout(resolve, 1500));
     fullscreenEffect.style.display = "none";
   }
 
@@ -111,7 +109,7 @@ document.addEventListener("DOMContentLoaded", () => {
     bgm.loop = true;
     bgm.play();
 
-    await new Promise(r => setTimeout(r, 2100));
+    await new Promise(resolve => setTimeout(resolve, 2100));
   }
 
   async function showTitleImages() {
@@ -147,6 +145,7 @@ document.addEventListener("DOMContentLoaded", () => {
       await fadeOut(backgroundOverlay, 1500);
 
       startBackgroundScroll();
+      createMenu();  // メニュー作成
     }
     window.addEventListener("keydown", onInput, { capture: true });
     window.addEventListener("touchstart", onInput, { capture: true });
@@ -184,13 +183,13 @@ document.addEventListener("DOMContentLoaded", () => {
     showNextLogo();
   }
 
-  // ----------- スクロール背景関連 ------------
+  // --- スクロール背景 ---
 
-  let scrollSpeed = 1; // 左スクロール速度
-  let containerHeight = window.innerHeight;
-  let containerWidth = window.innerWidth;
-  let bgImageWidth = containerWidth;  // 画面幅に合わせて背景画像幅を調整
-  let bgImageHeight = containerHeight;
+  const scrollSpeed = 1;
+  const containerHeight = window.innerHeight;
+  const containerWidth = window.innerWidth;
+  const bgImageWidth = 3600;
+  const bgImageHeight = containerHeight;
 
   const scrollWrapper = document.createElement("div");
   scrollWrapper.id = "scroll-wrapper";
@@ -223,20 +222,16 @@ document.addEventListener("DOMContentLoaded", () => {
     for (let i = 0; i < bgElements.length; i++) {
       const div = bgElements[i];
       let currentX = parseFloat(div.style.left);
-
-      // 左方向にスクロール
-      let newX = currentX - scrollSpeed;
+      let newX = currentX - scrollSpeed; // 左スクロール
       div.style.left = `${newX}px`;
     }
 
-    // 左端より完全に画面外の背景削除
     const firstDiv = bgElements[0];
     if (parseFloat(firstDiv.style.left) + bgImageWidth <= 0) {
       const removed = bgElements.shift();
       if (removed.parentNode) removed.parentNode.removeChild(removed);
     }
 
-    // 右端の背景の右端が画面右端より小さければ右端に追加
     const lastDiv = bgElements[bgElements.length - 1];
     const lastRight = parseFloat(lastDiv.style.left) + bgImageWidth;
     if (lastRight <= containerWidth) {
@@ -252,7 +247,6 @@ document.addEventListener("DOMContentLoaded", () => {
     backgroundOverlay.style.display = "none";
     document.body.appendChild(scrollWrapper);
 
-    // 初期は2枚の背景を横並びに配置
     bgElements.push(createBgDiv(0));
     bgElements.push(createBgDiv(bgImageWidth));
     bgElements.forEach(div => scrollWrapper.appendChild(div));
@@ -260,29 +254,92 @@ document.addEventListener("DOMContentLoaded", () => {
     animateScrollingBackground();
   }
 
-  // リサイズ対応（画面サイズ変化時に背景画像サイズを調整してリセット）
-  window.addEventListener("resize", () => {
-    // 一旦背景スクロール停止してDOMから消す
-    bgElements.forEach(div => {
-      if (div.parentNode) div.parentNode.removeChild(div);
+  // --- メニュー作成と選択処理 ---
+
+  const menuItems = ["New Game", "Load", "Settings"];
+  let selectedIndex = null;
+  let isInputMode = false;
+  let menuWrapper;
+
+  function createMenu() {
+    menuWrapper = document.createElement("div");
+    menuWrapper.id = "menu-wrapper";
+    menuWrapper.style.position = "fixed";
+
+    const rect = titleImg2.getBoundingClientRect();
+
+    menuWrapper.style.top = `${rect.bottom + 20}px`;
+    menuWrapper.style.left = "50%";
+    menuWrapper.style.transform = "translateX(-50%)";
+
+    menuWrapper.style.zIndex = "10000";
+    menuWrapper.style.display = "flex";
+    menuWrapper.style.gap = "40px";
+    menuWrapper.style.fontSize = "24px";
+    menuWrapper.style.fontWeight = "bold";
+    menuWrapper.style.color = "#fff";
+    menuWrapper.style.textShadow = "0 0 5px black";
+
+    menuItems.forEach((text, i) => {
+      const item = document.createElement("div");
+      item.textContent = text;
+      item.style.cursor = "pointer";
+      item.style.padding = "10px 20px";
+      item.style.borderRadius = "8px";
+      item.style.userSelect = "none";
+      item.dataset.index = i;
+
+      item.style.transition = "background-color 0.3s ease";
+
+      item.addEventListener("click", () => {
+        if (selectedIndex === i && isInputMode) {
+          // 2回目クリックで「決定」処理
+          alert(`"${menuItems[i]}" が選択されました！`);
+          // 必要ならここにゲーム開始や設定画面など処理追加
+        } else {
+          // 1回目クリックで選択切替
+          selectedIndex = i;
+          isInputMode = true;
+          updateMenuHighlight();
+        }
+      });
+
+      menuWrapper.appendChild(item);
     });
-    bgElements = [];
 
-    containerHeight = window.innerHeight;
-    containerWidth = window.innerWidth;
-    bgImageWidth = containerWidth;
-    bgImageHeight = containerHeight;
+    document.body.appendChild(menuWrapper);
 
-    scrollWrapper.style.width = `${containerWidth}px`;
-    scrollWrapper.style.height = `${containerHeight}px`;
+    // 画面外クリックで選択解除＆入力モード解除
+    window.addEventListener("click", (e) => {
+      if (!menuWrapper.contains(e.target)) {
+        selectedIndex = null;
+        isInputMode = false;
+        updateMenuHighlight();
+      }
+    });
 
-    // 再配置
-    if (started) {
-      bgElements.push(createBgDiv(0));
-      bgElements.push(createBgDiv(bgImageWidth));
-      bgElements.forEach(div => scrollWrapper.appendChild(div));
+    updateMenuHighlight();
+  }
+
+  function updateMenuHighlight() {
+    if (!menuWrapper) return;
+    const children = menuWrapper.children;
+    for (let i = 0; i < children.length; i++) {
+      const item = children[i];
+      if (i === selectedIndex) {
+        if (isInputMode) {
+          item.style.backgroundColor = "#f90"; // 入力モード強調色
+          item.style.color = "#000";
+        } else {
+          item.style.backgroundColor = "#555"; // 選択モード色
+          item.style.color = "#fff";
+        }
+      } else {
+        item.style.backgroundColor = "transparent";
+        item.style.color = "#fff";
+      }
     }
-  });
+  }
 
   // 初期非表示セット
   logos.forEach(logo => {
