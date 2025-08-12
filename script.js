@@ -1,3 +1,5 @@
+let introVideo; // 先にグローバルで保持
+
 document.addEventListener("DOMContentLoaded", () => {
   const btn = document.getElementById("fullscreen-toggle");
 
@@ -12,20 +14,40 @@ document.addEventListener("DOMContentLoaded", () => {
   });
 
   document.addEventListener("fullscreenchange", () => {
-    if (document.fullscreenElement) {
-      btn.textContent = "全画面解除";
-    } else {
-      btn.textContent = "全画面切替";
-    }
+    btn.textContent = document.fullscreenElement ? "全画面解除" : "全画面切替";
   });
 
   const newGameBtn = document.getElementById("newgame-btn");
   if (newGameBtn) {
     newGameBtn.addEventListener("click", () => {
+      prepareIntroMovie(); // クリック直後に準備して再生開始（非表示）
       startFadeOutAndPlayMovie();
     });
   }
 });
+
+function prepareIntroMovie() {
+  introVideo = document.createElement("video");
+  introVideo.id = "intro-movie";
+  introVideo.src = "movie/intro.mp4";
+  introVideo.style.position = "fixed";
+  introVideo.style.top = "50%";
+  introVideo.style.left = "50%";
+  introVideo.style.transform = "translate(-50%, -50%)";
+  introVideo.style.width = "80vw";
+  introVideo.style.height = "auto";
+  introVideo.style.zIndex = "6000";
+  introVideo.style.display = "none"; // 最初は非表示
+  introVideo.playsInline = true;
+  introVideo.autoplay = false;
+  introVideo.muted = false; // ミュートしない
+  document.body.appendChild(introVideo);
+
+  // ユーザー操作直後に再生開始
+  introVideo.play().catch(err => {
+    console.warn("動画準備時の再生失敗:", err);
+  });
+}
 
 function startFadeOutAndPlayMovie() {
   const titleBgm = document.getElementById("bgm");
@@ -52,90 +74,56 @@ function startFadeOutAndPlayMovie() {
   fadeOverlay.style.pointerEvents = "auto";
   fadeOverlay.style.opacity = "1";
 
-  // BGMフェードアウト用
-  function startFadeOutAndPlayMovie() {
-  const titleBgm = document.getElementById("bgm");
-
-  let fadeOverlay = document.getElementById("fade-overlay");
-  if (!fadeOverlay) {
-    fadeOverlay = document.createElement("div");
-    fadeOverlay.id = "fade-overlay";
-    Object.assign(fadeOverlay.style, {
-      position: "fixed",
-      top: "0",
-      left: "0",
-      width: "100vw",
-      height: "100vh",
-      backgroundColor: "black",
-      opacity: "0",
-      transition: "opacity 4s ease",
-      zIndex: "5000",
-      pointerEvents: "none",
+  function fadeOutAudio(audio, duration = 1000) {
+    return new Promise((resolve) => {
+      const stepTime = 50;
+      const steps = duration / stepTime;
+      let currentStep = 0;
+      const initialVolume = audio.volume || 1;
+      const fadeInterval = setInterval(() => {
+        currentStep++;
+        audio.volume = initialVolume * (1 - currentStep / steps);
+        if (currentStep >= steps) {
+          clearInterval(fadeInterval);
+          audio.volume = 0;
+          audio.pause();
+          audio.currentTime = 0;
+          resolve();
+        }
+      }, stepTime);
     });
-    document.body.appendChild(fadeOverlay);
   }
 
-  fadeOverlay.style.pointerEvents = "auto";
-  fadeOverlay.style.opacity = "1";
-
-  // 4秒フェードイン暗転後 → 1秒待ち → BGMを1秒フェードアウト → 1秒待ち → 動画再生開始
   setTimeout(() => {
     setTimeout(() => {
       if (titleBgm) {
         fadeOutAudio(titleBgm, 1000).then(() => {
-          // ここに1秒の遅延追加
           setTimeout(() => {
-            playIntroMovie();
+            showIntroMovie();
           }, 1000);
         });
       } else {
         setTimeout(() => {
-          playIntroMovie();
+          showIntroMovie();
         }, 1000);
       }
     }, 1000);
   }, 4000);
 }
-  
-async function playIntroMovie() {
-  let video = document.getElementById("intro-movie");
-  if (!video) {
-    video = document.createElement("video");
-    video.id = "intro-movie";
-    video.src = "movie/intro.mp4";
-    video.style.position = "fixed";
-    video.style.top = "50%";
-    video.style.left = "50%";
-    video.style.transform = "translate(-50%, -50%)";
-    video.style.width = "80vw";
-    video.style.height = "auto";
-    video.style.zIndex = "6000";
-    video.setAttribute("playsinline", "");
-    video.setAttribute("webkit-playsinline", "");
-    document.body.appendChild(video);
+
+function showIntroMovie() {
+  if (introVideo) {
+    introVideo.style.display = "block"; // 表示してそのまま流れる
+    introVideo.onended = () => {
+      introVideo.remove();
+      const fadeOverlay = document.getElementById("fade-overlay");
+      if (fadeOverlay) {
+        fadeOverlay.style.opacity = "0";
+        fadeOverlay.style.pointerEvents = "none";
+      }
+      startGameMain();
+    };
   }
-
-  video.style.display = "block";
-  video.style.visibility = "visible";
-  video.style.pointerEvents = "auto";
-
-  video.muted = true; // 自動再生許可のためにミュート
-  try {
-    await video.play();
-    video.muted = false; // ここで音戻したければ戻す
-  } catch (error) {
-    console.warn("動画自動再生失敗:", error);
-  }
-
-  video.onended = () => {
-    video.style.display = "none";
-    const fadeOverlay = document.getElementById("fade-overlay");
-    if (fadeOverlay) {
-      fadeOverlay.style.opacity = "0";
-      fadeOverlay.style.pointerEvents = "none";
-    }
-    startGameMain();
-  };
 }
 
 function startGameMain() {
@@ -146,7 +134,6 @@ function startGameMain() {
   document.querySelectorAll(".company-logo").forEach(el => el.style.display = "none");
   document.getElementById("center-text")?.style.display = "none";
 
-  // title-img2 をフェードアウトして非表示に
   const titleImg2 = document.getElementById("title-img2");
   if (titleImg2) {
     titleImg2.style.transition = "opacity 1s ease";
@@ -165,5 +152,3 @@ function startGameMain() {
     spawnDogs();
   }
 }
-
-
