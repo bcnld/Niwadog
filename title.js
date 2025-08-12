@@ -3,19 +3,16 @@ document.addEventListener("DOMContentLoaded", () => {
   const logos = document.querySelectorAll(".company-logo");
   const backgroundOverlay = document.getElementById("background-overlay");
   const bgm = document.getElementById("bgm");
-
   const titleImg1 = document.getElementById("title-img1");
   const titleImg2 = document.getElementById("title-img2");
   const pressKeyText = document.getElementById("press-any-key");
-
   const fullscreenEffect = document.getElementById("fullscreen-effect");
   const effectSfx = document.getElementById("effect-sfx");
-  const selectSfx = document.getElementById("select-sfx"); // 追加：選択時効果音
+  const selectSfx = document.getElementById("select-sfx");
 
   let currentIndex = 0;
   let started = false;
 
-  // 企業ロゴ中央固定、前面に表示
   logos.forEach(logo => {
     logo.style.position = "fixed";
     logo.style.top = "50%";
@@ -76,15 +73,13 @@ document.addEventListener("DOMContentLoaded", () => {
     fullscreenEffect.style.transition = "none";
 
     await new Promise(requestAnimationFrame);
-    // フェードインをゆっくり3秒に変更
+
     fullscreenEffect.style.transition = "opacity 3s ease, transform 3s ease";
     fullscreenEffect.style.opacity = "1";
     fullscreenEffect.style.transform = "translate(-50%, -50%) scale(1)";
 
-    // 表示時間はそのまま2秒待機
     await new Promise(resolve => setTimeout(resolve, 2000));
 
-    // フェードアウトも3秒かけてゆっくり消える
     fullscreenEffect.style.transition = "opacity 3s ease";
     fullscreenEffect.style.opacity = "0";
 
@@ -149,7 +144,7 @@ document.addEventListener("DOMContentLoaded", () => {
       await fadeOut(backgroundOverlay, 1500);
 
       startBackgroundScroll();
-      createMenu();  // メニュー作成
+      createMenu();
     }
     window.addEventListener("keydown", onInput, { capture: true });
     window.addEventListener("touchstart", onInput, { capture: true });
@@ -226,7 +221,7 @@ document.addEventListener("DOMContentLoaded", () => {
     for (let i = 0; i < bgElements.length; i++) {
       const div = bgElements[i];
       let currentX = parseFloat(div.style.left);
-      let newX = currentX - scrollSpeed; // 左スクロール
+      let newX = currentX - scrollSpeed;
       div.style.left = `${newX}px`;
     }
 
@@ -278,8 +273,8 @@ document.addEventListener("DOMContentLoaded", () => {
 
     menuWrapper.style.zIndex = "10000";
     menuWrapper.style.display = "flex";
-    menuWrapper.style.flexDirection = "column"; // 縦並びに変更
-    menuWrapper.style.gap = "12px";              // 間隔調整
+    menuWrapper.style.flexDirection = "column";
+    menuWrapper.style.gap = "12px";
     menuWrapper.style.fontSize = "24px";
     menuWrapper.style.fontWeight = "bold";
     menuWrapper.style.color = "#fff";
@@ -296,25 +291,28 @@ document.addEventListener("DOMContentLoaded", () => {
 
       item.style.transition = "background-color 0.3s ease, color 0.3s ease";
 
-      // クリック処理
       item.addEventListener("click", () => {
         if (selectedIndex === i && isInputMode) {
-          // 2回目クリックで「決定」処理
-          alert(`"${menuItems[i]}" が選択されました！`);
-          // 必要ならここにゲーム開始や設定画面など処理追加
+          if (menuItems[i] === "New Game") {
+            if (typeof startGameMain === "function") {
+              startGameMain();
+            } else {
+              alert("ゲーム開始関数がありません");
+            }
+          } else {
+            alert(`"${menuItems[i]}" が選択されました！`);
+          }
         } else {
-          // 1回目クリックで選択切替
           selectedIndex = i;
           isInputMode = true;
           updateMenuHighlight();
         }
       });
 
-      // マウスホバーで選択切替（PC用）
       item.addEventListener("mouseenter", () => {
         if (selectedIndex !== i) {
           selectedIndex = i;
-          isInputMode = false; // ホバー時は入力モード解除（決定待ちじゃない状態）
+          isInputMode = false;
           updateMenuHighlight();
         }
       });
@@ -324,7 +322,6 @@ document.addEventListener("DOMContentLoaded", () => {
 
     document.body.appendChild(menuWrapper);
 
-    // 画面外クリックで選択解除＆入力モード解除
     window.addEventListener("click", (e) => {
       if (!menuWrapper.contains(e.target)) {
         selectedIndex = null;
@@ -339,18 +336,17 @@ document.addEventListener("DOMContentLoaded", () => {
   function updateMenuHighlight() {
     if (!menuWrapper) return;
     const children = menuWrapper.children;
-    let playedSfxThisUpdate = false; // 連続再生防止用フラグ
+    let playedSfxThisUpdate = false;
     for (let i = 0; i < children.length; i++) {
       const item = children[i];
       if (i === selectedIndex) {
         if (isInputMode) {
-          item.style.backgroundColor = "#f90"; // 入力モード強調色
+          item.style.backgroundColor = "#f90";
           item.style.color = "#000";
         } else {
-          item.style.backgroundColor = "#555"; // 選択モード色
+          item.style.backgroundColor = "#555";
           item.style.color = "#fff";
         }
-        // 効果音再生（選択が変わったタイミングで）
         if (!playedSfxThisUpdate && selectSfx) {
           try {
             selectSfx.currentTime = 0;
@@ -365,7 +361,6 @@ document.addEventListener("DOMContentLoaded", () => {
     }
   }
 
-  // 初期非表示セット
   logos.forEach(logo => {
     logo.style.display = "none";
     logo.style.opacity = "0";
