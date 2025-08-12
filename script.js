@@ -98,7 +98,7 @@ function playIntroMovie() {
   if (!video) {
     video = document.createElement("video");
     video.id = "intro-movie";
-    video.src = "images/intro.mp4"; // ムービーのパス確認
+    video.src = "movie/intro.mp4"; // ムービーのパス確認
     video.style.position = "fixed";
     video.style.top = "50%";
     video.style.left = "50%";
@@ -147,3 +147,4 @@ function startGameMain() {
     spawnDogs();
   }
 }
+
