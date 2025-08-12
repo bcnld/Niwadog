@@ -138,6 +138,16 @@ function startGameMain() {
   document.querySelectorAll(".company-logo").forEach(el => el.style.display = "none");
   document.getElementById("center-text")?.style.display = "none";
 
+  // title-img2 をフェードアウトして非表示に
+  const titleImg2 = document.getElementById("title-img2");
+  if (titleImg2) {
+    titleImg2.style.transition = "opacity 1s ease";
+    titleImg2.style.opacity = "0";
+    setTimeout(() => {
+      titleImg2.style.display = "none";
+    }, 1000);
+  }
+
   const gameScreen = document.getElementById("game-screen");
   if (gameScreen) {
     gameScreen.style.display = "block";
