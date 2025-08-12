@@ -10,6 +10,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
   const fullscreenEffect = document.getElementById("fullscreen-effect");
   const effectSfx = document.getElementById("effect-sfx");
+  const selectSfx = document.getElementById("select-sfx"); // 追加：選択時効果音
 
   let currentIndex = 0;
   let started = false;
@@ -277,7 +278,8 @@ document.addEventListener("DOMContentLoaded", () => {
 
     menuWrapper.style.zIndex = "10000";
     menuWrapper.style.display = "flex";
-    menuWrapper.style.gap = "40px";
+    menuWrapper.style.flexDirection = "column"; // 縦並びに変更
+    menuWrapper.style.gap = "12px";              // 間隔調整
     menuWrapper.style.fontSize = "24px";
     menuWrapper.style.fontWeight = "bold";
     menuWrapper.style.color = "#fff";
@@ -292,8 +294,9 @@ document.addEventListener("DOMContentLoaded", () => {
       item.style.userSelect = "none";
       item.dataset.index = i;
 
-      item.style.transition = "background-color 0.3s ease";
+      item.style.transition = "background-color 0.3s ease, color 0.3s ease";
 
+      // クリック処理
       item.addEventListener("click", () => {
         if (selectedIndex === i && isInputMode) {
           // 2回目クリックで「決定」処理
@@ -303,6 +306,15 @@ document.addEventListener("DOMContentLoaded", () => {
           // 1回目クリックで選択切替
           selectedIndex = i;
           isInputMode = true;
+          updateMenuHighlight();
+        }
+      });
+
+      // マウスホバーで選択切替（PC用）
+      item.addEventListener("mouseenter", () => {
+        if (selectedIndex !== i) {
+          selectedIndex = i;
+          isInputMode = false; // ホバー時は入力モード解除（決定待ちじゃない状態）
           updateMenuHighlight();
         }
       });
@@ -327,6 +339,7 @@ document.addEventListener("DOMContentLoaded", () => {
   function updateMenuHighlight() {
     if (!menuWrapper) return;
     const children = menuWrapper.children;
+    let playedSfxThisUpdate = false; // 連続再生防止用フラグ
     for (let i = 0; i < children.length; i++) {
       const item = children[i];
       if (i === selectedIndex) {
@@ -336,6 +349,14 @@ document.addEventListener("DOMContentLoaded", () => {
         } else {
           item.style.backgroundColor = "#555"; // 選択モード色
           item.style.color = "#fff";
+        }
+        // 効果音再生（選択が変わったタイミングで）
+        if (!playedSfxThisUpdate && selectSfx) {
+          try {
+            selectSfx.currentTime = 0;
+            selectSfx.play();
+            playedSfxThisUpdate = true;
+          } catch {}
         }
       } else {
         item.style.backgroundColor = "transparent";
