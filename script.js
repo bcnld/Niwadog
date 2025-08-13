@@ -19,8 +19,8 @@ document.addEventListener("DOMContentLoaded", () => {
   const newGameBtn = document.getElementById("newgame-btn");
   if (newGameBtn) {
     newGameBtn.addEventListener("click", () => {
-      prepareIntroMovie();         // 動画事前ロード
-      startFadeOutAndPlayMovie();  // フェードアウト＋動画再生
+      prepareIntroMovie();       // 動画事前ロード
+      startFadeOutAndPlayMovie(); // 背景フェード → 動画再生
     });
   }
 });
@@ -36,7 +36,7 @@ function prepareIntroMovie() {
   }
 
   introVideo.style.display = "none";
-  introVideo.muted = true;  // 自動再生制限対策
+  introVideo.muted = true; // 自動再生制限対策
   introVideo.currentTime = 0;
   introVideo.load();
 
@@ -62,16 +62,25 @@ function startFadeOutAndPlayMovie() {
     return;
   }
 
-  // フェードイン
+  // フェードイン（背景を黒くする）
   fadeOverlay.style.pointerEvents = "auto";
   fadeOverlay.style.transition = "opacity 1s ease";
   fadeOverlay.style.opacity = "1";
 
+  // ロゴ・タイトル・ボタン類も非表示に
+  document.getElementById("center-text")?.style.display = "none";
+  document.getElementById("title-images")?.style.opacity = "0";
+  document.getElementById("press-any-key")?.style.opacity = "0";
+  document.querySelectorAll(".company-logo").forEach(el => el.style.opacity = "0");
+
   // BGMフェードアウト
   if (titleBgm) fadeOutAudio(titleBgm, 1000);
 
-  // 1秒後に動画表示
-  setTimeout(showIntroMovie, 1000);
+  // フェード完了後に動画再生
+  fadeOverlay.addEventListener("transitionend", function handler() {
+    fadeOverlay.removeEventListener("transitionend", handler);
+    showIntroMovie();
+  });
 }
 
 /**
