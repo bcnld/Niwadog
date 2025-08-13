@@ -47,7 +47,7 @@
       user-select: none;
       pointer-events: none;
     }
-    /* ゲーム画面の例 */
+    /* ゲーム画面 */
     #game-screen {
       display: none;
       width: 100vw;
@@ -56,7 +56,6 @@
       position: relative;
       overflow: hidden;
     }
-    /* 簡単にゲームの水エリアだけ配置 */
     #water-area {
       width: 100%;
       height: 100%;
@@ -66,6 +65,7 @@
 </head>
 <body>
 
+  <!-- 中央テキスト -->
   <div id="center-text">あなたは日本人ですか？</div>
   <div id="background-overlay"></div>
 
@@ -75,7 +75,15 @@
   <img class="company-logo" src="images/homo_logo.png" alt="Logo 3" />
 
   <!-- 全画面演出用画像 -->
-  <img id="fullscreen-effect" src="images/fullscreen_effect.png" alt="Effect" style="display:none; position:fixed; top:50%; left:50%; transform: translate(-50%, -50%) scale(1.2); opacity:0; z-index:9999; pointer-events:none;" />
+  <img id="fullscreen-effect" src="images/fullscreen_effect.png" alt="Effect" style="
+    display:none; 
+    position:fixed; 
+    top:50%; left:50%; 
+    transform: translate(-50%, -50%) scale(1.2); 
+    opacity:0; 
+    z-index:9999; 
+    pointer-events:none;
+  " />
 
   <!-- タイトル画像 -->
   <div id="title-images">
@@ -83,6 +91,7 @@
     <img id="title-img2" src="images/title2.png" alt="Title 2" />
   </div>
 
+  <!-- PRESS ANY KEY -->
   <div id="press-any-key" style="
     position: fixed;
     bottom: 50px;
@@ -95,57 +104,49 @@
     z-index: 50;
   ">PRESS ANY KEY</div>
 
-  <!-- 右上の全画面切替ボタン -->
+  <!-- 全画面切替ボタン -->
   <button id="fullscreen-toggle">全画面切替</button>
 
   <!-- ゲーム本編画面 -->
   <div id="game-screen">
     <div id="water-area"></div>
-    <!-- 他のゲームUIをここに追加 -->
   </div>
 
-<!-- フェード用オーバーレイ -->
-<div id="fade-overlay" style="
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  background: black;
-  opacity: 0;
-  pointer-events: none;
-  z-index: 5000;
-  transition: opacity 1s ease;
-"></div>
+  <!-- フェード用オーバーレイ -->
+  <div id="fade-overlay" style="
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: black;
+    opacity: 0;
+    pointer-events: none;
+    z-index: 5000;
+    transition: opacity 1s ease;
+  "></div>
 
-<!-- 動画 -->
-<video id="intro-movie" src="movie/intro.mp4" style="
-  position: fixed;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%);
-  width: 100vw;
-  height: 100vh;
-  object-fit: cover;
-  z-index: 6000;
-  display: none;
-"></video>
+  <!-- 動画 -->
+  <video id="intro-movie" src="movie/intro.mp4" style="
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 100vw;
+    height: 100vh;
+    object-fit: cover;
+    z-index: 6000;
+    display: none;
+  "></video>
 
   <!-- BGM・効果音 -->
   <audio id="bgm" src="Sounds/title.mp3" preload="auto"></audio>
   <audio id="effect-sfx" src="Sounds/effect.mp3"></audio>
   <audio id="select-sfx" src="Sounds/select.mp3" preload="auto"></audio>
 
+  <!-- JS読み込み -->
   <script src="title.js"></script>
   <script src="script.js"></script>
 
 </body>
 </html>
-
-
-
-
-
-
-
-
