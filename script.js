@@ -20,39 +20,47 @@ document.addEventListener("DOMContentLoaded", () => {
   const newGameBtn = document.getElementById("newgame-btn");
   if (newGameBtn) {
     newGameBtn.addEventListener("click", () => {
-      prepareIntroMovie(); // 動画要素を作成してロードだけする
+      prepareIntroMovie(); // 動画要素作成
       startFadeOutAndPlayMovie();
     });
   }
 });
 
 /**
- * 動画を事前に作成して読み込む（再生はしない）
+ * 動画作成＆自動再生保険（ミュートで一瞬再生→停止）
  */
 function prepareIntroMovie() {
   introVideo = document.createElement("video");
   introVideo.id = "intro-movie";
-  introVideo.src = "movie/intro.mp4"; // 正しいパスを設定
-  introVideo.style.position = "fixed";
-  introVideo.style.top = "50%";
-  introVideo.style.left = "50%";
-  introVideo.style.transform = "translate(-50%, -50%)";
-  introVideo.style.width = "80vw";
-  introVideo.style.height = "auto";
-  introVideo.style.zIndex = "6000";
-  introVideo.style.display = "none"; // 最初は非表示
+  introVideo.src = "movie/intro.mp4";
+  Object.assign(introVideo.style, {
+    position: "fixed",
+    top: "50%",
+    left: "50%",
+    transform: "translate(-50%, -50%)",
+    width: "80vw",
+    height: "auto",
+    zIndex: "6000",
+    display: "none",
+  });
   introVideo.playsInline = true;
   introVideo.autoplay = false;
-  introVideo.muted = false; // ミュートしない
-  introVideo.preload = "auto"; // 事前読み込み
+  introVideo.preload = "auto";
+  introVideo.muted = true; // 一瞬だけミュート
   document.body.appendChild(introVideo);
 
-  // ユーザー操作中にロードだけしておく
-  introVideo.load();
+  // 再生制限回避のために一瞬再生してすぐ停止
+  introVideo.play().then(() => {
+    introVideo.pause();
+    introVideo.currentTime = 0;
+    introVideo.muted = false; // 本再生は音あり
+  }).catch(err => {
+    console.warn("動画の事前再生失敗:", err);
+  });
 }
 
 /**
- * フェードアウトとBGMフェード処理
+ * フェードアウトとBGMフェード
  */
 function startFadeOutAndPlayMovie() {
   const titleBgm = document.getElementById("bgm");
@@ -79,7 +87,6 @@ function startFadeOutAndPlayMovie() {
   fadeOverlay.style.pointerEvents = "auto";
   fadeOverlay.style.opacity = "1";
 
-  // BGMフェードアウト関数
   function fadeOutAudio(audio, duration = 1000) {
     return new Promise((resolve) => {
       const stepTime = 50;
@@ -105,29 +112,24 @@ function startFadeOutAndPlayMovie() {
     setTimeout(() => {
       if (titleBgm) {
         fadeOutAudio(titleBgm, 1000).then(() => {
-          setTimeout(() => {
-            showIntroMovie();
-          }, 1000);
+          setTimeout(showIntroMovie, 1000);
         });
       } else {
-        setTimeout(() => {
-          showIntroMovie();
-        }, 1000);
+        setTimeout(showIntroMovie, 1000);
       }
     }, 1000);
   }, 4000);
 }
 
 /**
- * 動画を表示＆再生
+ * 動画を表示＆本再生
  */
 function showIntroMovie() {
   if (introVideo) {
     introVideo.style.display = "block";
     introVideo.currentTime = 0;
-
     introVideo.play().catch(err => {
-      console.warn("動画再生失敗:", err);
+      console.error("動画再生失敗:", err);
     });
 
     introVideo.onended = () => {
