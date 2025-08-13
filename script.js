@@ -1,4 +1,4 @@
-let introVideo; // 先にグローバルで保持
+let introVideo; // グローバルで保持
 
 document.addEventListener("DOMContentLoaded", () => {
   const btn = document.getElementById("fullscreen-toggle");
@@ -20,16 +20,19 @@ document.addEventListener("DOMContentLoaded", () => {
   const newGameBtn = document.getElementById("newgame-btn");
   if (newGameBtn) {
     newGameBtn.addEventListener("click", () => {
-      prepareIntroMovie(); // クリック直後に準備して再生開始（非表示）
+      prepareIntroMovie(); // 動画要素を作成してロードだけする
       startFadeOutAndPlayMovie();
     });
   }
 });
 
+/**
+ * 動画を事前に作成して読み込む（再生はしない）
+ */
 function prepareIntroMovie() {
   introVideo = document.createElement("video");
   introVideo.id = "intro-movie";
-  introVideo.src = "movie/intro.mp4";
+  introVideo.src = "movie/intro.mp4"; // 正しいパスを設定
   introVideo.style.position = "fixed";
   introVideo.style.top = "50%";
   introVideo.style.left = "50%";
@@ -41,14 +44,16 @@ function prepareIntroMovie() {
   introVideo.playsInline = true;
   introVideo.autoplay = false;
   introVideo.muted = false; // ミュートしない
+  introVideo.preload = "auto"; // 事前読み込み
   document.body.appendChild(introVideo);
 
-  // ユーザー操作直後に再生開始
-  introVideo.play().catch(err => {
-    console.warn("動画準備時の再生失敗:", err);
-  });
+  // ユーザー操作中にロードだけしておく
+  introVideo.load();
 }
 
+/**
+ * フェードアウトとBGMフェード処理
+ */
 function startFadeOutAndPlayMovie() {
   const titleBgm = document.getElementById("bgm");
 
@@ -74,6 +79,7 @@ function startFadeOutAndPlayMovie() {
   fadeOverlay.style.pointerEvents = "auto";
   fadeOverlay.style.opacity = "1";
 
+  // BGMフェードアウト関数
   function fadeOutAudio(audio, duration = 1000) {
     return new Promise((resolve) => {
       const stepTime = 50;
@@ -94,6 +100,7 @@ function startFadeOutAndPlayMovie() {
     });
   }
 
+  // 暗転4秒 → 1秒待機 → BGMフェード → 1秒後動画再生
   setTimeout(() => {
     setTimeout(() => {
       if (titleBgm) {
@@ -111,9 +118,18 @@ function startFadeOutAndPlayMovie() {
   }, 4000);
 }
 
+/**
+ * 動画を表示＆再生
+ */
 function showIntroMovie() {
   if (introVideo) {
-    introVideo.style.display = "block"; // 表示してそのまま流れる
+    introVideo.style.display = "block";
+    introVideo.currentTime = 0;
+
+    introVideo.play().catch(err => {
+      console.warn("動画再生失敗:", err);
+    });
+
     introVideo.onended = () => {
       introVideo.remove();
       const fadeOverlay = document.getElementById("fade-overlay");
@@ -126,6 +142,9 @@ function showIntroMovie() {
   }
 }
 
+/**
+ * ゲーム画面に切り替え
+ */
 function startGameMain() {
   document.getElementById("menu-wrapper")?.remove();
   document.getElementById("title-images")?.style.display = "none";
