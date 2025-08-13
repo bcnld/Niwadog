@@ -19,8 +19,8 @@ document.addEventListener("DOMContentLoaded", () => {
   const newGameBtn = document.getElementById("newgame-btn");
   if (newGameBtn) {
     newGameBtn.addEventListener("click", () => {
-      prepareIntroMovie();         // 動画事前ロード
-      startFadeOutAndPlayMovie();  // フェードアウト＋動画再生
+      prepareIntroMovie(); // 動画事前ロード
+      showVideoConfirm();  // 再生確認テロップ表示
     });
   }
 });
@@ -36,7 +36,7 @@ function prepareIntroMovie() {
   }
 
   introVideo.style.display = "none";
-  introVideo.muted = true;  // 自動再生制限対策
+  introVideo.muted = true; // 自動再生制限対策
   introVideo.currentTime = 0;
   introVideo.load();
 
@@ -48,6 +48,35 @@ function prepareIntroMovie() {
       introVideo.muted = false; // 本再生は音あり
     })
     .catch(err => console.warn("動画事前再生失敗:", err));
+}
+
+/**
+ * 動画再生確認テロップ
+ */
+function showVideoConfirm() {
+  const overlay = document.createElement("div");
+  overlay.id = "video-confirm-overlay";
+  overlay.style.cssText = `
+    position: fixed;
+    top:0; left:0; width:100%; height:100%;
+    background: rgba(0,0,0,0.8);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    color: white;
+    font-size: 28px;
+    text-align: center;
+    z-index: 10000;
+    cursor: pointer;
+  `;
+  overlay.innerHTML = `動画を再生しますか？<br>クリックで再生`;
+
+  document.body.appendChild(overlay);
+
+  overlay.addEventListener("click", () => {
+    overlay.remove();
+    startFadeOutAndPlayMovie();
+  });
 }
 
 /**
