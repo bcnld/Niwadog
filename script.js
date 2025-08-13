@@ -24,6 +24,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
 /**
  * 動画の準備（既存のvideoタグを使う）
+ * → ミュートせずに事前読み込み
  */
 function prepareIntroMovie() {
   introVideo = document.getElementById("intro-movie");
@@ -33,16 +34,9 @@ function prepareIntroMovie() {
   }
 
   introVideo.style.display = "none";
-  introVideo.muted = true; // 一瞬ミュート再生で自動再生許可対策
+  introVideo.muted = false; // 最初から音あり
   introVideo.currentTime = 0;
-
-  introVideo.play().then(() => {
-    introVideo.pause();
-    introVideo.currentTime = 0;
-    introVideo.muted = false; // 本再生は音あり
-  }).catch(err => {
-    console.warn("動画の事前再生失敗:", err);
-  });
+  introVideo.load(); // ブラウザに読み込み指示
 }
 
 /**
@@ -63,7 +57,7 @@ function startFadeOutAndPlayMovie() {
       height: "100vh",
       backgroundColor: "black",
       opacity: "0",
-      transition: "opacity 4s ease",
+      transition: "opacity 1s ease",
       zIndex: "5000",
       pointerEvents: "none",
     });
@@ -93,18 +87,16 @@ function startFadeOutAndPlayMovie() {
     });
   }
 
-  // 4秒暗転 → 1秒待機 → BGMフェード → 1秒後動画再生
+  // フェードアウト1秒 → 1秒待機 → BGMフェード → 1秒後動画再生
   setTimeout(() => {
-    setTimeout(() => {
-      if (titleBgm) {
-        fadeOutAudio(titleBgm, 1000).then(() => {
-          setTimeout(showIntroMovie, 1000);
-        });
-      } else {
+    if (titleBgm) {
+      fadeOutAudio(titleBgm, 1000).then(() => {
         setTimeout(showIntroMovie, 1000);
-      }
-    }, 1000);
-  }, 4000);
+      });
+    } else {
+      setTimeout(showIntroMovie, 1000);
+    }
+  }, 1000);
 }
 
 /**
@@ -114,6 +106,7 @@ function showIntroMovie() {
   if (introVideo) {
     introVideo.style.display = "block";
     introVideo.currentTime = 0;
+
     introVideo.play().catch(err => {
       console.error("動画再生失敗:", err);
     });
