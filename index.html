@@ -1,150 +1,109 @@
 <!DOCTYPE html>
 <html lang="ja">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Niwatori Crackudos</title>
-  <link rel="stylesheet" href="title.css" />
   <style>
-    /* --- タイトル画面用スタイル --- */
-    #fullscreen-toggle {
-      position: fixed;
-      top: 10px;
-      right: 10px;
-      background: rgba(50, 50, 50, 0.8);
-      color: white;
-      border: none;
-      padding: 8px 14px;
-      font-size: 14px;
-      cursor: pointer;
-      border-radius: 5px;
-      z-index: 10000;
-      user-select: none;
-      transition: background 0.3s ease;
+    body, html {
+      margin: 0;
+      padding: 0;
+      width: 100%;
+      height: 100%;
+      background: #000;
+      font-family: sans-serif;
+      overflow: hidden;
     }
-    #fullscreen-toggle:hover {
-      background: rgba(80, 80, 80, 1);
-    }
-    #title-images {
+
+    #center-text {
       position: fixed;
       top: 50%;
       left: 50%;
       transform: translate(-50%, -50%);
-      z-index: 30;
-      pointer-events: none;
-      width: 100vw;
-      height: 100vh;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      flex-direction: column;
-      gap: 20px;
+      font-size: 2rem;
+      color: white;
+      cursor: pointer;
+      z-index: 1000;
     }
-    #title-images img {
-      max-width: 80vw;
-      max-height: 40vh;
-      display: none;
-      user-select: none;
+
+    #fade-overlay {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: black;
+      opacity: 0;
       pointer-events: none;
+      z-index: 5000;
+      transition: opacity 1s ease;
     }
-    /* ゲーム画面の例 */
+
     #game-screen {
       display: none;
-      width: 100vw;
-      height: 100vh;
-      background-color: #a0d8f7;
-      position: relative;
-      overflow: hidden;
-    }
-    /* 簡単にゲームの水エリアだけ配置 */
-    #water-area {
       width: 100%;
       height: 100%;
       background: linear-gradient(to bottom, #4ec6ff, #0059b3);
+      position: relative;
+    }
+
+    #fullscreen-toggle {
+      position: fixed;
+      top: 10px;
+      right: 10px;
+      padding: 8px 12px;
+      font-size: 14px;
+      border-radius: 5px;
+      border: none;
+      background: rgba(50,50,50,0.8);
+      color: #fff;
+      cursor: pointer;
+      z-index: 10000;
+    }
+
+    #newgame-btn {
+      position: fixed;
+      bottom: 50px;
+      left: 50%;
+      transform: translateX(-50%);
+      padding: 12px 24px;
+      font-size: 18px;
+      border-radius: 8px;
+      border: none;
+      background: #f90;
+      color: #000;
+      cursor: pointer;
+      z-index: 1000;
+    }
+
+    video#intro-movie {
+      position: fixed;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      display: none;
+      z-index: 6000;
     }
   </style>
 </head>
 <body>
 
-  <div id="center-text">あなたは日本人ですか？</div>
-  <div id="background-overlay"></div>
+  <div id="center-text">タイトル画面をクリック</div>
 
-  <!-- 企業ロゴ -->
-  <img class="company-logo" src="images/mdm_logo.png" alt="Logo 1" />
-  <img class="company-logo" src="images/Sus_logo.png" alt="Logo 2" />
-  <img class="company-logo" src="images/homo_logo.png" alt="Logo 3" />
+  <div id="fade-overlay"></div>
 
-  <!-- 全画面演出用画像 -->
-  <img id="fullscreen-effect" src="images/fullscreen_effect.png" alt="Effect" style="display:none; position:fixed; top:50%; left:50%; transform: translate(-50%, -50%) scale(1.2); opacity:0; z-index:9999; pointer-events:none;" />
-
-  <!-- タイトル画像 -->
-  <div id="title-images">
-    <img id="title-img1" src="images/title1.png" alt="Title 1" />
-    <img id="title-img2" src="images/title2.png" alt="Title 2" />
-  </div>
-
-  <div id="press-any-key" style="
-    position: fixed;
-    bottom: 50px;
-    width: 100%;
-    text-align: center;
-    color: white;
-    font-size: 24px;
-    user-select: none;
-    cursor: default;
-    z-index: 50;
-  ">PRESS ANY KEY</div>
-
-  <!-- 右上の全画面切替ボタン -->
   <button id="fullscreen-toggle">全画面切替</button>
+  <button id="newgame-btn">New Game</button>
 
-  <!-- ゲーム本編画面 -->
-  <div id="game-screen">
-    <div id="water-area"></div>
-    <!-- 他のゲームUIをここに追加 -->
-  </div>
+  <video id="intro-movie" src="movie/intro.mp4"></video>
 
-<!-- フェード用オーバーレイ -->
-<div id="fade-overlay" style="
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  background: black;
-  opacity: 0;
-  pointer-events: none;
-  z-index: 5000;
-  transition: opacity 1s ease;
-"></div>
+  <div id="game-screen"></div>
 
-<!-- 動画 -->
-<video id="intro-movie" src="movie/intro.mp4" style="
-  position: fixed;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%);
-  width: 100vw;
-  height: 100vh;
-  object-fit: cover;
-  z-index: 6000;
-  display: none;
-"></video>
+  <audio id="bgm" src="Sounds/title.mp3" preload="auto" loop></audio>
 
-  <!-- BGM・効果音 -->
-  <audio id="bgm" src="Sounds/title.mp3" preload="auto"></audio>
-  <audio id="effect-sfx" src="Sounds/effect.mp3"></audio>
-  <audio id="select-sfx" src="Sounds/select.mp3" preload="auto"></audio>
-
-  <script src="title.js"></script>
-  <script src="script.js"></script>
-
+  <script src="main.js"></script>
 </body>
 </html>
-
-
-
-
-
-
-
