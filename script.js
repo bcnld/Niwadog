@@ -13,7 +13,7 @@ document.addEventListener("DOMContentLoaded", () => {
   // New Game
   document.getElementById("newgame-btn")?.addEventListener("click", () => {
     prepareIntroMovie();
-    fadeOutTitleAndPlayVideo();
+    fadeOutTitleAndShowPrompt(); // ← テロップを挟む処理に変更
   });
 });
 
@@ -33,8 +33,8 @@ function prepareIntroMovie() {
   }).catch(() => {});
 }
 
-// タイトルフェードアウト → 動画再生
-function fadeOutTitleAndPlayVideo() {
+// タイトルフェードアウト → テロップ → 動画再生
+function fadeOutTitleAndShowPrompt() {
   const fadeOverlay = document.getElementById("fade-overlay");
   const titleBgm = document.getElementById("bgm");
 
@@ -50,11 +50,34 @@ function fadeOutTitleAndPlayVideo() {
 
   if (titleBgm) fadeOutAudio(titleBgm, 1000);
 
-  // フェード完了後に動画再生
   fadeOverlay.addEventListener("transitionend", function handler() {
     fadeOverlay.removeEventListener("transitionend", handler);
-    playIntroVideo();
+    showVideoPrompt(); // ← フェード完了後にテロップ表示
   });
+}
+
+// テロップ表示
+function showVideoPrompt() {
+  const prompt = document.createElement("div");
+  prompt.textContent = "動画を再生しますか？";
+  prompt.style.position = "fixed";
+  prompt.style.top = "50%";
+  prompt.style.left = "50%";
+  prompt.style.transform = "translate(-50%, -50%)";
+  prompt.style.fontSize = "2rem";
+  prompt.style.color = "#fff";
+  prompt.style.background = "rgba(0,0,0,0.7)";
+  prompt.style.padding = "20px 40px";
+  prompt.style.borderRadius = "8px";
+  prompt.style.zIndex = "1000";
+  prompt.style.textAlign = "center";
+  document.body.appendChild(prompt);
+
+  // 2秒後に消して動画再生
+  setTimeout(() => {
+    prompt.remove();
+    playIntroVideo();
+  }, 2000);
 }
 
 // BGMフェードアウト
