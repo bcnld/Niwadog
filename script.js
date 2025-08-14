@@ -10,10 +10,10 @@ document.addEventListener("DOMContentLoaded", () => {
     }
   });
 
-  // New Game
+  // New Gameボタン
   document.getElementById("newgame-btn")?.addEventListener("click", () => {
     prepareIntroMovie();
-    fadeOutTitleAndShowPrompt(); // ← テロップを挟む処理に変更
+    fadeOutTitleAndShowPrompt();
   });
 });
 
@@ -26,11 +26,6 @@ function prepareIntroMovie() {
   introVideo.muted = true;
   introVideo.currentTime = 0;
   introVideo.load();
-  introVideo.play().then(() => {
-    introVideo.pause();
-    introVideo.currentTime = 0;
-    introVideo.muted = false;
-  }).catch(() => {});
 }
 
 // タイトルフェードアウト → テロップ → 動画再生
@@ -50,9 +45,10 @@ function fadeOutTitleAndShowPrompt() {
 
   if (titleBgm) fadeOutAudio(titleBgm, 1000);
 
+  // フェード完了後にテロップ表示
   fadeOverlay.addEventListener("transitionend", function handler() {
     fadeOverlay.removeEventListener("transitionend", handler);
-    showVideoPrompt(); // ← フェード完了後にテロップ表示
+    showVideoPrompt();
   });
 }
 
@@ -60,17 +56,19 @@ function fadeOutTitleAndShowPrompt() {
 function showVideoPrompt() {
   const prompt = document.createElement("div");
   prompt.textContent = "動画を再生しますか？";
-  prompt.style.position = "fixed";
-  prompt.style.top = "50%";
-  prompt.style.left = "50%";
-  prompt.style.transform = "translate(-50%, -50%)";
-  prompt.style.fontSize = "2rem";
-  prompt.style.color = "#fff";
-  prompt.style.background = "rgba(0,0,0,0.7)";
-  prompt.style.padding = "20px 40px";
-  prompt.style.borderRadius = "8px";
-  prompt.style.zIndex = "1000";
-  prompt.style.textAlign = "center";
+  Object.assign(prompt.style, {
+    position: "fixed",
+    top: "50%",
+    left: "50%",
+    transform: "translate(-50%, -50%)",
+    fontSize: "2rem",
+    color: "#fff",
+    background: "rgba(0,0,0,0.7)",
+    padding: "20px 40px",
+    borderRadius: "8px",
+    zIndex: "1000",
+    textAlign: "center",
+  });
   document.body.appendChild(prompt);
 
   // 2秒後に消して動画再生
@@ -108,12 +106,14 @@ function playIntroVideo() {
   introVideo.muted = false;
   introVideo.play().catch(() => {});
 
-  introVideo.onended = () => {
+  introVideo.addEventListener("ended", function onEnd() {
+    introVideo.removeEventListener("ended", onEnd);
     introVideo.style.display = "none";
-    document.getElementById("fade-overlay").style.opacity = "0";
-    document.getElementById("fade-overlay").style.pointerEvents = "none";
+    const fadeOverlay = document.getElementById("fade-overlay");
+    fadeOverlay.style.opacity = "0";
+    fadeOverlay.style.pointerEvents = "none";
     startGameMain();
-  };
+  });
 }
 
 // ゲーム画面表示
