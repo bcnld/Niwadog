@@ -11,7 +11,7 @@
       position: fixed;
       top: 10px;
       right: 10px;
-      background: rgba(50, 50, 50, 0.8);
+      background: rgba(50,50,50,0.8);
       color: white;
       border: none;
       padding: 8px 14px;
@@ -22,9 +22,8 @@
       user-select: none;
       transition: background 0.3s ease;
     }
-    #fullscreen-toggle:hover {
-      background: rgba(80, 80, 80, 1);
-    }
+    #fullscreen-toggle:hover { background: rgba(80,80,80,1); }
+
     #title-images {
       position: fixed;
       top: 50%;
@@ -47,26 +46,50 @@
       user-select: none;
       pointer-events: none;
     }
-    /* ゲーム画面の例 */
-    #game-screen {
-      display: none;
-      width: 100vw;
-      height: 100vh;
-      background-color: #a0d8f7;
-      position: relative;
-      overflow: hidden;
+
+    #game-screen { display: none; width:100vw; height:100vh; background:#a0d8f7; position:relative; overflow:hidden; }
+    #water-area { width:100%; height:100%; background:linear-gradient(to bottom,#4ec6ff,#0059b3); }
+
+    /* イントロ */
+    #intro {
+      position: fixed;
+      top:0; left:0;
+      width:100%; height:100%;
+      display:none;
+      justify-content:center;
+      align-items:center;
+      background:black;
+      color:white;
+      font-size:32px;
+      z-index:9999;
+      cursor:pointer;
     }
-    /* 簡単にゲームの水エリアだけ配置 */
-    #water-area {
-      width: 100%;
-      height: 100%;
-      background: linear-gradient(to bottom, #4ec6ff, #0059b3);
+
+    /* フェード用オーバーレイ */
+    #fade-overlay {
+      position: fixed;
+      top:0; left:0; width:100%; height:100%;
+      background:black; opacity:0;
+      pointer-events:none;
+      z-index:5000;
+      transition: opacity 1s ease;
+    }
+
+    /* Press Any Key */
+    #press-any-key {
+      position: fixed;
+      bottom:50px; width:100%; text-align:center;
+      color:white; font-size:24px; user-select:none; cursor:default;
+      z-index:50; display:none;
     }
   </style>
 </head>
 <body>
 
+  <!-- センターテキスト -->
   <div id="center-text">あなたは日本人ですか？</div>
+
+  <!-- 背景オーバーレイ -->
   <div id="background-overlay"></div>
 
   <!-- 企業ロゴ -->
@@ -74,7 +97,7 @@
   <img class="company-logo" src="images/Sus_logo.png" alt="Logo 2" />
   <img class="company-logo" src="images/homo_logo.png" alt="Logo 3" />
 
-  <!-- 全画面演出用画像 -->
+  <!-- 全画面演出 -->
   <img id="fullscreen-effect" src="images/fullscreen_effect.png" alt="Effect" style="display:none; position:fixed; top:50%; left:50%; transform: translate(-50%, -50%) scale(1.2); opacity:0; z-index:9999; pointer-events:none;" />
 
   <!-- タイトル画像 -->
@@ -83,53 +106,23 @@
     <img id="title-img2" src="images/title2.png" alt="Title 2" />
   </div>
 
-  <div id="press-any-key" style="
-    position: fixed;
-    bottom: 50px;
-    width: 100%;
-    text-align: center;
-    color: white;
-    font-size: 24px;
-    user-select: none;
-    cursor: default;
-    z-index: 50;
-  ">PRESS ANY KEY</div>
+  <!-- Press Any Key -->
+  <div id="press-any-key">PRESS ANY KEY</div>
 
-  <!-- 右上の全画面切替ボタン -->
+  <!-- イントロ -->
+  <div id="intro">INTRO SCENE (Click to Skip)</div>
+
+  <!-- 全画面切替ボタン -->
   <button id="fullscreen-toggle">全画面切替</button>
 
-  <!-- ゲーム本編画面 -->
+  <!-- ゲーム本編 -->
   <div id="game-screen">
     <div id="water-area"></div>
-    <!-- 他のゲームUIをここに追加 -->
+    <!-- 他のUIはScript.jsで追加 -->
   </div>
 
-<!-- フェード用オーバーレイ -->
-<div id="fade-overlay" style="
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  background: black;
-  opacity: 0;
-  pointer-events: none;
-  z-index: 5000;
-  transition: opacity 1s ease;
-"></div>
-
-<!-- 動画 -->
-<video id="intro-movie" src="movie/intro.mp4" style="
-  position: fixed;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%);
-  width: 100vw;
-  height: 100vh;
-  object-fit: cover;
-  z-index: 6000;
-  display: none;
-"></video>
+  <!-- 動画 -->
+  <video id="intro-movie" src="movie/intro.mp4" style="position:fixed;top:50%;left:50%;transform:translate(-50%,-50%);width:100vw;height:100vh;object-fit:cover;z-index:6000;display:none;"></video>
 
   <!-- BGM・効果音 -->
   <audio id="bgm" src="Sounds/title.mp3" preload="auto"></audio>
@@ -141,10 +134,3 @@
 
 </body>
 </html>
-
-
-
-
-
-
-
