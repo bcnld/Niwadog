@@ -9,9 +9,7 @@ document.addEventListener("DOMContentLoaded", () => {
   const fullscreenEffect = document.getElementById("fullscreen-effect");
   const effectSfx = document.getElementById("effect-sfx");
   const selectSfx = document.getElementById("select-sfx");
-  const introMovie = document.getElementById("intro-movie");
   const gameScreen = document.getElementById("game-screen");
-  const fullscreenBtn = document.getElementById("fullscreen-toggle");
 
   let currentIndex = 0;
   let started = false;
@@ -36,7 +34,7 @@ document.addEventListener("DOMContentLoaded", () => {
   pressKeyText.style.display = "none";
   fullscreenEffect.style.display = "none";
 
-  // --- フェード ---
+  // --- フェード関数 ---
   function fadeIn(el, duration = 1000) {
     el.style.display = "block";
     el.style.opacity = 0;
@@ -123,8 +121,89 @@ document.addEventListener("DOMContentLoaded", () => {
     titleImg2.style.opacity = 0;
     await fadeIn(titleImg2, 1000);
 
-    // メニュー表示
-    createMenu();
+    // PRESS ANY KEY
+    pressKeyText.style.display = "block";
+    pressKeyText.style.opacity = 0;
+    requestAnimationFrame(() => pressKeyText.style.opacity = 1);
+
+    waitForPressKey();
+  }
+
+  function waitForPressKey() {
+    async function onInput() {
+      window.removeEventListener("keydown", onInput, true);
+      window.removeEventListener("touchstart", onInput, true);
+      await fadeOut(pressKeyText, 800);
+      await fadeOut(backgroundOverlay, 1500);
+      startBackgroundScroll();
+      createMenu();
+      attachMenuKeyboardListeners();
+    }
+    window.addEventListener("keydown", onInput, { capture: true });
+    window.addEventListener("touchstart", onInput, { capture: true });
+  }
+
+  // --- 背景スクロール ---
+  const scrollSpeed = 1;
+  const containerHeight = window.innerHeight;
+  const containerWidth = window.innerWidth;
+  const bgImageWidth = 3600;
+  const bgImageHeight = containerHeight;
+
+  const scrollWrapper = document.createElement("div");
+  Object.assign(scrollWrapper.style, {
+    position: "fixed",
+    top: "0",
+    left: "0",
+    width: `${containerWidth}px`,
+    height: `${containerHeight}px`,
+    overflow: "hidden",
+    zIndex: "1",
+    pointerEvents: "none",
+  });
+
+  let bgElements = [];
+
+  function createBgDiv(x) {
+    const div = document.createElement("div");
+    Object.assign(div.style, {
+      position: "absolute",
+      top: "0",
+      left: `${x}px`,
+      width: `${bgImageWidth}px`,
+      height: `${bgImageHeight}px`,
+      backgroundImage: "url('images/menu.png')",
+      backgroundSize: "cover",
+      backgroundRepeat: "no-repeat",
+      backgroundPosition: "center center",
+    });
+    return div;
+  }
+
+  function animateScrollingBackground() {
+    for (let i = 0; i < bgElements.length; i++) {
+      const div = bgElements[i];
+      div.style.left = `${parseFloat(div.style.left) - scrollSpeed}px`;
+    }
+    if (parseFloat(bgElements[0].style.left) + bgImageWidth <= 0) {
+      const removed = bgElements.shift();
+      removed.remove();
+    }
+    const lastDiv = bgElements[bgElements.length - 1];
+    if (parseFloat(lastDiv.style.left) + bgImageWidth <= containerWidth) {
+      const newDiv = createBgDiv(parseFloat(lastDiv.style.left) + bgImageWidth);
+      scrollWrapper.appendChild(newDiv);
+      bgElements.push(newDiv);
+    }
+    requestAnimationFrame(animateScrollingBackground);
+  }
+
+  function startBackgroundScroll() {
+    backgroundOverlay.style.display = "none";
+    document.body.appendChild(scrollWrapper);
+    bgElements = [createBgDiv(0), createBgDiv(bgImageWidth)];
+    bgElements.forEach(div => scrollWrapper.appendChild(div));
+    animateScrollingBackground();
   }
 
   // --- メニュー ---
@@ -158,79 +237,79 @@ document.addEventListener("DOMContentLoaded", () => {
         transition: "background-color 0.3s ease, color 0.3s ease",
       });
       item.dataset.index = i;
-
       item.addEventListener("click", () => {
-        selectedIndex = i;
-        if (menuItems[i] === "New Game") startIntroSequence();
+        if (selectedIndex === i && isInputMode) {
+          if (menuItems[i] === "New Game") onNewGameClicked();
+          else alert(`"${menuItems[i]}" が選択されました！`);
+        } else {
+          selectedIndex = i;
+          isInputMode = true;
+          updateMenuHighlight();
+        }
       });
-
+      item.addEventListener("mouseenter", () => {
+        selectedIndex = i;
+        isInputMode = false;
+        updateMenuHighlight();
+      });
       menuWrapper.appendChild(item);
     });
-
     document.body.appendChild(menuWrapper);
     updateMenuHighlight();
-    attachMenuKeyboardListeners();
   }
 
   function updateMenuHighlight() {
     if (!menuWrapper) return;
     const children = menuWrapper.children;
+    let playedSfx = false;
     for (let i = 0; i < children.length; i++) {
       const item = children[i];
-      if (i === selectedIndex) item.style.backgroundColor = "#f90";
-      else item.style.backgroundColor = "transparent";
+      if (i === selectedIndex) {
+        if (isInputMode) {
+          item.style.backgroundColor = "#f90";
+          item.style.color = "#000";
+        } else {
+          item.style.backgroundColor = "#555";
+          item.style.color = "#fff";
+        }
+        if (!playedSfx && selectSfx) { try { selectSfx.currentTime=0; selectSfx.play(); playedSfx=true;} catch{} }
+      } else {
+        item.style.backgroundColor = "transparent";
+        item.style.color = "#fff";
+      }
     }
   }
 
   function attachMenuKeyboardListeners() {
-    window.addEventListener("keydown", e => {
-      if (!menuWrapper) return;
-      if (e.key === "ArrowDown") { selectedIndex = (selectedIndex + 1) % menuItems.length; updateMenuHighlight(); }
-      else if (e.key === "ArrowUp") { selectedIndex = (selectedIndex - 1 + menuItems.length) % menuItems.length; updateMenuHighlight(); }
-      else if (e.key === "Enter") {
-        if (menuItems[selectedIndex] === "New Game") startIntroSequence();
+    window.addEventListener("keydown", onMenuKeyDown);
+  }
+  function onMenuKeyDown(e) {
+    if (!menuWrapper) return;
+    if (e.key === "ArrowDown") { selectedIndex = (selectedIndex + 1) % menuItems.length; isInputMode=false; updateMenuHighlight(); e.preventDefault(); }
+    else if (e.key === "ArrowUp") { selectedIndex = (selectedIndex - 1 + menuItems.length) % menuItems.length; isInputMode=false; updateMenuHighlight(); e.preventDefault(); }
+    else if (e.key === "Enter") {
+      if (selectedIndex >=0 && selectedIndex < menuItems.length) {
+        if (isInputMode) { if (menuItems[selectedIndex]==="New Game") onNewGameClicked(); else alert(`"${menuItems[selectedIndex]}" が選択されました！`); }
+        else { isInputMode=true; updateMenuHighlight(); }
       }
-    });
+      e.preventDefault();
+    } else if (e.key==="Escape") { if (isInputMode){ isInputMode=false; updateMenuHighlight(); } }
   }
 
-  // --- イントロ動画再生 ---
-  function startIntroSequence() {
+  // --- New Game ---
+  async function onNewGameClicked() {
     if (menuWrapper) menuWrapper.style.display = "none";
-    if (titleImg2) titleImg2.style.display = "none";
-    if (bgm) { bgm.pause(); bgm.currentTime = 0; }
-
-    if (introMovie) {
-      introMovie.style.display = "block";
-      introMovie.play();
-      introMovie.onended = () => {
-        introMovie.style.display = "none";
-        showGameScreen();
-      };
-      introMovie.addEventListener("click", () => {
-        introMovie.pause();
-        introMovie.style.display = "none";
-        showGameScreen();
-      });
-    } else {
-      showGameScreen();
-    }
+    const fadeTitle = fadeOut(titleImg2, 2000);
+    const fadeScroll = fadeOut(scrollWrapper, 2000);
+    await Promise.all([fadeTitle, fadeScroll]);
+    if (bgm && !bgm.paused) { bgm.pause(); bgm.currentTime=0; }
+    gameScreen.style.display = "block";
   }
 
-  function showGameScreen() {
-    if (gameScreen) gameScreen.style.display = "block";
-    if (backgroundOverlay) backgroundOverlay.style.display = "none";
-  }
-
-  // --- 中央テキストクリック ---
+  // --- センターテキストクリック ---
   centerText.addEventListener("click", () => {
     if (started) return;
     started = true;
     fadeOut(centerText, 500).then(showNextLogo);
-  });
-
-  // --- 全画面切替 ---
-  fullscreenBtn.addEventListener("click", () => {
-    if (!document.fullscreenElement) document.documentElement.requestFullscreen();
-    else document.exitFullscreen();
   });
 });
