@@ -60,7 +60,6 @@ document.addEventListener("DOMContentLoaded", () => {
       await showTitleSequence();
       return;
     }
-    // 2個目以降は背景を暗い白に
     if(currentIndex > 0 && backgroundOverlay){
       backgroundOverlay.style.transition="none";
       backgroundOverlay.style.backgroundImage="";
@@ -102,7 +101,6 @@ document.addEventListener("DOMContentLoaded", () => {
     waitForPressKey();
   }
 
-  // 全画面エフェクト
   async function showFullscreenEffect(){
     if(!fullscreenEffect) return;
     if(effectSfx){ try{ effectSfx.currentTime=0; await effectSfx.play(); } catch{} }
@@ -120,7 +118,6 @@ document.addEventListener("DOMContentLoaded", () => {
     fullscreenEffect.style.display="none";
   }
 
-  // PRESS ANY KEY
   function waitForPressKey(){
     async function onInput(){
       window.removeEventListener("keydown",onInput,true);
@@ -135,7 +132,6 @@ document.addEventListener("DOMContentLoaded", () => {
     window.addEventListener("touchstart",onInput,{capture:true});
   }
 
-  // 中央クリックで開始
   centerText.addEventListener("click",()=>{
     if(started) return;
     started = true;
@@ -226,37 +222,56 @@ document.addEventListener("DOMContentLoaded", () => {
       }
     }
   }
+
   function attachMenuKeyboardListeners(){
-    window.addEventListener("keydown",e=>{
-      if(!menuWrapper)return;
-      if(e.key==="ArrowDown"){ selectedIndex=(selectedIndex+1)%menuItems.length; isInputMode=false; updateMenuHighlight(); e.preventDefault();}
-      else if(e.key==="ArrowUp"){ selectedIndex=(selectedIndex-1+menuItems.length)%menuItems.length; isInputMode=false; updateMenuHighlight(); e.preventDefault();}
-      else if(e.key==="Enter"){
-        if(selectedIndex>=0 && selectedIndex<menuItems.length){
+    window.addEventListener("keydown", e => {
+      if(!menuWrapper) return;
+      if(e.key === "ArrowDown"){ 
+        selectedIndex = (selectedIndex + 1) % menuItems.length; 
+        isInputMode = false; 
+        updateMenuHighlight(); 
+        e.preventDefault();
+      } else if(e.key === "ArrowUp"){ 
+        selectedIndex = (selectedIndex - 1 + menuItems.length) % menuItems.length; 
+        isInputMode = false; 
+        updateMenuHighlight(); 
+        e.preventDefault();
+      } else if(e.key === "Enter"){
+        if(selectedIndex >= 0 && selectedIndex < menuItems.length){
           if(isInputMode){
-            if(menuItems[selectedIndex]==="New Game") startNewGameWithVideo();
+            if(menuItems[selectedIndex] === "New Game") startNewGameWithVideo();
             else alert(`"${menuItems[selectedIndex]}" が選択されました！`);
           } else {
-            isInputMode=true; updateMenuHighlight();
+            isInputMode = true; 
+            updateMenuHighlight();
           }
         }
         e.preventDefault();
+      } else if(e.key === "Escape"){
+        if(isInputMode){ isInputMode = false; updateMenuHighlight(); }
       }
-      else if(e.key==="Escape"){ if(isInputMode){ isInputMode=false; updateMenuHighlight(); } }
     });
   }
 
   // New Game フェードアウト → 動画再生 → ゲーム画面フェードイン
   function startNewGameWithVideo(){
     if(menuWrapper) menuWrapper.style.display="none";
+
     if(fadeOverlay){
       fadeOverlay.style.display = "block";
-      fadeOverlay.style.opacity = "1";
-      setTimeout(()=>{
+      fadeOverlay.style.opacity = "0";
+      fadeOverlay.style.transition = "opacity 1s ease";
+
+      requestAnimationFrame(() => {
+        fadeOverlay.style.opacity = "1";
+      });
+
+      fadeOverlay.addEventListener("transitionend", () => {
         if(introVideo){
           introVideo.style.display = "block";
           introVideo.currentTime = 0;
           introVideo.play();
+
           introVideo.onended = () => {
             introVideo.style.display = "none";
             startGameWithFadeIn();
@@ -264,77 +279,37 @@ document.addEventListener("DOMContentLoaded", () => {
         } else {
           startGameWithFadeIn();
         }
-      }, 1000);
+      }, { once: true });
+
     } else {
       startGameWithFadeIn();
     }
   }
 
-  // New Game フェードアウト → 動画再生 → ゲーム画面フェードイン
-function startNewGameWithVideo(){
-  if(menuWrapper) menuWrapper.style.display="none";
-  
-  if(fadeOverlay){
-    fadeOverlay.style.display = "block";
-    fadeOverlay.style.opacity = "0";
-    fadeOverlay.style.transition = "opacity 1s ease";
-
-    // 次のフレームでフェード開始
-    requestAnimationFrame(() => {
-      fadeOverlay.style.opacity = "1";
-    });
-
-    // 暗転完了後に動画再生
-    fadeOverlay.addEventListener("transitionend", () => {
-      if(introVideo){
-        introVideo.style.display = "block";
-        introVideo.currentTime = 0;
-        introVideo.play();
-
-        introVideo.onended = () => {
-          introVideo.style.display = "none";
-          startGameWithFadeIn();
-        };
-      } else {
-        startGameWithFadeIn();
-      }
-    }, { once: true });
-
-  } else {
-    startGameWithFadeIn();
-  }
-}
-
   function startGameWithFadeIn(){
     if(gameScreen){
-      gameScreen.style.display="block";
+      gameScreen.style.display = "block";
       gameScreen.style.opacity = 0;
       gameScreen.style.transition = "opacity 1s ease";
-
-    // ゲーム画面を徐々に表示
       requestAnimationFrame(() => {
         gameScreen.style.opacity = 1;
       });
     }
 
-  // 背景スクロール停止
-    if(scrollWrapper){ scrollWrapper.style.display="none"; }
+    if(scrollWrapper){ scrollWrapper.style.display = "none"; }
 
-  // BGM 停止
     if(bgm && !bgm.paused){
       bgm.pause();
       bgm.currentTime = 0;
     }
 
-  // 暗転解除
     if(fadeOverlay){
       fadeOverlay.style.opacity = "0";
       fadeOverlay.addEventListener("transitionend", () => {
         fadeOverlay.style.display = "none";
       }, { once: true });
     }
-  
-    // 実際のゲーム初期化
+
     if(typeof initGame === "function") initGame();
   }
 });
