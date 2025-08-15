@@ -253,7 +253,7 @@ document.addEventListener("DOMContentLoaded", () => {
     });
   }
 
-  // New Game フェードアウト → 動画再生 → ゲーム画面フェードイン
+  // New Game → 暗転 → 動画 → ゲーム画面
   function startNewGameWithVideo(){
     if(menuWrapper) menuWrapper.style.display="none";
 
@@ -262,13 +262,17 @@ document.addEventListener("DOMContentLoaded", () => {
       fadeOverlay.style.opacity = "0";
       fadeOverlay.style.transition = "opacity 1s ease";
 
-      requestAnimationFrame(() => {
+      // フェード開始
+      setTimeout(() => {
         fadeOverlay.style.opacity = "1";
-      });
+      }, 20);
 
-      fadeOverlay.addEventListener("transitionend", () => {
+      fadeOverlay.addEventListener("transitionend", (e) => {
+        if(e.propertyName !== "opacity") return;
+
         if(introVideo){
           introVideo.style.display = "block";
+          introVideo.style.zIndex = 10001;
           introVideo.currentTime = 0;
           introVideo.play();
 
