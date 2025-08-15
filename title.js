@@ -21,13 +21,9 @@ document.addEventListener("DOMContentLoaded", () => {
   logos.forEach(logo => {
     Object.assign(logo.style, { position:"fixed", top:"50%", left:"50%", transform:"translate(-50%,-50%)", zIndex:"9998", display:"none", opacity:0 });
   });
-  if(titleImg1) titleImg1.style.display="none";
-  if(titleImg2) titleImg2.style.display="none";
-  if(pressKeyText) { pressKeyText.style.display="none"; pressKeyText.style.opacity=0; }
-  if(fullscreenEffect) { fullscreenEffect.style.display="none"; fullscreenEffect.style.opacity=0; }
-  if(backgroundOverlay) { backgroundOverlay.style.display="none"; }
-  if(introVideo) { introVideo.style.display="none"; }
-  if(fadeOverlay) { fadeOverlay.style.display="none"; fadeOverlay.style.opacity = "0"; }
+  [titleImg1, titleImg2, pressKeyText, fullscreenEffect, backgroundOverlay, introVideo, fadeOverlay].forEach(el=>{
+    if(el){ el.style.display="none"; el.style.opacity=0; }
+  });
 
   // フェード関数
   function fadeIn(el, duration=1000){
@@ -64,7 +60,8 @@ document.addEventListener("DOMContentLoaded", () => {
       await showTitleSequence();
       return;
     }
-    if(currentIndex>0 && backgroundOverlay){
+    // 2個目以降は背景を暗い白に
+    if(currentIndex > 0 && backgroundOverlay){
       backgroundOverlay.style.transition="none";
       backgroundOverlay.style.backgroundImage="";
       backgroundOverlay.style.backgroundColor="rgba(255,255,255,0.8)";
@@ -85,7 +82,6 @@ document.addEventListener("DOMContentLoaded", () => {
   // タイトル表示
   async function showTitleSequence(){
     const effectPromise = showFullscreenEffect();
-
     if(backgroundOverlay){
       backgroundOverlay.style.display="block";
       backgroundOverlay.style.opacity=0;
@@ -98,15 +94,10 @@ document.addEventListener("DOMContentLoaded", () => {
       backgroundOverlay.style.opacity=1;
       backgroundOverlay.style.filter="blur(0)";
     }
-
     if(bgm){ bgm.loop=true; bgm.volume=1; bgm.play(); }
-
     if(titleImg1){ titleImg1.style.display="block"; await fadeIn(titleImg1,1000); await new Promise(r=>setTimeout(r,3000)); await fadeOut(titleImg1,1000); }
-
     if(titleImg2){ titleImg2.style.display="block"; await fadeIn(titleImg2,1000); }
-
     if(pressKeyText){ pressKeyText.style.display="block"; requestAnimationFrame(()=>pressKeyText.style.opacity=1); }
-
     effectPromise.catch(()=>{});
     waitForPressKey();
   }
@@ -144,7 +135,7 @@ document.addEventListener("DOMContentLoaded", () => {
     window.addEventListener("touchstart",onInput,{capture:true});
   }
 
-  // 中央テキストクリック
+  // 中央クリックで開始
   centerText.addEventListener("click",()=>{
     if(started) return;
     started = true;
@@ -255,7 +246,7 @@ document.addEventListener("DOMContentLoaded", () => {
     });
   }
 
-  // New Game フェードアウト → 動画再生
+  // New Game フェードアウト → 動画再生 → ゲーム画面フェードイン
   function startNewGameWithVideo(){
     if(menuWrapper) menuWrapper.style.display="none";
     if(fadeOverlay){
@@ -268,25 +259,38 @@ document.addEventListener("DOMContentLoaded", () => {
           introVideo.play();
           introVideo.onended = () => {
             introVideo.style.display = "none";
-            fadeOverlay.style.opacity = "0";
-            fadeOverlay.style.display = "none";
-            startGame();
+            startGameWithFadeIn();
           };
         } else {
-          startGame();
+          startGameWithFadeIn();
         }
       }, 1000);
     } else {
-      startGame();
+      startGameWithFadeIn();
     }
   }
 
-  function startGame(){
-    if(gameScreen){ gameScreen.style.display="block"; }
+  function startGameWithFadeIn(){
+    if(gameScreen){
+      gameScreen.style.display="block";
+      gameScreen.style.opacity = 0;
+      let start=null;
+      function fadeInStep(ts){
+        if(!start) start=ts;
+        let p=Math.min((ts-start)/1000,1);
+        gameScreen.style.opacity=p;
+        if(p<1) requestAnimationFrame(fadeInStep);
+      }
+      requestAnimationFrame(fadeInStep);
+    }
     if(scrollWrapper){ scrollWrapper.style.display="none"; }
     if(bgm && !bgm.paused){
       bgm.pause();
       bgm.currentTime = 0;
+    }
+    if(fadeOverlay){
+      fadeOverlay.style.opacity="0";
+      setTimeout(()=>{ fadeOverlay.style.display="none"; }, 1000);
     }
     if(typeof initGame === "function") initGame();
   }
