@@ -270,28 +270,71 @@ document.addEventListener("DOMContentLoaded", () => {
     }
   }
 
+  // New Game フェードアウト → 動画再生 → ゲーム画面フェードイン
+function startNewGameWithVideo(){
+  if(menuWrapper) menuWrapper.style.display="none";
+  
+  if(fadeOverlay){
+    fadeOverlay.style.display = "block";
+    fadeOverlay.style.opacity = "0";
+    fadeOverlay.style.transition = "opacity 1s ease";
+
+    // 次のフレームでフェード開始
+    requestAnimationFrame(() => {
+      fadeOverlay.style.opacity = "1";
+    });
+
+    // 暗転完了後に動画再生
+    fadeOverlay.addEventListener("transitionend", () => {
+      if(introVideo){
+        introVideo.style.display = "block";
+        introVideo.currentTime = 0;
+        introVideo.play();
+
+        introVideo.onended = () => {
+          introVideo.style.display = "none";
+          startGameWithFadeIn();
+        };
+      } else {
+        startGameWithFadeIn();
+      }
+    }, { once: true });
+
+  } else {
+    startGameWithFadeIn();
+  }
+}
+
   function startGameWithFadeIn(){
     if(gameScreen){
       gameScreen.style.display="block";
       gameScreen.style.opacity = 0;
-      let start=null;
-      function fadeInStep(ts){
-        if(!start) start=ts;
-        let p=Math.min((ts-start)/1000,1);
-        gameScreen.style.opacity=p;
-        if(p<1) requestAnimationFrame(fadeInStep);
-      }
-      requestAnimationFrame(fadeInStep);
+      gameScreen.style.transition = "opacity 1s ease";
+
+    // ゲーム画面を徐々に表示
+      requestAnimationFrame(() => {
+        gameScreen.style.opacity = 1;
+      });
     }
+
+  // 背景スクロール停止
     if(scrollWrapper){ scrollWrapper.style.display="none"; }
+
+  // BGM 停止
     if(bgm && !bgm.paused){
       bgm.pause();
       bgm.currentTime = 0;
     }
+
+  // 暗転解除
     if(fadeOverlay){
-      fadeOverlay.style.opacity="0";
-      setTimeout(()=>{ fadeOverlay.style.display="none"; }, 1000);
+      fadeOverlay.style.opacity = "0";
+      fadeOverlay.addEventListener("transitionend", () => {
+        fadeOverlay.style.display = "none";
+      }, { once: true });
     }
+  
+    // 実際のゲーム初期化
     if(typeof initGame === "function") initGame();
   }
 });
