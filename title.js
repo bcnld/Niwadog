@@ -181,28 +181,41 @@ document.addEventListener("DOMContentLoaded", () => {
     else if(e.key==="Escape"){ if(isInputMode){ isInputMode=false; updateMenuHighlight(); } }
   }
 
-  // ---------- ニューゲーム：イントロ動画再生 ----------
-  function playIntroMovie(){
-    if(menuWrapper) menuWrapper.style.display="none";
-    if(!introMovie) { console.error("introMovieがありません"); return; }
-    introMovie.style.display="block";
-    introMovie.currentTime=0;
+// ---------- ニューゲーム：イントロ動画再生 ----------
+function playIntroMovie(){
+  if(menuWrapper) menuWrapper.style.display = "none";
+  if(!introMovie) { console.error("introMovieがありません"); return; }
+
+  // ★フェードアウト用の黒背景を作成
+  const fadeOverlay = document.createElement("div");
+  Object.assign(fadeOverlay.style, {
+    position: "fixed",
+    top: "0", left: "0", width: "100%", height: "100%",
+    backgroundColor: "black",
+    opacity: 0,
+    zIndex: 99999,
+    pointerEvents: "none",
+    transition: "opacity 1s ease"
+  });
+  document.body.appendChild(fadeOverlay);
+
+  // ★フェードアウト開始
+  requestAnimationFrame(() => {
+    fadeOverlay.style.opacity = 1;
+  });
+
+  // ★フェード完了後に動画再生
+  setTimeout(() => {
+    introMovie.style.display = "block";
+    introMovie.currentTime = 0;
     introMovie.play();
+
+    // フェード解除（動画の上に黒が残らないように）
+    fadeOverlay.style.display = "none";
+
     introMovie.onended = () => {
-      introMovie.style.display="none";
+      introMovie.style.display = "none";
       startGame();
     };
-  }
-
-  function startGame(){
-    if(gameScreen){ gameScreen.style.display="block"; }
-    if(scrollWrapper){ scrollWrapper.style.display="none"; }    // ゲーム用BGMがあれば再生（タイトルBGMは停止済み）
-    if(bgm && !bgm.paused){
-      bgm.pause();
-      bgm.currentTime = 0;
-    }
-    // 必要ならゲーム側で初期化処理呼び出し
-    if(typeof initGame === "function") initGame();
-  }
-});
-                      
+  }, 1000); // フェード時間と合わせる
+}
