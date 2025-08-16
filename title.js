@@ -253,27 +253,30 @@ document.addEventListener("DOMContentLoaded", () => {
     });
   }
 
-  // New Game → 暗転 → 動画 → ゲーム画面
-function startNewGameWithVideo(){
+// New Game → 暗転 → 動画 → ゲーム画面
+  function startNewGameWithVideo(){
     if(menuWrapper) menuWrapper.style.display="none";
 
     const fadeAllUI = async () => {
-        // まずタイトルと背景をフェードアウト
+        // タイトルと背景をフェードアウト
         const promises = [];
         if(titleImg2) promises.push(fadeOut(titleImg2, 1000));
         if(backgroundOverlay) promises.push(fadeOut(backgroundOverlay, 1000));
         await Promise.all(promises);
 
-        // それが終わったら画面全体を黒フェード
+        // 画面全体を黒フェード
         if(fadeOverlay){
-            fadeOverlay.style.display="block";
+            fadeOverlay.style.display = "block";
             fadeOverlay.style.opacity = "0";
             fadeOverlay.style.transition = "opacity 1s ease";
             return new Promise(res=>{
                 fadeOverlay.addEventListener("transitionend", ()=>{
-                    // 完全に黒になったらUI消去
+                    // 真っ黒になったらUI全部消す
                     if(titleImg2) titleImg2.style.display="none";
                     if(backgroundOverlay) backgroundOverlay.style.display="none";
+                    if(menuWrapper) menuWrapper.style.display="none";
+
+                    // フェードオーバーレイを黒のまま残す
                     res();
                 }, {once:true});
                 requestAnimationFrame(()=> fadeOverlay.style.opacity = "1");
@@ -284,14 +287,20 @@ function startNewGameWithVideo(){
     fadeAllUI().then(()=>{
         // 真っ暗になったら動画再生
         if(introVideo){
-            introVideo.style.display="block";
+            introVideo.style.display = "block";
             introVideo.style.zIndex = 10001;
             introVideo.currentTime = 0;
-            introVideo.play();
+            introVideo.volume = 1; // 音声付きで再生
+            introVideo.play().catch(err=>{
+              console.warn("動画再生がブロックされました:",err);
+            });
 
             introVideo.onended = () => {
                 introVideo.style.display = "none";
-                if(fadeOverlay) fadeOverlay.style.display="none"; // 黒フェード解除
+                if(fadeOverlay){
+                  fadeOverlay.style.display="none"; // フェード黒解除
+                  fadeOverlay.style.opacity="0";
+                }
                 startGameWithFadeIn();
             };
         } else {
@@ -299,8 +308,8 @@ function startNewGameWithVideo(){
         }
     });
 }
-  
-  function startGameWithFadeIn(){
+
+function startGameWithFadeIn(){
     if(gameScreen){
       gameScreen.style.display = "block";
       gameScreen.style.opacity = 0;
@@ -325,5 +334,4 @@ function startNewGameWithVideo(){
     }
 
     if(typeof initGame === "function") initGame();
-  }
-});
+}
