@@ -39,6 +39,7 @@ document.addEventListener("DOMContentLoaded", () => {
       requestAnimationFrame(step);
     });
   }
+
   function fadeOut(el, duration=1000){
     el.style.opacity=1;
     return new Promise(resolve=>{
@@ -88,7 +89,7 @@ document.addEventListener("DOMContentLoaded", () => {
       backgroundOverlay.style.backgroundSize="cover";
       backgroundOverlay.style.backgroundPosition="center";
       backgroundOverlay.style.filter="blur(5px)";
-      await new Promise(requestAnimationFrame);
+      await new Promise(resolve => requestAnimationFrame(resolve));
       backgroundOverlay.style.transition="opacity 2s ease, filter 2s ease";
       backgroundOverlay.style.opacity=1;
       backgroundOverlay.style.filter="blur(0)";
@@ -107,7 +108,7 @@ document.addEventListener("DOMContentLoaded", () => {
     fullscreenEffect.style.display="block"; fullscreenEffect.style.opacity=0;
     fullscreenEffect.style.transform="translate(-50%,-50%) scale(2)";
     fullscreenEffect.style.transition="none";
-    await new Promise(requestAnimationFrame);
+    await new Promise(resolve => requestAnimationFrame(resolve));
     fullscreenEffect.style.transition="opacity 3s ease, transform 3s ease";
     fullscreenEffect.style.opacity=1;
     fullscreenEffect.style.transform="translate(-50%,-50%) scale(1)";
@@ -205,6 +206,7 @@ document.addEventListener("DOMContentLoaded", () => {
     document.body.appendChild(menuWrapper);
     updateMenuHighlight();
   }
+
   function updateMenuHighlight(){
     if(!menuWrapper) return;
     const children=menuWrapper.children;
@@ -253,30 +255,25 @@ document.addEventListener("DOMContentLoaded", () => {
     });
   }
 
-// New Game → 暗転 → 動画 → ゲーム画面
+  // New Game → 暗転 → 動画 → ゲーム画面
   function startNewGameWithVideo(){
     if(menuWrapper) menuWrapper.style.display="none";
 
     const fadeAllUI = async () => {
-        // タイトルと背景をフェードアウト
         const promises = [];
         if(titleImg2) promises.push(fadeOut(titleImg2, 1000));
         if(backgroundOverlay) promises.push(fadeOut(backgroundOverlay, 1000));
         await Promise.all(promises);
 
-        // 画面全体を黒フェード
         if(fadeOverlay){
             fadeOverlay.style.display = "block";
             fadeOverlay.style.opacity = "0";
             fadeOverlay.style.transition = "opacity 1s ease";
             return new Promise(res=>{
                 fadeOverlay.addEventListener("transitionend", ()=>{
-                    // 真っ黒になったらUI全部消す
                     if(titleImg2) titleImg2.style.display="none";
                     if(backgroundOverlay) backgroundOverlay.style.display="none";
                     if(menuWrapper) menuWrapper.style.display="none";
-
-                    // フェードオーバーレイを黒のまま残す
                     res();
                 }, {once:true});
                 requestAnimationFrame(()=> fadeOverlay.style.opacity = "1");
@@ -285,12 +282,11 @@ document.addEventListener("DOMContentLoaded", () => {
     };
 
     fadeAllUI().then(()=>{
-        // 真っ暗になったら動画再生
         if(introVideo){
             introVideo.style.display = "block";
             introVideo.style.zIndex = 10001;
             introVideo.currentTime = 0;
-            introVideo.volume = 1; // 音声付きで再生
+            introVideo.volume = 1;
             introVideo.play().catch(err=>{
               console.warn("動画再生がブロックされました:",err);
             });
@@ -298,7 +294,7 @@ document.addEventListener("DOMContentLoaded", () => {
             introVideo.onended = () => {
                 introVideo.style.display = "none";
                 if(fadeOverlay){
-                  fadeOverlay.style.display="none"; // フェード黒解除
+                  fadeOverlay.style.display="none";
                   fadeOverlay.style.opacity="0";
                 }
                 startGameWithFadeIn();
@@ -307,31 +303,25 @@ document.addEventListener("DOMContentLoaded", () => {
             startGameWithFadeIn();
         }
     });
-}
+  }
 
-function startGameWithFadeIn() {
+  function startGameWithFadeIn() {
     if (gameScreen) {
         gameScreen.style.display = "block";
         gameScreen.style.opacity = 0;
         gameScreen.style.transition = "opacity 1s ease";
-        requestAnimationFrame(() => {
-            gameScreen.style.opacity = 1;
-        });
+        requestAnimationFrame(() => { gameScreen.style.opacity = 1; });
     }
 
     if (scrollWrapper) scrollWrapper.style.display = "none";
 
-    if (bgm && !bgm.paused) {
-        bgm.pause();
-        bgm.currentTime = 0;
-    }
+    if (bgm && !bgm.paused) { bgm.pause(); bgm.currentTime = 0; }
 
     if (fadeOverlay) {
         fadeOverlay.style.opacity = "0";
-        fadeOverlay.addEventListener("transitionend", () => {
-            fadeOverlay.style.display = "none";
-        }, { once: true });
+        fadeOverlay.addEventListener("transitionend", () => { fadeOverlay.style.display = "none"; }, { once: true });
     }
 
     if (typeof initGame === "function") initGame();
-};
+  }
+});
