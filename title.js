@@ -258,25 +258,26 @@ function startNewGameWithVideo(){
     if(menuWrapper) menuWrapper.style.display="none";
 
     const fadeAllUI = async () => {
-        // タイトル2と背景を同時にフェードアウト
+        // まずタイトルと背景をフェードアウト
         const promises = [];
         if(titleImg2) promises.push(fadeOut(titleImg2, 1000));
         if(backgroundOverlay) promises.push(fadeOut(backgroundOverlay, 1000));
+        await Promise.all(promises);
+
+        // それが終わったら画面全体を黒フェード
         if(fadeOverlay){
             fadeOverlay.style.display="block";
             fadeOverlay.style.opacity = "0";
             fadeOverlay.style.transition = "opacity 1s ease";
-            requestAnimationFrame(()=> fadeOverlay.style.opacity = "1");
-            promises.push(new Promise(res => fadeOverlay.addEventListener("transitionend", res, {once:true})));
-        }
-        await Promise.all(promises);
-
-        // 完全にUIを消す
-        if(titleImg2) titleImg2.style.display="none";
-        if(backgroundOverlay) backgroundOverlay.style.display="none";
-        if(fadeOverlay){
-            fadeOverlay.style.transition="";
-            fadeOverlay.style.opacity="1"; // リセット
+            return new Promise(res=>{
+                fadeOverlay.addEventListener("transitionend", ()=>{
+                    // 完全に黒になったらUI消去
+                    if(titleImg2) titleImg2.style.display="none";
+                    if(backgroundOverlay) backgroundOverlay.style.display="none";
+                    res();
+                }, {once:true});
+                requestAnimationFrame(()=> fadeOverlay.style.opacity = "1");
+            });
         }
     };
 
@@ -290,7 +291,7 @@ function startNewGameWithVideo(){
 
             introVideo.onended = () => {
                 introVideo.style.display = "none";
-                if(fadeOverlay) fadeOverlay.style.display="none";
+                if(fadeOverlay) fadeOverlay.style.display="none"; // 黒フェード解除
                 startGameWithFadeIn();
             };
         } else {
@@ -298,7 +299,7 @@ function startNewGameWithVideo(){
         }
     });
 }
-
+  
   function startGameWithFadeIn(){
     if(gameScreen){
       gameScreen.style.display = "block";
