@@ -256,7 +256,7 @@ document.addEventListener("DOMContentLoaded", () => {
   }
 
   // New Game → 暗転 → 動画 → ゲーム画面
-  function startNewGameWithVideo(){
+  function startNewGameWithVideo() {
     if(menuWrapper) menuWrapper.style.display="none";
 
     const fadeAllUI = async () => {
@@ -269,42 +269,39 @@ document.addEventListener("DOMContentLoaded", () => {
             fadeOverlay.style.display = "block";
             fadeOverlay.style.opacity = "0";
             fadeOverlay.style.transition = "opacity 1s ease";
-            return new Promise(res=>{
-                fadeOverlay.addEventListener("transitionend", ()=>{
-                    if(titleImg2) titleImg2.style.display="none";
-                    if(backgroundOverlay) backgroundOverlay.style.display="none";
-                    if(menuWrapper) menuWrapper.style.display="none";
-                    res();
-                }, {once:true});
+            await new Promise(res => {
+                fadeOverlay.addEventListener("transitionend", res, { once:true });
                 requestAnimationFrame(()=> fadeOverlay.style.opacity = "1");
             });
         }
     };
 
-    fadeAllUI().then(()=>{
-        if(introVideo){
-            introVideo.style.display = "block";
-            introVideo.style.zIndex = 10001;
-            introVideo.currentTime = 0;
-            introVideo.volume = 1;
-            introVideo.play().catch(err=>{
-              console.warn("動画再生がブロックされました:",err);
+    const playVideo = (video) => {
+        return new Promise(resolve => {
+            video.style.display = "block";
+            video.style.zIndex = 10001;
+            video.currentTime = 0;
+            video.volume = 1;
+            video.play().catch(err=>{
+                console.warn("動画再生がブロックされました:",err);
             });
-
-            introVideo.onended = () => {
-                introVideo.style.display = "none";
-                if(fadeOverlay){
-                  fadeOverlay.style.display="none";
-                  fadeOverlay.style.opacity="0";
-                }
-                startGameWithFadeIn();
+            video.onended = () => {
+                video.style.display = "none";
+                resolve();
             };
-        } else {
-            startGameWithFadeIn();
-        }
-    });
-  }
+        });
+    };
 
+    (async () => {
+        await fadeAllUI();
+        if(introVideo){
+            await playVideo(introVideo);
+        }
+        // 動画が終わったらゲーム画面
+        startGameWithFadeIn();
+    })();
+}
+  
   function startGameWithFadeIn() {
     if (gameScreen) {
         gameScreen.style.display = "block";
