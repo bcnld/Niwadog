@@ -309,29 +309,29 @@ document.addEventListener("DOMContentLoaded", () => {
     });
 }
 
-function startGameWithFadeIn(){
-    if(gameScreen){
-      gameScreen.style.display = "block";
-      gameScreen.style.opacity = 0;
-      gameScreen.style.transition = "opacity 1s ease";
-      requestAnimationFrame(() => {
-        gameScreen.style.opacity = 1;
-      });
+function startGameWithFadeIn() {
+    if (gameScreen) {
+        gameScreen.style.display = "block";
+        gameScreen.style.opacity = 0;
+        gameScreen.style.transition = "opacity 1s ease";
+        requestAnimationFrame(() => {
+            gameScreen.style.opacity = 1;
+        });
     }
 
-    if(scrollWrapper){ scrollWrapper.style.display = "none"; }
+    if (scrollWrapper) scrollWrapper.style.display = "none";
 
-    if(bgm && !bgm.paused){
-      bgm.pause();
-      bgm.currentTime = 0;
+    if (bgm && !bgm.paused) {
+        bgm.pause();
+        bgm.currentTime = 0;
     }
 
-    if(fadeOverlay){
-      fadeOverlay.style.opacity = "0";
-      fadeOverlay.addEventListener("transitionend", () => {
-        fadeOverlay.style.display = "none";
-      }, { once: true });
+    if (fadeOverlay) {
+        fadeOverlay.style.opacity = "0";
+        fadeOverlay.addEventListener("transitionend", () => {
+            fadeOverlay.style.display = "none";
+        }, { once: true });
     }
 
-    if(typeof initGame === "function") initGame();
-}
+    if (typeof initGame === "function") initGame();
+};
