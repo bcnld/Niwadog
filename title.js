@@ -259,6 +259,9 @@ document.addEventListener("DOMContentLoaded", () => {
   function startNewGameWithVideo() {
     if(menuWrapper) menuWrapper.style.display="none";
 
+    // 最初にゲーム画面を絶対隠す！
+    if (gameScreen) gameScreen.style.display = "none";
+
     const fadeAllUI = async () => {
         const promises = [];
         if(titleImg2) promises.push(fadeOut(titleImg2, 1000));
@@ -279,7 +282,7 @@ document.addEventListener("DOMContentLoaded", () => {
     const playVideo = (video) => {
         return new Promise(resolve => {
             video.style.display = "block";
-            video.style.zIndex = 10001;
+            video.style.zIndex = 10001;  // 一番上
             video.currentTime = 0;
             video.volume = 1;
             video.play().catch(err=>{
@@ -308,10 +311,10 @@ document.addEventListener("DOMContentLoaded", () => {
     };
 
     (async () => {
-        await fadeAllUI();        // タイトル・背景フェードアウト + 黒フェードイン
-        if(introVideo) await playVideo(introVideo); // 動画再生待機
-        await fadeOutOverlay();   // 黒フェードアウト
-        startGameWithFadeIn();    // ゲーム画面フェードイン
+        await fadeAllUI();              // 黒フェードイン
+        if(introVideo) await playVideo(introVideo); // 動画終了待機
+        await fadeOutOverlay();         // 黒フェードアウト
+        startGameWithFadeIn();          // ここでやっとゲーム画面を表示
     })();
 }
   
