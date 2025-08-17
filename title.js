@@ -271,7 +271,7 @@ document.addEventListener("DOMContentLoaded", () => {
             fadeOverlay.style.transition = "opacity 1s ease";
             await new Promise(res => {
                 fadeOverlay.addEventListener("transitionend", res, { once:true });
-                requestAnimationFrame(()=> fadeOverlay.style.opacity = "1");
+                requestAnimationFrame(() => fadeOverlay.style.opacity = "1");
             });
         }
     };
@@ -292,13 +292,26 @@ document.addEventListener("DOMContentLoaded", () => {
         });
     };
 
+    const fadeOutOverlay = () => {
+        return new Promise(res => {
+            if(fadeOverlay){
+                fadeOverlay.style.transition = "opacity 1s ease";
+                fadeOverlay.addEventListener("transitionend", () => {
+                    fadeOverlay.style.display = "none";
+                    res();
+                }, {once:true});
+                requestAnimationFrame(() => fadeOverlay.style.opacity = "0");
+            } else {
+                res();
+            }
+        });
+    };
+
     (async () => {
-        await fadeAllUI();
-        if(introVideo){
-            await playVideo(introVideo);
-        }
-        // 動画が終わったらゲーム画面
-        startGameWithFadeIn();
+        await fadeAllUI();        // タイトル・背景フェードアウト + 黒フェードイン
+        if(introVideo) await playVideo(introVideo); // 動画再生待機
+        await fadeOutOverlay();   // 黒フェードアウト
+        startGameWithFadeIn();    // ゲーム画面フェードイン
     })();
 }
   
